@@ -1,0 +1,1710 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Pet Guardian
+meta:
+  id: wrk_410fbaa91a9945a795604af107d78b97
+  created: 1779315088270
+  modified: 1779315088270
+  description: ""
+collection:
+  - name: Pets
+    meta:
+      id: fld_ea23100e8f2140ae92c86f9c81d3e840
+      created: 1779323931608
+      modified: 1779405691090
+      sortKey: -1779323927837
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Pets
+        meta:
+          id: req_9f31333f31db43f6ab8d9ed06d877169
+          created: 1779323931611
+          modified: 1779405775009
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-nome
+        name: Get Pet by Nome
+        meta:
+          id: req_2651ee6eecbc4783a0f1b7066004ae1c
+          created: 1779323931614
+          modified: 1779405785331
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        parameters:
+          - name: nome
+            value: Mel
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Pet by Id
+        meta:
+          id: req_1b791ba0a19841afb8622e9dd84bdf02
+          created: 1779323931616
+          modified: 1779405794250
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/historico
+        name: Get Pet Historico
+        meta:
+          id: req_31c77f9bbfe84f63a63ac47a1f12d701
+          created: 1779410000001
+          modified: 1779410000001
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276325
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Pet
+        meta:
+          id: req_aafc4cb9e04f46e3885af1c1bc82a4cb
+          created: 1779323931617
+          modified: 1779405407549
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Bidu",
+                "idade": 3,
+                "raca": "Poodle",
+                "porte": "PEQUENO",
+                "sexo": "M",
+                "castrado": true,
+                "usuarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Pet
+        meta:
+          id: req_6b1eb422d5874047866dc8967ef2ca9a
+          created: 1779323931620
+          modified: 1779405417154
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Bidu Atualizado",
+                "idade": 4,
+                "raca": "Poodle",
+                "porte": "PEQUENO",
+                "sexo": "M",
+                "castrado": true,
+                "usuarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Pet
+        meta:
+          id: req_7340835e2188453f851f7ea285ed6cf9
+          created: 1779323931622
+          modified: 1779405816096
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927630
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/usuarios/2
+        name: Vincular Usuario ao Pet
+        meta:
+          id: req_08cd1eb83b314f1593db9733f9c2f531
+          created: 1779410000002
+          modified: 1779410000002
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276295
+        method: POST
+        parameters:
+          - name: principal
+            value: "false"
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/usuarios/2
+        name: Desvincular Usuario do Pet
+        meta:
+          id: req_4de5649cd5924a328d807f01250fe9fb
+          created: 1779410000003
+          modified: 1779410000003
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927629
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/convidar
+        name: Convidar Cuidador por ID
+        meta:
+          id: req_a8a6b9f9f85f4dac8c37b14c8be2eb76
+          created: 1779410000004
+          modified: 1779410000004
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276285
+        method: POST
+        parameters:
+          - name: responsavelPrincipalId
+            value: "1"
+            disabled: false
+          - name: usuarioConvidadoId
+            value: "2"
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/convidar-email
+        name: Convidar Cuidador por Email
+        meta:
+          id: req_4cf9bcf010c946f5badf9e2609df0f65
+          created: 1779410000005
+          modified: 1779410000005
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927628
+        method: POST
+        parameters:
+          - name: responsavelPrincipalId
+            value: "1"
+            disabled: false
+          - name: email
+            value: cuidador@email.com
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: pets
+  - name: Usuários
+    meta:
+      id: fld_8a3651b26a2b450da343f9395e7c6d19
+      created: 1779323931624
+      modified: 1779405574617
+      sortKey: -1779323927937
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Usuarios
+        meta:
+          id: req_944d266be00b476fb9522da4424d9c61
+          created: 1779323931626
+          modified: 1779405722295
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927628
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-nome
+        name: Get Usuario by Nome
+        meta:
+          id: req_42a29bfd37f64676adf2a14f7afbaf2a
+          created: 1779323931628
+          modified: 1779405732714
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927627
+        method: GET
+        parameters:
+          - name: nome
+            value: Enzo
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-email
+        name: Get Usuario by Email
+        meta:
+          id: req_usuario_by_email_new
+          created: 1779410000100
+          modified: 1779410000100
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276265
+        method: GET
+        parameters:
+          - name: email
+            value: enzo@email.com
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Usuario by Id
+        meta:
+          id: req_7815f9712bd2422c88212077ec0ba72c
+          created: 1779323931630
+          modified: 1779405744486
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927626
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/rede-cuidado
+        name: Get Usuario Rede Cuidado
+        meta:
+          id: req_0e532caefceb4b16a3fc83bc4ea9806b
+          created: 1779410000006
+          modified: 1779410000006
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276255
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Usuario
+        meta:
+          id: req_db1fb0d38c3542be8501566588b9ce01
+          created: 1779393918773
+          modified: 1779405756394
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927526
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Enzo Silva",
+                "email": "enzo@email.com",
+                "senha": "123456",
+                "ddd": "11",
+                "numeroTelefone": "912345678",
+                "endereco": {
+                    "cep": "05412000",
+                    "numero": "123"
+                }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Usuario
+        meta:
+          id: req_e62105be92e84924ae449a5192502285
+          created: 1779393932127
+          modified: 1779405760412
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927426
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Enzo Silva Atualizado",
+                "email": "enzo.atualizado@email.com",
+                "senha": "123456",
+                "ddd": "11",
+                "numeroTelefone": "923456789",
+                "endereco": {
+                    "cep": "05412000",
+                    "numero": "456"
+                }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Usuario
+        meta:
+          id: req_868280a86a1940418c7226cf563add76
+          created: 1779393947719
+          modified: 1779405765618
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927326
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: usuarios
+  - name: Tratamento de Erros (Testes)
+    meta:
+      id: fld_ac0222f47a3c448fbfe8ffa9728d68f3
+      created: 1779323931638
+      modified: 1779391314840
+      sortKey: -1779323927737
+      description: ""
+    children:
+      - url: http://localhost:8080/pets/9999
+        name: Erro 404 - Pet Não Encontrado
+        meta:
+          id: req_02194775fe884c0d87281a87bf53cec9
+          created: 1779323931639
+          modified: 1779323931639
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927621
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pets
+        name: Erro 400 - Validação de Entrada (Nome em Branco)
+        meta:
+          id: req_b4aa1dbc4a3541b9957d78abbf11b9fd
+          created: 1779323931641
+          modified: 1779323931641
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927620
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "",
+                "idade": 3,
+                "raca": "Poodle",
+                "porte": "PEQUENO",
+                "sexo": "M",
+                "castrado": true,
+                "usuarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pets
+        name: Erro 400 - Validação Personalizada (Enum Incorreto)
+        meta:
+          id: req_f4480d5126f0446385800b8a4d190160
+          created: 1779323931643
+          modified: 1779323931643
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927619
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Bidu",
+                "idade": 3,
+                "raca": "Poodle",
+                "porte": "GIGANTE_INVALIDO",
+                "sexo": "M",
+                "castrado": true,
+                "usuarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/usuarios/9999
+        name: Erro 404 - Usuario Não Encontrado
+        meta:
+          id: req_erro_404_usuario
+          created: 1779410100001
+          modified: 1779410100001
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927618
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/veterinarios/9999
+        name: Erro 404 - Veterinario Não Encontrado
+        meta:
+          id: req_erro_404_veterinario
+          created: 1779410100002
+          modified: 1779410100002
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927617
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/atendimentos/9999
+        name: Erro 404 - Atendimento Não Encontrado
+        meta:
+          id: req_erro_404_atendimento
+          created: 1779410100003
+          modified: 1779410100003
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927616
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/tarefas/9999
+        name: Erro 404 - Tarefa Não Encontrada
+        meta:
+          id: req_erro_404_tarefa
+          created: 1779410100004
+          modified: 1779410100004
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927615
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/clinicas/9999
+        name: Erro 404 - Clinica Não Encontrada
+        meta:
+          id: req_erro_404_clinica
+          created: 1779410100005
+          modified: 1779410100005
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927614
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/tarefas
+        name: Erro 400 - Criar Tarefa COM Executor (Deve Falhar)
+        meta:
+          id: req_erro_tarefa_com_executor
+          created: 1779410100006
+          modified: 1779410100006
+          isPrivate: false
+          description: "Regra de negócio: tarefa não pode ser criada com usuarioId preenchido"
+          sortKey: -1779323927613
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "titulo": "Passeio diário",
+                "pontosTarefa": 20,
+                "descricao": "Levar o pet para passear por 30 minutos",
+                "prazo": "2026-12-01T18:00:00",
+                "usuarioId": 1,
+                "petId": 1,
+                "status": "PENDENTE",
+                "veterinarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/tarefas/1/concluir
+        name: Erro 403 - Concluir Tarefa por Usuario Não Vinculado
+        meta:
+          id: req_erro_concluir_nao_vinculado
+          created: 1779410100007
+          modified: 1779410100007
+          isPrivate: false
+          description: "Regra de negócio: somente co-cuidador vinculado ao pet pode concluir tarefa"
+          sortKey: -1779323927612
+        method: PATCH
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "concluinteId": 9999
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pets/1/convidar
+        name: Erro 403 - Convidar por Não Principal (Deve Falhar)
+        meta:
+          id: req_erro_convite_nao_principal
+          created: 1779410100008
+          modified: 1779410100008
+          isPrivate: false
+          description: "Regra de negócio: somente o responsável principal pode convidar co-cuidadores"
+          sortKey: -1779323927611
+        method: POST
+        parameters:
+          - name: responsavelPrincipalId
+            value: "9999"
+            disabled: false
+          - name: usuarioConvidadoId
+            value: "2"
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pets/1/usuarios/1
+        name: Erro 400 - Desvincular Responsável Principal (Deve Falhar)
+        meta:
+          id: req_erro_desvincular_principal
+          created: 1779410100009
+          modified: 1779410100009
+          isPrivate: false
+          description: "Regra de negócio: não é possível desvincular o responsável principal do pet"
+          sortKey: -1779323927610
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Atendimentos
+    meta:
+      id: fld_07ca9a06679d453a812306f80a53db7e
+      created: 1779410000010
+      modified: 1779410000010
+      sortKey: -1779323927836
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Atendimentos
+        meta:
+          id: req_all_atendimentos_new
+          created: 1779410000101
+          modified: 1779410000101
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927636
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: data,desc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-usuario
+        name: Get Atendimentos by Usuario
+        meta:
+          id: req_a5ff5110dbcb453fbe68d8b80f774df1
+          created: 1779410000011
+          modified: 1779410000011
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: usuarioId
+            value: "1"
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: data,desc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Atendimento by Id
+        meta:
+          id: req_8806b0d42e884df1bb8fca383ebf2b87
+          created: 1779410000012
+          modified: 1779410000012
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Atendimento
+        meta:
+          id: req_97d370ef1fd646f4aa34404f8cb2fcd6
+          created: 1779410000013
+          modified: 1779410000013
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "tipo": "CONSULTA",
+                "data": "2026-12-01T10:00:00",
+                "anotacoes": "Consulta de rotina",
+                "valor": 150.00,
+                "status": "PENDENTE",
+                "petId": 1,
+                "veterinarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Atendimento
+        meta:
+          id: req_47ce5ac28a30463784d41d72cd5b929a
+          created: 1779410000014
+          modified: 1779410000014
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "tipo": "CONSULTA",
+                "data": "2026-12-02T15:30:00",
+                "anotacoes": "Consulta remarcada",
+                "valor": 180.00,
+                "status": "CONCLUIDO",
+                "petId": 1,
+                "veterinarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Atendimento
+        meta:
+          id: req_84d7f61c965e4894b8862f8778f522ee
+          created: 1779410000015
+          modified: 1779410000015
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: atendimentos
+  - name: Tarefas
+    meta:
+      id: fld_c159a86f3416474ca9fb79b8dad8d98d
+      created: 1779410000020
+      modified: 1779410000020
+      sortKey: -1779323927835
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Tarefas
+        meta:
+          id: req_all_tarefas_new
+          created: 1779410000102
+          modified: 1779410000102
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927636
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: prazo,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-usuario
+        name: Get Tarefas by Usuario
+        meta:
+          id: req_1d01de2d87ab49eb8ca469b4a3a8e9f0
+          created: 1779410000021
+          modified: 1779410000021
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: usuarioId
+            value: "1"
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: prazo,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Tarefa by Id
+        meta:
+          id: req_97527b5cfbd54703a3b89fb6ccfd4462
+          created: 1779410000022
+          modified: 1779410000022
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-usuario/1/1
+        name: Get Tarefa by Usuario and Id
+        meta:
+          id: req_0e8e2723ce1a4a2f99c332ecaef7ecae
+          created: 1779410000023
+          modified: 1779410000023
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Tarefa
+        meta:
+          id: req_4d9096e2bddf49dd9622639a8fd3a7d5
+          created: 1779410000024
+          modified: 1779410000024
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "titulo": "Passeio diário",
+                "pontosTarefa": 20,
+                "descricao": "Levar o pet para passear por 30 minutos",
+                "prazo": "2026-12-01T18:00:00",
+                "usuarioId": null,
+                "petId": 1,
+                "status": "PENDENTE",
+                "veterinarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Tarefa
+        meta:
+          id: req_31de08bb4f694f5abfbfbc903625fcb4
+          created: 1779410000025
+          modified: 1779410000025
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "titulo": "Passeio diário atualizado",
+                "pontosTarefa": 25,
+                "descricao": "Levar o pet para passear por 45 minutos",
+                "prazo": "2026-12-02T18:00:00",
+                "usuarioId": 1,
+                "petId": 1,
+                "status": "PENDENTE",
+                "veterinarioId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1/concluir
+        name: Concluir Tarefa
+        meta:
+          id: req_0de8db24fae14579ad67a51b95f06af4
+          created: 1779410000026
+          modified: 1779410000026
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927630
+        method: PATCH
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "concluinteId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-usuario/pontos
+        name: Get Pontos by Usuario
+        meta:
+          id: req_544c9b2c0fa44685844f649f8f499d69
+          created: 1779410000027
+          modified: 1779410000027
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927629
+        method: GET
+        parameters:
+          - name: usuarioId
+            value: "1"
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Tarefa
+        meta:
+          id: req_9863674845b74fd48f65283f9f7fef18
+          created: 1779410000028
+          modified: 1779410000028
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927628
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: tarefas
+  - name: Clinicas
+    meta:
+      id: fld_a184bf8edab04f87a9ff6fe546f147bc
+      created: 1779410000030
+      modified: 1779410000030
+      sortKey: -1779323927834
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Clinicas
+        meta:
+          id: req_e5ec7964df9546ec9e60254f0f2ff8ab
+          created: 1779410000031
+          modified: 1779410000031
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-nome
+        name: Get Clinica by Nome
+        meta:
+          id: req_clinica_by_nome_new
+          created: 1779410000103
+          modified: 1779410000103
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276345
+        method: GET
+        parameters:
+          - name: nome
+            value: Vida
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Clinica by Id
+        meta:
+          id: req_04572e9bc0624ff9aab29ef2ae5f1f8d
+          created: 1779410000032
+          modified: 1779410000032
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Clinica
+        meta:
+          id: req_b88f66debf8a45f8a9d8f3ac8442bcf4
+          created: 1779410000033
+          modified: 1779410000033
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Clinica Nova Vida",
+                "ddd": "11",
+                "numeroTelefone": "988776655",
+                "endereco": {
+                    "cep": "05412000",
+                    "numero": "100"
+                }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Clinica
+        meta:
+          id: req_ddd7b6d742f5428a8139a9580b34f2fc
+          created: 1779410000034
+          modified: 1779410000034
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Clinica Nova Vida Atualizada",
+                "ddd": "11",
+                "numeroTelefone": "977665544",
+                "endereco": {
+                    "cep": "05412000",
+                    "numero": "200"
+                }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Clinica
+        meta:
+          id: req_e7d20da4c9954feea8b8d133f0a0b6f4
+          created: 1779410000035
+          modified: 1779410000035
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: clinicas
+  - name: Veterinarios
+    meta:
+      id: fld_b71ee4ba938b446d8dc4f531af5f2a1d
+      created: 1779410000040
+      modified: 1779410000040
+      sortKey: -1779323927833
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Veterinarios
+        meta:
+          id: req_53fda8f1d48f4ef58a473fd62c857212
+          created: 1779410000041
+          modified: 1779410000041
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-nome
+        name: Get Veterinario by Nome
+        meta:
+          id: req_veterinario_by_nome_new
+          created: 1779410000104
+          modified: 1779410000104
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276345
+        method: GET
+        parameters:
+          - name: nome
+            value: Camila
+            disabled: false
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: nome,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/by-email
+        name: Get Veterinario by Email
+        meta:
+          id: req_veterinario_by_email_new
+          created: 1779410000105
+          modified: 1779410000105
+          isPrivate: false
+          description: ""
+          sortKey: -17793239276342
+        method: GET
+        parameters:
+          - name: email
+            value: camila@clinica.com
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Veterinario by Id
+        meta:
+          id: req_3053640ff58a494e93ecf608981030af
+          created: 1779410000042
+          modified: 1779410000042
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Veterinario
+        meta:
+          id: req_08aab58e6b7542cf8a5f748d2fd7f5b2
+          created: 1779410000043
+          modified: 1779410000043
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Dra. Camila Souza",
+                "email": "camila@clinica.com",
+                "senha": "123456",
+                "ddd": "11",
+                "numeroTelefone": "976543210",
+                "clinicaId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Veterinario
+        meta:
+          id: req_9b5f15da89ce48e4ac8aabbe524ca3c4
+          created: 1779410000044
+          modified: 1779410000044
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "nome": "Dr. Carlos Souza",
+                "email": "carlos@clinica.com",
+                "senha": "123456",
+                "ddd": "11",
+                "numeroTelefone": "987654321",
+                "clinicaId": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Veterinario
+        meta:
+          id: req_3d03d62a26d84b22b687f6ef728ec836
+          created: 1779410000045
+          modified: 1779410000045
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: veterinarios
+  - name: Enderecos
+    meta:
+      id: fld_7552503ba3f44e7ea9ccf27d08f435f2
+      created: 1779410000050
+      modified: 1779410000050
+      sortKey: -1779323927832
+      description: ""
+    children:
+      - url: http://localhost:8080/{{ _.path }}
+        name: Get All Enderecos
+        meta:
+          id: req_22ad5deaf5b84aeca7eff86f1916ad31
+          created: 1779410000051
+          modified: 1779410000051
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927635
+        method: GET
+        parameters:
+          - name: page
+            value: "0"
+            disabled: false
+          - name: size
+            value: "10"
+            disabled: false
+          - name: sort
+            value: rua,asc
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Get Endereco by Id
+        meta:
+          id: req_969263491bf54a1289e6f6e4de47253a
+          created: 1779410000052
+          modified: 1779410000052
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927634
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}
+        name: Post Endereco
+        meta:
+          id: req_4962a72ab4a44f2798a7ecfc8077346f
+          created: 1779410000053
+          modified: 1779410000053
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927633
+        method: POST
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "cep": "05412000",
+                "numero": "321"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Update Endereco
+        meta:
+          id: req_f3cd9ba4f76043e1a3df16ba41890f4d
+          created: 1779410000054
+          modified: 1779410000054
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927632
+        method: PUT
+        body:
+          mimeType: text/plain
+          text: |-
+            {
+                "cep": "05412000",
+                "numero": "654"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/{{ _.path }}/1
+        name: Delete Endereco
+        meta:
+          id: req_9bbbf006f7fd476cb3be133715bcf54d
+          created: 1779410000055
+          modified: 1779410000055
+          isPrivate: false
+          description: ""
+          sortKey: -1779323927631
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+    environment:
+      path: enderecos
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_81de29e2c22c50920d9f01344edb655ee65086e9
+    created: 1779315088280
+    modified: 1779315088280
+environments:
+  name: Base Environment
+  meta:
+    id: env_81de29e2c22c50920d9f01344edb655ee65086e9
+    created: 1779315088275
+    modified: 1779315088275
+    isPrivate: false
