@@ -2,7 +2,7 @@
 
 > **Challenge FIAP - Java Advanced (Spring Boot)**
 >
-> Plataforma colaborativa para gestao de cuidados de pets, com tarefas prescritas por veterinarios e execucao por cuidadores.
+> Plataforma corporativa para gestão da saúde e rotina de cuidados do pet em família sob a **Arquitetura Pet-Centric**.
 
 <p>
   <img src="https://img.shields.io/badge/Java-17-007396?logo=openjdk&logoColor=white" alt="Java 17" />
@@ -23,50 +23,47 @@
 ## Integrantes
 
 | Nome | RM | Turma | GitHub | LinkedIn |
-|---|---:|---|---|---|
-| Enzo Okuizumi | 561432 | 2TDSPG | [EnzoOkuizumiFiap](https://github.com/EnzoOkuizumiFiap) | [Enzo Okuizumi](https://www.linkedin.com/in/enzo-okuizumi-b60292256/) |
-| Lucas Barros Gouveia | 566422 | 2TDSPG | [LuzBGouveia](https://github.com/LuzBGouveia) | [Lucas Barros Gouveia](https://www.linkedin.com/in/lucas-barros-gouveia-09b147355/) |
-| Milton Marcelino | 564836 | 2TDSPG | [MiltonMarcelino](https://github.com/MiltonMarcelino) | [Milton Marcelino](http://linkedin.com/in/milton-marcelino-250298142) |
-| Luna de Carvalho Guimaraes | 562290 | 2TDSPG | [lunaguima](https://github.com/lunaguima) | [Luna M. Guimaraes](https://www.linkedin.com/in/luna-m-guimar%C3%A3es-1850ab173/) |
-| Gustavo Okada | 563428 | 2TDSPG | [Gdev3356](https://github.com/Gdev3356) | [Gustavo Okada](https://www.linkedin.com/in/gustavo-okada-53a3b8359/) |
+| :--- | :---: | :---: | :--- | :--- |
+| **Enzo Okuizumi** | **561432** | 2TDSPG | [EnzoOkuizumiFiap](https://github.com/EnzoOkuizumiFiap) | [Enzo Okuizumi](https://www.linkedin.com/in/enzo-okuizumi-b60292256/) |
+| **Gustavo Okada** | **563428** | 2TDSPG | [Gdev3356](https://github.com/Gdev3356) | [Gustavo Okada](https://www.linkedin.com/in/gustavo-okada-53a3b8359/) |
+| **Lucas Barros Gouveia** | **566422** | 2TDSPG | [LuzBGouveia](https://github.com/LuzBGouveia) | [Lucas Barros Gouveia](https://www.linkedin.com/in/lucas-barros-gouveia-09b147355/) |
+| **Luna de Carvalho Guimarães** | **562290** | 2TDSPG | [lunaguima](https://github.com/lunaguima) | [Luna M. Guimarães](https://www.linkedin.com/in/luna-m-guimar%C3%A3es-1850ab173/) |
+| **Milton Marcelino** | **564836** | 2TDSPG | [MiltonMarcelino](https://github.com/MiltonMarcelino) | [Milton Marcelino](http://linkedin.com/in/milton-marcelino-250298142) |
 
 ---
 
 ## Sobre o Projeto
 
-O **PetGuardian** é uma API REST em Spring Boot para organizar o cuidado diário de pets em cenários com vários cuidadores.
+O **PetGuardian** é uma API REST corporativa em Spring Boot desenvolvida sob a **Arquitetura Pet-Centric** (diretriz da Mentoria Clyvo para o Challenge 2026), focada na saúde contínua, governança de cuidados e gamificação centrada no animal.
 
-A plataforma é centrada no **Pet**:
-- um pet pode ter vários cuidadores (`usuario_pet`);
-- existe um responsável principal por pet (`respon_princ`);
-- veterinários criam tarefas de cuidado;
-- cuidadores concluem tarefas e acumulam pontos;
-- atendimentos e tarefas concluidas formam o historico consolidado do pet.
+### 🌟 Pilares da Arquitetura Pet-Centric
+- **Ecossistema Centrado no Pet:** O animal é a entidade nuclear (`pet`), possuindo sua própria evolução de bem-estar, peso e prontuário.
+- **Gamificação Pet-Centric:** O score de bem-estar (`score_bem_estar` / `pontos_bem_estar`) acumula **diretamente no Pet** conforme as rotinas de cuidado e módulos de treinamento são concluídos pela família.
+- **Rotina Familiar Colaborativa:** Cuidadores e tutores gerenciam as tarefas diárias do pet (alimentação, remédios, passeios, higiene) com sincronização em tempo real entre co-cuidadores, sem necessidade de prescrição veterinária para tarefas domésticas.
+- **Acompanhamento Clínico & Emergência 24h:** Prontuário clínico estruturado (`atendimento`) com histórico de consultas, vacinas e busca especializada de clínicas veterinárias 24h / pronto-socorro.
 
 ---
 
-### Gamificação: Pontos por Conclusão
+### Gamificação: Score e Bem-Estar no Pet
 
-O sistema incentiva engajamento por meio de pontos:
-- cada tarefa possui `pontos_tarefa`;
-- ao concluir, o cuidador executor recebe esses pontos;
-- os pontos são calculados por soma das tarefas concluidas do usuario.
+O sistema incentiva o cuidado preventivo e a consistência da rotina:
+- Cada tarefa de rotina e módulo de adestramento concluído gera **pontos de bem-estar** para o Pet.
+- O Pet evolui de nível de saúde e bem-estar na plataforma (`PetScoreBar`).
+- O histórico de cuidados e o score alimentam a Assistente de IA para sugestões personalizadas de saúde preventiva.
 
-### Rede de Cuidado (care circle)
+### Rede de Cuidado Familiar (Care Circle)
 
-A antiga ideia de familia rígida foi substituída por uma rede dinâmica por pet:
-- vínculos entre usuários e pets em `usuario_pet`;
-- visão agregada por usuário em `/usuarios/{id}/rede-cuidado`;
-- co-cuidadores e pets compartilhados são calculados a partir desses vínculos.
+A rede de cuidado organiza os vínculos de tutores em torno de cada animal:
+- Vínculos colaborativos entre usuários e pets em `usuario_pet`;
+- Visão agregada por usuário em `/usuarios/{id}/rede-cuidado`;
+- Histórico compartilhado entre todos os membros da família.
 
-### Tarefas
+### Rotina e Tarefas
 
-As tarefas representam cuidados como alimentar, medicar, passear, curativo etc.
-
-Regras atuais:
-- tarefa é criada pelo fluxo de prescrição (sem executor inicial);
-- apenas usuario vinculado ao pet pode concluir;
-- status controlado por tabela (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
+As tarefas representam cuidados diários da rotina familiar (alimentar, medicar, passear, higienizar, adestrar):
+- Criadas diretamente pelos tutores da família vinculados ao Pet;
+- Conclusão reativa que credita pontos imediatamente ao Score do Pet;
+- Status controlado por ciclo de vida (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
 
 ---
 
