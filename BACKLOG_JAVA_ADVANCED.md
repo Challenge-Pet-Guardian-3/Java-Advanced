@@ -1,6 +1,9 @@
 # 📋 Backlog Azure Boards — Sprint 3: Java Advanced (Spring Boot)
 > **Projeto:** PetGuardian (Challenge FIAP 2026 - Clyvo Vet)  
 > **Disciplina:** Advanced Business Development with Java (Java Advanced)  
+> **Epic Principal:** `[EPIC] PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`  
+> **Start Date:** `2026-08-24`  
+> **Target Date:** `2026-08-29`  
 > **Padrão:** Azure DevOps / Azure Boards (Scrum Process Template: *Epic ➔ Feature ➔ PBI ➔ Child Tasks*)  
 > **Base de Requisitos:** Slides 20 a 22 da Apresentação Oficial FIAP & Diretrizes da Mentoria Clyvo (Arquitetura Pet-Centric)  
 > **Sequência Estratégica:** 1º Refatoração & Qualidade ➔ 2º Segurança & JWT ➔ 3º Versionamento de Banco (Flyway) ➔ 4º Fluxos Complexos de Negócio ➔ 5º Documentação & Entrega
@@ -73,6 +76,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `SOLID`, `CleanCode`, `Refactor`, `Exceptions`
+* **Start Date:** `2026-08-24`
+* **Target Date:** `2026-08-25`
 * **Descrição:** Refatoração da camada de serviços e tratamento de erros para cumprir os princípios de Clean Code, SRP e DIP, eliminando ResponseStatusException solta e unificando o tratamento de exceções de domínio no Global Exception Handler.
 
 #### 🔹 [PBI-01] Arquitetura de Exceções de Domínio e Global Exception Handler
@@ -130,6 +135,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `BeanValidation`, `OpenAPI`, `Swagger`, `Contracts`
+* **Start Date:** `2026-08-24`
+* **Target Date:** `2026-08-25`
 * **Descrição:** Padronização de DTOs de entrada e saída com Bean Validation avançado e documentação interativa completa da API utilizando SpringDoc OpenAPI 3 / Swagger UI com suporte a autenticação JWT.
 
 #### 🔹 [PBI-03] Padronização de DTOs e Bean Validation Avançado (@Valid)
@@ -186,6 +193,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `Security`, `Authentication`, `BCrypt`, `JWT`, `MobileIntegration`
+* **Start Date:** `2026-08-25`
+* **Target Date:** `2026-08-26`
 * **Descrição:** Estruturação da arquitetura de autenticação com Spring Security e JWT (JSON Web Token), criptografia BCrypt, UserDetails e emissão de tokens de acesso para consumo pelo aplicativo Mobile (React Native).
 
 #### 🔹 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT
@@ -247,6 +256,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `Security`, `RBAC`, `SecurityFilterChain`, `JWTFilter`, `CORS`
+* **Start Date:** `2026-08-25`
+* **Target Date:** `2026-08-26`
 * **Descrição:** Configuração da cadeia de filtros `SecurityFilterChain` em modo STATELESS com filtro de autenticação JWT (`JwtAuthenticationFilter`), suporte a CORS para o aplicativo Mobile (React Native), isolamento de rotas por perfis (RBAC) e proteção granular por método (`@PreAuthorize`).
 
 #### 🔹 [PBI-07] Configuração do SecurityFilterChain Stateless, Filtro JWT e CORS para Mobile
@@ -306,6 +317,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `Flyway`, `Database`, `Governance`, `PetCentric`
+* **Start Date:** `2026-08-26`
+* **Target Date:** `2026-08-27`
 * **Descrição:** Implementação de controle de versão de banco de dados relacional através do Flyway, estruturando tabelas Pet-Centric (`pet`, `historico_peso`, `historico_saude`, `clinica` com flags 24h, `treinamento` e `tarefa_rotina`).
 
 #### 🔹 [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1)
@@ -375,6 +388,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `BusinessFlow`, `Atendimento`, `Clinica24h`, `HistoricoSaude`, `NonCRUD`
+* **Start Date:** `2026-08-27`
+* **Target Date:** `2026-08-28`
 * **Descrição:** Implementação do primeiro fluxo de negócio complexo não-CRUD obrigatório: busca de clínicas (com filtros 24h e pronto-socorro), agendamento com validação de conflito de horários e conclusão com gravação no prontuário e histórico de saúde do Pet.
 
 #### 🔹 [PBI-11] [Fluxo 1.1] Busca de Clínicas 24h e Solicitação de Atendimento com Validação de Conflito
@@ -435,6 +450,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `BusinessFlow`, `Gamification`, `PetScore`, `RotinaFamiliar`, `Treinamento`, `AiAssistant`, `NonCRUD`
+* **Start Date:** `2026-08-27`
+* **Target Date:** `2026-08-28`
 * **Descrição:** Implementação do segundo fluxo de negócio complexo não-CRUD obrigatório: gestão de tarefas da rotina do pet por tutores, realização de trilhas de treinamento/educação, evolução do Score de Bem-Estar do Pet e Dicas personalizadas via Assistente de IA.
 
 #### 🔹 [PBI-13] [Fluxo 2.1] Criação de Rotina Familiar de Cuidados e Mecanismo de Expiração Automática
@@ -494,6 +511,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `Documentation`, `Video`, `OralExam`, `Delivery`
+* **Start Date:** `2026-08-28`
+* **Target Date:** `2026-08-29`
 * **Descrição:** Elaboração da documentação técnica no README, gravação do vídeo demonstrativo de até 10 minutos e consolidação da matriz de argumentação para a avaliação oral individual da disciplina.
 
 #### 🔹 [PBI-15] Atualização Completa do README.md e Guia de Execução
@@ -579,6 +598,8 @@
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
 * **Tags:** `JavaAdvanced`, `Frontend`, `Thymeleaf`, `UI`, `Optional`
+* **Start Date:** `2026-08-28`
+* **Target Date:** `2026-08-29`
 * **Descrição:** Desenvolvimento opcional de interface visual web com Thymeleaf caso a equipe opte por disponibilizar visualização web além do aplicativo mobile React Native.
 
 #### 🔹 [PBI-18] Interface Web Básica de Autenticação e Cadastro com Formulários Validados
