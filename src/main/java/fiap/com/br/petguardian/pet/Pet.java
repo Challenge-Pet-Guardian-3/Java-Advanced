@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,6 +48,22 @@ public class Pet {
 
     @Column(nullable = false)
     private Boolean castrado;
+
+    // ---- CAMPOS CLÍNICOS (simplificado) ----
+
+    @Column
+    private Double peso;
+
+    @Column(name = "ultima_vacina")
+    private LocalDate ultimaVacina;
+
+    @Column(name = "ultima_consulta")
+    private LocalDate ultimaConsulta;
+
+    @Column(name = "avatar_id")
+    private Integer avatarId;
+
+    // ---- FIM DOS CAMPOS CLÍNICOS ----
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

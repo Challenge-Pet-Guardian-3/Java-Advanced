@@ -6,14 +6,14 @@ import fiap.com.br.petguardian.tarefa.Tarefa;
 import fiap.com.br.petguardian.telefone.Telefone;
 import fiap.com.br.petguardian.usuariopet.UsuarioPet;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Table(name = "usuario")
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
@@ -34,7 +34,7 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 255) // era 20 -> hash BCrypt não cabia
     private String senha;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -45,9 +45,9 @@ public class Usuario {
 
     @ManyToMany
     @JoinTable(
-        name = "usuario_endereco",
-        joinColumns = @JoinColumn(name = "usuario_id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "endereco_id_endereco")
+            name = "usuario_endereco",
+            joinColumns = @JoinColumn(name = "usuario_id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "endereco_id_endereco")
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -67,4 +67,26 @@ public class Usuario {
     @ToString.Exclude
     @Builder.Default
     private Set<UsuarioPet> usuarioPets = new HashSet<>();
+
+    // ---- UserDetails ----
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_TUTOR"));
+    }
+
+    @Override
+    public String getPassword() { return senha; }
+
+    @Override
+    public String getUsername() { return email; }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+    @Override
+    public boolean isEnabled() { return true; }
 }

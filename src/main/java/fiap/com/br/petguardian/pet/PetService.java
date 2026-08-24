@@ -2,34 +2,61 @@ package fiap.com.br.petguardian.pet;
 
 import fiap.com.br.petguardian.atendimento.AtendimentoRepository;
 import fiap.com.br.petguardian.atendimento.dto.AtendimentoResponse;
-import fiap.com.br.petguardian.exception.ResourceNotFoundException;
+import fiap.com.br.petguardian.familia.FamiliaMembroRepository;
 import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
-import fiap.com.br.petguardian.pet.raca.Raca;
-import fiap.com.br.petguardian.pet.raca.RacaRepository;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
 import fiap.com.br.petguardian.tarefa.dto.TarefaResponse;
+import fiap.com.br.petguardian.pet.raca.Raca;
+import fiap.com.br.petguardian.pet.raca.RacaRepository;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuariopet.UsuarioPet;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetRepository;
+import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PetService {
+
     private final PetRepository petRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioPetRepository usuarioPetRepository;
     private final RacaRepository racaRepository;
     private final AtendimentoRepository atendimentoRepository;
     private final TarefaRepository tarefaRepository;
+    private final FamiliaMembroRepository familiaMembroRepository;
 
     public Page<Pet> findAll(Pageable pageable) {
         return petRepository.findAll(pageable);
+    }
+
+    public Page<Pet> findAllByUsuario(Long usuarioId, Pageable pageable) {
+        return petRepository.findAllByUsuarioId(usuarioId, pageable);
+    }
+
+    public Page<Pet> findAllByFamilia(Long usuarioId, Pageable pageable) {
+        var membroOpt = familiaMembroRepository.findByUsuarioId(usuarioId);
+
+        if (membroOpt.isEmpty()) {
+            // Usuario nao pertence a familia: mostra so os pets dele mesmo
+            return findAllByUsuario(usuarioId, pageable);
+        }
+
+        Long familiaId = membroOpt.get().getFamilia().getId();
+
+        List<Long> usuarioIds = familiaMembroRepository.findByFamiliaId(familiaId)
+                .stream()
+                .map(m -> m.getUsuario().getId())
+                .toList();
+
+        return petRepository.findAllByUsuarioIdIn(usuarioIds, pageable);
     }
 
     public Page<Pet> findByNome(String nome, Pageable pageable) {
@@ -41,36 +68,71 @@ public class PetService {
     }
 
     public Pet create(PetRequest petRequest) {
-        Usuario usuario = findUsuarioById(petRequest.usuarioId());
-        Raca raca = findOrCreateRaca(petRequest.raca());
-        Pet petSalvo = petRepository.save(petRequest.toEntity(raca));
 
-        usuarioPetRepository.save(UsuarioPet.principal(usuario, petSalvo));
+        Usuario usuario = findUsuarioById(petRequest.usuarioId());
+
+        Raca raca = findOrCreateRaca(petRequest.raca());
+
+        Pet pet = petRequest.toEntity(raca);
+
+        Pet petSalvo = petRepository.save(pet);
+
+        usuarioPetRepository.save(
+                UsuarioPet.principal(usuario, petSalvo)
+        );
+
         return petSalvo;
     }
 
     public Pet update(Long id, PetRequest petRequest) {
-        Pet petAtual = findPetById(id);
+
+        Pet pet = findPetById(id);
+
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
+
         Raca raca = findOrCreateRaca(petRequest.raca());
 
-        Pet pet = petRequest.toEntity(raca);
-        pet.setId(id);
+        pet.setNome(petRequest.nome());
+        pet.setIdade(petRequest.idade());
+        pet.setRaca(raca);
+        pet.setPorte(
+                PetPorte.valueOf(
+                        petRequest.porte().toUpperCase()
+                )
+        );
+        pet.setSexo(petRequest.sexo());
+        pet.setCastrado(petRequest.castrado());
+
+        pet.setPeso(petRequest.peso());
+        pet.setUltimaVacina(petRequest.ultimaVacina());
+        pet.setUltimaConsulta(petRequest.ultimaConsulta());
+
+        pet.setAvatarId(petRequest.avatarId());
+
         Pet petSalvo = petRepository.save(pet);
 
-        usuarioPetRepository.limparResponsavelPrincipalPorPet(petAtual.getId());
-        UsuarioPet usuarioPet = usuarioPetRepository.findByUsuarioIdAndPetId(usuario.getId(), petAtual.getId())
-                .orElseGet(() -> UsuarioPet.of(usuario, petAtual, false));
+        usuarioPetRepository.limparResponsavelPrincipalPorPet(id);
 
-        usuarioPet.setResponsavelPrincipal(Boolean.TRUE);
+        UsuarioPet usuarioPet =
+                usuarioPetRepository
+                        .findByUsuarioIdAndPetId(usuario.getId(), id)
+                        .orElseGet(() ->
+                                UsuarioPet.of(usuario, pet, false)
+                        );
+
+        usuarioPet.setResponsavelPrincipal(true);
+
         usuarioPetRepository.save(usuarioPet);
 
         return petSalvo;
     }
 
     public void delete(Long id) {
+
         findPetById(id);
+
         usuarioPetRepository.deleteByPetId(id);
+
         petRepository.deleteById(id);
     }
 
@@ -143,14 +205,31 @@ public class PetService {
     }
 
     private Pet findPetById(Long id) {
-        return petRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pet com id " + id + " nao encontrado."));
+        return petRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Pet com id " + id + " nao encontrado."
+                        )
+                );
     }
 
     private Usuario findUsuarioById(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario com id " + id + " nao encontrado."));
+        return usuarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Usuario com id " + id + " nao encontrado."
+                        )
+                );
     }
 
     private Raca findOrCreateRaca(String nomeRaca) {
-        return racaRepository.findByNome(nomeRaca).orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeRaca).build()));
+        return racaRepository.findByNome(nomeRaca)
+                .orElseGet(() ->
+                        racaRepository.save(
+                                Raca.builder()
+                                        .nome(nomeRaca)
+                                        .build()
+                        )
+                );
     }
 }

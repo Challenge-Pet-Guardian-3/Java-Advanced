@@ -1,6 +1,8 @@
 package fiap.com.br.petguardian.tarefa;
 
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
+import fiap.com.br.petguardian.familia.FamiliaMembro;
+import fiap.com.br.petguardian.familia.FamiliaMembroRepository;
 import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetRepository;
 import fiap.com.br.petguardian.status.Status;
@@ -10,8 +12,6 @@ import fiap.com.br.petguardian.tarefa.dto.TarefaRequest;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetRepository;
-import fiap.com.br.petguardian.veterinario.Veterinario;
-import fiap.com.br.petguardian.veterinario.VeterinarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,15 +19,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TarefaService {
+
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
     private final PetRepository petRepository;
     private final UsuarioPetRepository usuarioPetRepository;
-    private final VeterinarioService veterinarioService;
+    private final FamiliaMembroRepository familiaMembroRepository;
     private final StatusService statusService;
 
     public Page<Tarefa> findAll(Pageable pageable) {
@@ -48,42 +51,49 @@ public class TarefaService {
     public Tarefa findByUsuarioIdAndTarefaId(Long usuarioId, Long tarefaId) {
         expirarTarefasPendentesAtrasadas();
         return tarefaRepository.findByIdAndUsuarioId(tarefaId, usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com id " + tarefaId + " nao encontrada para o usuario informado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com id " + tarefaId + " não encontrada para o usuário informado."));
     }
 
+    @Transactional
     public Tarefa create(TarefaRequest request) {
-        if (request.usuarioId() != null) {
-            throw new IllegalArgumentException("Tarefa deve ser criada sem usuario executor. Use o endpoint de conclusao para registrar o cuidador.");
+        Pet pet = findPetById(request.petId());
+
+        Tarefa tarefa = request.toEntity(null, pet);
+
+        // Garante o preenchimento de campos obrigatórios
+        if (tarefa.getCriacao() == null) {
+            tarefa.setCriacao(LocalDateTime.now());
+        }
+        if (tarefa.getPontosTarefa() == null) {
+            tarefa.setPontosTarefa(request.pontosTarefa() != null ? request.pontosTarefa() : 15);
+        }
+        if (tarefa.getPrazo() == null) {
+            tarefa.setPrazo(request.prazo() != null ? request.prazo() : LocalDateTime.now().withHour(23).withMinute(59).withSecond(59));
         }
 
-        Pet pet = findPetById(request.petId());
-        Veterinario veterinario = veterinarioService.findById(request.veterinarioId());
- 
-        Tarefa tarefa = request.toEntity(null, pet, veterinario);
         tarefa.setStatus(statusService.findStatusByNome("PENDENTE"));
         tarefa.setConclusao(null);
         return tarefaRepository.save(tarefa);
     }
- 
+
     @Transactional
     public Tarefa update(Long id, TarefaRequest request) {
         Tarefa tarefaAtual = findTarefaById(id);
         Pet pet = findPetById(request.petId());
-        Veterinario veterinario = veterinarioService.findById(request.veterinarioId());
 
         Usuario usuario = null;
         if (request.usuarioId() != null) {
             usuario = findUsuarioById(request.usuarioId());
-            validarCuidadorDoPet(usuario.getId(), pet.getId());
+            validarPermissaoCuidador(usuario.getId(), pet.getId());
         }
 
-        Tarefa tarefa = request.toEntity(usuario, pet, veterinario);
+        Tarefa tarefa = request.toEntity(usuario, pet);
         tarefa.setId(tarefaAtual.getId());
-        tarefa.setCriacao(tarefaAtual.getCriacao());
+        tarefa.setCriacao(tarefaAtual.getCriacao() != null ? tarefaAtual.getCriacao() : LocalDateTime.now());
 
-        String statusStr = request.status();
-        if ("EXPIRADO".equalsIgnoreCase(statusStr) && request.prazo().isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Nao e permitido marcar como EXPIRADO antes do vencimento do prazo.");
+        String statusStr = request.status() != null ? request.status() : "PENDENTE";
+        if ("EXPIRADO".equalsIgnoreCase(statusStr) && request.prazo() != null && request.prazo().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Não é permitido marcar como EXPIRADO antes do vencimento do prazo.");
         }
 
         tarefa.setStatus(statusService.findStatusByNome(statusStr));
@@ -101,52 +111,134 @@ public class TarefaService {
         expirarTarefasPendentesAtrasadas();
 
         Tarefa tarefa = findTarefaById(id);
-        if (!"PENDENTE".equals(tarefa.getStatus().getNome_status().name())) {
-            throw new IllegalArgumentException("Apenas tarefas pendentes podem ser concluidas.");
+        if (!"PENDENTE".equalsIgnoreCase(tarefa.getStatus().getNome_status().name())) {
+            throw new IllegalArgumentException("Apenas tarefas pendentes podem ser concluídas.");
         }
 
         Usuario usuario = findUsuarioById(request.concluinteId());
-        validarCuidadorDoPet(usuario.getId(), tarefa.getPet().getId());
-
-        if (tarefa.getUsuario() != null && !tarefa.getUsuario().getId().equals(usuario.getId())) {
-            throw new IllegalArgumentException("Tarefa ja possui cuidador associado.");
-        }
+        validarPermissaoCuidador(usuario.getId(), tarefa.getPet().getId());
 
         tarefa.setUsuario(usuario);
         tarefa.setStatus(statusService.findStatusByNome("CONCLUIDO"));
         tarefa.setConclusao(LocalDateTime.now());
+
+        // Incrementa o XP do membro na família com segurança
+        try {
+            familiaMembroRepository.findByUsuarioId(usuario.getId()).ifPresent(membro -> {
+                int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
+                membro.setXp((membro.getXp() != null ? membro.getXp() : 0) + pontos);
+                familiaMembroRepository.save(membro);
+            });
+        } catch (Exception ignored) {}
+
+        return tarefaRepository.save(tarefa);
+    }
+
+    @Transactional
+    public Tarefa reabrir(Long id, Long solicitanteId) {
+        Tarefa tarefa = findTarefaById(id);
+
+        if (!"CONCLUIDO".equalsIgnoreCase(tarefa.getStatus().getNome_status().name())) {
+            throw new IllegalArgumentException("Apenas tarefas concluídas podem ser reabertas.");
+        }
+
+        // Se solicitante for informado, impede que outro cuidador reabra a tarefa de outrem
+        if (tarefa.getUsuario() != null && solicitanteId != null) {
+            if (!tarefa.getUsuario().getId().equals(solicitanteId)) {
+                throw new IllegalArgumentException("Você não pode desmarcar uma tarefa realizada por outro cuidador.");
+            }
+
+            try {
+                familiaMembroRepository.findByUsuarioId(tarefa.getUsuario().getId()).ifPresent(membro -> {
+                    int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
+                    int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
+                    membro.setXp(Math.max(0, xpAtual - pontos));
+                    familiaMembroRepository.save(membro);
+                });
+            } catch (Exception ignored) {}
+        }
+
+        tarefa.setStatus(statusService.findStatusByNome("PENDENTE"));
+        tarefa.setUsuario(null);
+        tarefa.setConclusao(null);
         return tarefaRepository.save(tarefa);
     }
 
     public Integer calcularPontosTotaisUsuario(Long usuarioId) {
         findUsuarioById(usuarioId);
-        return tarefaRepository.calcularPontosTotaisUsuario(usuarioId);
+        Integer pontos = tarefaRepository.calcularPontosTotaisUsuario(usuarioId);
+        return pontos != null ? pontos : 0;
     }
 
-    public void delete(Long id) {
-        findTarefaById(id);
-        tarefaRepository.deleteById(id);
-    }
+    @Transactional
+    public void delete(Long id, Long solicitanteId) {
+        Tarefa tarefa = findTarefaById(id);
 
-    private void validarCuidadorDoPet(Long usuarioId, Long petId) {
-        if (!usuarioPetRepository.existsByUsuarioIdAndPetId(usuarioId, petId)) {
-            throw new IllegalArgumentException("Usuario informado nao esta vinculado ao pet da tarefa.");
+        if (solicitanteId != null) {
+            findUsuarioById(solicitanteId);
+
+            boolean isDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
+                    .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
+                    .orElse(false);
+
+            boolean isDonoPet = usuarioPetRepository.findAllByUsuarioId(solicitanteId).stream()
+                    .anyMatch(up -> up.getPet().getId().equals(tarefa.getPet().getId()) && Boolean.TRUE.equals(up.getResponsavelPrincipal()));
+
+            if (!isDonoFamilia && !isDonoPet) {
+                throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para excluir tarefas.");
+            }
+
+            if ("CONCLUIDO".equalsIgnoreCase(tarefa.getStatus().getNome_status().name()) && tarefa.getUsuario() != null) {
+                try {
+                    familiaMembroRepository.findByUsuarioId(tarefa.getUsuario().getId()).ifPresent(membro -> {
+                        int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
+                        int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
+                        membro.setXp(Math.max(0, xpAtual - pontos));
+                        familiaMembroRepository.save(membro);
+                    });
+                } catch (Exception ignored) {}
+            }
         }
+
+        tarefaRepository.delete(tarefa);
+    }
+
+    private void validarPermissaoCuidador(Long usuarioId, Long petId) {
+        if (usuarioPetRepository.existsByUsuarioIdAndPetId(usuarioId, petId)) {
+            return;
+        }
+
+        Optional<FamiliaMembro> membroLogado = familiaMembroRepository.findByUsuarioId(usuarioId);
+        if (membroLogado.isPresent() && membroLogado.get().getFamilia() != null) {
+            Long familiaId = membroLogado.get().getFamilia().getId();
+            List<FamiliaMembro> todosMembros = familiaMembroRepository.findByFamiliaId(familiaId);
+
+            boolean membroCuidaDoPet = todosMembros.stream()
+                    .filter(m -> m.getUsuario() != null)
+                    .map(m -> m.getUsuario().getId())
+                    .anyMatch(idMembro -> usuarioPetRepository.existsByUsuarioIdAndPetId(idMembro, petId));
+
+            if (membroCuidaDoPet) {
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("Você não possui permissão para gerenciar as tarefas deste pet.");
     }
 
     private Tarefa findTarefaById(Long id) {
         return tarefaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com id " + id + " nao encontrada."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com id " + id + " não encontrada."));
     }
 
     private Pet findPetById(Long id) {
         return petRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Pet com id " + id + " nao encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Pet com id " + id + " não encontrado."));
     }
 
     private Usuario findUsuarioById(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario com id " + id + " nao encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário com id " + id + " não encontrado."));
     }
 
     private void expirarTarefasPendentesAtrasadas() {

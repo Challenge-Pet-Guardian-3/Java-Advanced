@@ -6,12 +6,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("select distinct p from Pet p join p.usuarioPets up where up.usuario.id = :usuarioId")
     List<Pet> findAllByUsuarioId(@Param("usuarioId") Long usuarioId);
+
+    @Query(value = "select distinct p from Pet p join p.usuarioPets up where up.usuario.id = :usuarioId",
+            countQuery = "select count(distinct p) from Pet p join p.usuarioPets up where up.usuario.id = :usuarioId")
+    Page<Pet> findAllByUsuarioId(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
+    @Query(value = "select distinct p from Pet p join p.usuarioPets up where up.usuario.id in :usuarioIds",
+            countQuery = "select count(distinct p) from Pet p join p.usuarioPets up where up.usuario.id in :usuarioIds")
+    Page<Pet> findAllByUsuarioIdIn(@Param("usuarioIds") Collection<Long> usuarioIds, Pageable pageable);
 
     @Query("select distinct p.id from Pet p join p.usuarioPets up where up.usuario.id = :usuarioId")
     Set<Long> findIdsByUsuarioId(@Param("usuarioId") Long usuarioId);

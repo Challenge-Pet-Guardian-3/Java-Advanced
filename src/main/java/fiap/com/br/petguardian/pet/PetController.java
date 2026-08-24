@@ -3,6 +3,7 @@ package fiap.com.br.petguardian.pet;
 import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
 import fiap.com.br.petguardian.pet.dto.PetResponse;
+import fiap.com.br.petguardian.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -23,9 +25,23 @@ public class PetController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Listar todos os pets com paginacao e ordenacao")
-    public Page<PetResponse> findAll(@PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
-        return petService.findAll(pageable)
+    @Operation(summary = "Listar pets do usuario autenticado")
+    public Page<PetResponse> findAll(
+            Authentication authentication,
+            @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        return petService.findAllByUsuario(usuarioLogado.getId(), pageable)
+                .map(PetResponse::fromEntity);
+    }
+
+    @GetMapping("/by-familia")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Listar pets de todos os membros da familia do usuario autenticado")
+    public Page<PetResponse> findAllByFamilia(
+            Authentication authentication,
+            @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        return petService.findAllByFamilia(usuarioLogado.getId(), pageable)
                 .map(PetResponse::fromEntity);
     }
 

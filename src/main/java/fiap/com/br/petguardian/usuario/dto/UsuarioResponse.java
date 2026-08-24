@@ -1,9 +1,6 @@
 package fiap.com.br.petguardian.usuario.dto;
 
-import fiap.com.br.petguardian.endereco.Endereco;
 import fiap.com.br.petguardian.usuario.Usuario;
-
-import java.util.Set;
 
 public record UsuarioResponse(
         Long id,
@@ -11,16 +8,20 @@ public record UsuarioResponse(
         String email,
         String ddd,
         String numeroTelefone,
-        Set<Endereco> enderecos
+        String token
 ) {
     public static UsuarioResponse fromEntity(Usuario usuario) {
+        return fromEntity(usuario, null);
+    }
+
+    public static UsuarioResponse fromEntity(Usuario usuario, String token) {
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getTelefone().getDdd(),
-                usuario.getTelefone().getNumero(),
-                usuario.getEnderecos()
+                usuario.getTelefone() != null ? usuario.getTelefone().getDdd() : null,
+                usuario.getTelefone() != null ? usuario.getTelefone().getNumero() : null,
+                token
         );
     }
 }

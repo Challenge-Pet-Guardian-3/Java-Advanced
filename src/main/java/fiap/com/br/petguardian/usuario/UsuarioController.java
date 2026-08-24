@@ -1,10 +1,13 @@
 package fiap.com.br.petguardian.usuario;
 
+import fiap.com.br.petguardian.security.TokenService;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
 import fiap.com.br.petguardian.usuario.dto.UsuarioRequest;
 import fiap.com.br.petguardian.usuario.dto.UsuarioResponse;
+import fiap.com.br.petguardian.usuario.dto.UsuarioUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,14 +15,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
 @Tag(name = "Usuarios", description = "Gerenciamento de usuarios")
 public class UsuarioController {
+
     private final UsuarioService usuarioService;
+    private final TokenService tokenService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -62,14 +66,17 @@ public class UsuarioController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar usuário")
     public UsuarioResponse create(@Valid @RequestBody UsuarioRequest usuarioRequest) {
-        return UsuarioResponse.fromEntity(usuarioService.create(usuarioRequest));
+        Usuario usuario = usuarioService.create(usuarioRequest);
+        return UsuarioResponse.fromEntity(usuario);
     }
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Atualizar usuário")
-    public UsuarioResponse update(@PathVariable Long id, @Valid @RequestBody UsuarioRequest usuarioRequest) {
-        return UsuarioResponse.fromEntity(usuarioService.update(id, usuarioRequest));
+    @Operation(summary = "Atualizar usuário (senha opcional — se omitida, mantém a atual)")
+    public UsuarioResponse update(@PathVariable Long id, @Valid @RequestBody UsuarioUpdateRequest usuarioUpdateRequest) {
+        Usuario usuario = usuarioService.update(id, usuarioUpdateRequest);
+        String novoToken = tokenService.gerarToken(usuario);
+        return UsuarioResponse.fromEntity(usuario, novoToken);
     }
 
     @DeleteMapping("{id}")

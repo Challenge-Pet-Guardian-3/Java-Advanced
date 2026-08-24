@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,11 +41,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, List<ValidationErrorDetail>>> handleValidation(MethodArgumentNotValidException exception) {
         log.warn("Falha de validacao de entrada detectada: {} erro(s)", exception.getFieldErrorCount());
-        
+
         List<ValidationErrorDetail> errors = exception.getFieldErrors().stream()
                 .map(ValidationErrorDetail::new)
                 .toList();
-                
+
         return ResponseEntity.badRequest().body(Map.of("erros", errors));
     }
 
@@ -52,9 +53,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleResourceNotFound(
             ResourceNotFoundException exception, HttpServletRequest request) {
-        
+
         log.warn("Recurso nao encontrado: {}", exception.getMessage());
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -62,7 +63,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
@@ -70,9 +71,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiErrorResponse> handleIllegalArgument(
             IllegalArgumentException exception, HttpServletRequest request) {
-        
+
         log.warn("Violacao de regra de negocio: {}", exception.getMessage());
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -88,9 +89,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(
             HttpMessageNotReadableException exception, HttpServletRequest request) {
-        
+
         log.warn("JSON com formato ou tipos incorretos: {}", exception.getMessage());
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -98,7 +99,7 @@ public class GlobalExceptionHandler {
                 "Erro na leitura dos dados. Por favor, verifique se os tipos de dados enviados no JSON estao corretos (ex: campos numericos, datas ou caracteres unicos).",
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -106,9 +107,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(
             DataIntegrityViolationException exception, HttpServletRequest request) {
-        
+
         log.error("Erro de consistencia/integridade no banco de dados", exception);
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -116,7 +117,7 @@ public class GlobalExceptionHandler {
                 "Erro de integridade de dados. Por favor, certifique-se de que os valores enviados nao ultrapassam o limite de caracteres permitido ou violam chaves unicas.",
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -124,10 +125,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiErrorResponse> handleResponseStatusException(
             ResponseStatusException exception, HttpServletRequest request) {
-        
+
         HttpStatus status = HttpStatus.valueOf(exception.getStatusCode().value());
         log.warn("ResponseStatusException capturada: {} - {}", status, exception.getReason());
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 status.value(),
@@ -135,17 +136,35 @@ public class GlobalExceptionHandler {
                 exception.getReason() != null ? exception.getReason() : "Erro desconhecido.",
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(status).body(errorResponse);
     }
 
-    // 7. Captura qualquer outro erro inesperado (Fallback geral de seguranca) - 500 Internal Server Error
+    // 7. Captura falhas de autenticacao (login/senha invalidos) - 401 Unauthorized
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(
+            AuthenticationException exception, HttpServletRequest request) {
+
+        log.warn("Falha de autenticacao: {}", exception.getMessage());
+
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                Instant.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "Unauthorized",
+                "E-mail ou senha inválidos.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    // 8. Captura qualquer outro erro inesperado (Fallback geral de seguranca) - 500 Internal Server Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(
             Exception exception, HttpServletRequest request) {
-        
+
         log.error("Erro inesperado capturado no handler global", exception);
-        
+
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 Instant.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -153,7 +172,7 @@ public class GlobalExceptionHandler {
                 "Ocorreu um erro interno inesperado no servidor. Por favor, tente novamente mais tarde.",
                 request.getRequestURI()
         );
-        
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }
