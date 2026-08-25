@@ -1,6 +1,7 @@
 package fiap.com.br.petguardian.usuario;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fiap.com.br.petguardian.endereco.Endereco;
 import fiap.com.br.petguardian.tarefa.Tarefa;
 import fiap.com.br.petguardian.usuariopet.UsuarioPet;
 import jakarta.persistence.*;
@@ -35,6 +36,15 @@ public class Usuario implements UserDetails {
 
     @Column(nullable = false, length = 255)
     private String senha;
+
+    @Column(length = 20)
+    private String telefone;
+
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Endereco endereco;
 
     @OneToMany(mappedBy = "usuario")
     @JsonIgnore

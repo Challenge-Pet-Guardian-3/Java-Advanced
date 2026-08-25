@@ -14,5 +14,7 @@ public record UsuarioUpdateRequest(
 
         // Opcional: se vier nulo/vazio, a senha atual é preservada.
         @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres.")
-        String senha
+        String senha,
+
+        String telefone
 ) {}

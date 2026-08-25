@@ -51,6 +51,7 @@ public class UsuarioService {
 
         usuarioExistente.setNome(usuarioUpdateRequest.nome().trim());
         usuarioExistente.setEmail(usuarioUpdateRequest.email().trim().toLowerCase());
+        usuarioExistente.setTelefone(usuarioUpdateRequest.telefone());
 
         if (usuarioUpdateRequest.senha() != null && !usuarioUpdateRequest.senha().isBlank()) {
             usuarioExistente.setSenha(passwordEncoder.encode(usuarioUpdateRequest.senha()));

@@ -15,13 +15,16 @@ public record UsuarioRequest(
 
         @NotBlank
         @Size(min = 6)
-        String senha
+        String senha,
+
+        String telefone
 ) {
     public Usuario toEntity() {
         return Usuario.builder()
                 .nome(nome)
                 .email(email)
                 .senha(senha)
+                .telefone(telefone)
                 .build();
     }
 }
