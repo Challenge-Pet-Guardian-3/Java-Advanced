@@ -6,8 +6,6 @@ public record UsuarioResponse(
         Long id,
         String nome,
         String email,
-        String ddd,
-        String numeroTelefone,
         String token
 ) {
     public static UsuarioResponse fromEntity(Usuario usuario) {
@@ -19,8 +17,6 @@ public record UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getTelefone() != null ? usuario.getTelefone().getDdd() : null,
-                usuario.getTelefone() != null ? usuario.getTelefone().getNumero() : null,
                 token
         );
     }

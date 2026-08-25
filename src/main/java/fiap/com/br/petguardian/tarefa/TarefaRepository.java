@@ -1,4 +1,5 @@
 package fiap.com.br.petguardian.tarefa;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,6 +52,22 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             "where up.usuario.id = :usuarioId " +
             "and t.status.nome_status = fiap.com.br.petguardian.status.EnumStatus.PENDENTE")
     Page<Tarefa> findTarefasPendentesDoCuidador(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
+    @Query("select t from Tarefa t where t.pet.id in :petIds and t.status.nome_status = fiap.com.br.petguardian.status.EnumStatus.PENDENTE")
+    Page<Tarefa> findTarefasPendentesByPetIdIn(@Param("petIds") List<Long> petIds, Pageable pageable);
+
+    // NOVO: traz TODOS os status (pendente, concluído, expirado) pro cuidador,
+    // usado quando o usuário ainda não tem família (mesmo caso, sem filtrar status).
+    @Query("select t from Tarefa t " +
+            "join t.pet p " +
+            "join p.usuarioPets up " +
+            "where up.usuario.id = :usuarioId")
+    Page<Tarefa> findTodasDoCuidador(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
+    // NOVO: traz TODOS os status pros pets da família, ordenado das mais recentes
+    // primeiro (por id desc), pra alimentar Hoje/Ontem/Expiradas/Histórico no front.
+    @Query("select t from Tarefa t where t.pet.id in :petIds order by t.id desc")
+    Page<Tarefa> findTodasByPetIdIn(@Param("petIds") List<Long> petIds, Pageable pageable);
 
     @Query("select coalesce(sum(t.pontosTarefa), 0) from Tarefa t " +
             "where t.usuario.id = :usuarioId " +

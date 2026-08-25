@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -77,12 +79,23 @@ public class FamiliaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario nao pertence a nenhuma familia."));
 
         if (Boolean.TRUE.equals(membro.getResponsavelPrincipal())) {
-            long total = membroRepository.findByFamiliaId(membro.getFamilia().getId()).size();
-            if (total > 1) {
-                throw new IllegalArgumentException("O dono nao pode sair enquanto houver outros membros na familia.");
+            List<FamiliaMembro> todos = membroRepository.findByFamiliaId(membro.getFamilia().getId());
+
+            if (todos.size() == 1) {
+                // Dono e unico membro: desfaz a familia
+                familiaRepository.delete(membro.getFamilia());
+                return;
             }
-            familiaRepository.delete(membro.getFamilia());
-            return;
+
+            // Promove o membro mais antigo (excluindo o dono atual) a novo dono
+            FamiliaMembro novoDono = todos.stream()
+                    .filter(m -> !m.getId().equals(membro.getId()))
+                    .min(Comparator.comparing(FamiliaMembro::getDataEntrada))
+                    .orElseThrow(() -> new IllegalStateException("Nao foi possivel determinar o novo dono da familia."));
+
+            novoDono.setResponsavelPrincipal(true);
+            novoDono.setFuncao("Dono(a) da Familia");
+            membroRepository.save(novoDono);
         }
 
         membroRepository.delete(membro);

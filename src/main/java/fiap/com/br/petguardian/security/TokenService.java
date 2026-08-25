@@ -20,8 +20,8 @@ public class TokenService {
     public String gerarToken(Usuario usuario) {
         Instant agora = Instant.now();
         return Jwts.builder()
-                .subject(usuario.getEmail())
-                .claim("id", usuario.getId())
+                .subject(String.valueOf(usuario.getId()))
+                .claim("email", usuario.getEmail())
                 .claim("nome", usuario.getNome())
                 .issuedAt(Date.from(agora))
                 .expiration(Date.from(agora.plus(4, ChronoUnit.HOURS)))

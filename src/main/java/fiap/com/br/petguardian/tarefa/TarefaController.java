@@ -21,15 +21,24 @@ public class TarefaController {
     private final TarefaService tarefaService;
 
     @GetMapping
-    public ResponseEntity<Page<TarefaResponse>> listar(@PageableDefault(size = 20) Pageable pageable) {
-        Page<TarefaResponse> page = tarefaService.findAll(pageable).map(TarefaResponse::fromEntity);
-        return ResponseEntity.ok(page);
+    public ResponseEntity<Page<TarefaResponse>> listar(
+            @RequestParam(required = false) Long usuarioId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        Page<Tarefa> tarefas = (usuarioId != null)
+                ? tarefaService.findAllByFamilia(usuarioId, pageable)
+                : tarefaService.findAll(pageable);
+        return ResponseEntity.ok(tarefas.map(TarefaResponse::fromEntity));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TarefaResponse> buscarPorId(@PathVariable Long id) {
         Tarefa tarefa = tarefaService.findById(id);
         return ResponseEntity.ok(TarefaResponse.fromEntity(tarefa));
+    }
+
+    @GetMapping("/pontos/{usuarioId}")
+    public ResponseEntity<Integer> pontosTotais(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(tarefaService.calcularPontosTotaisUsuario(usuarioId));
     }
 
     @PostMapping

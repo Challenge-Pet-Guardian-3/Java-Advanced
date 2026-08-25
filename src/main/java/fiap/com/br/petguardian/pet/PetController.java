@@ -1,6 +1,5 @@
 package fiap.com.br.petguardian.pet;
 
-import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
 import fiap.com.br.petguardian.pet.dto.PetResponse;
 import fiap.com.br.petguardian.usuario.Usuario;
@@ -58,13 +57,6 @@ public class PetController {
     @Operation(summary = "Buscar pet por ID")
     public PetResponse findById(@PathVariable Long id) {
         return PetResponse.fromEntity(petService.findById(id));
-    }
-
-    @GetMapping("{id}/historico")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Obter historico clinico consolidado do pet (atendimentos e tarefas concluidas)")
-    public PetHistoryResponse getHistorico(@PathVariable Long id) {
-        return petService.getConsolidatedHistory(id);
     }
 
     @PostMapping

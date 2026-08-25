@@ -1,12 +1,7 @@
 package fiap.com.br.petguardian.usuario;
 
-import fiap.com.br.petguardian.atendimento.AtendimentoRepository;
-import fiap.com.br.petguardian.endereco.Endereco;
-import fiap.com.br.petguardian.endereco.EnderecoService;
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
-import fiap.com.br.petguardian.telefone.Telefone;
-import fiap.com.br.petguardian.telefone.TelefoneRepository;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
 import fiap.com.br.petguardian.usuario.dto.UsuarioRequest;
 import fiap.com.br.petguardian.usuario.dto.UsuarioUpdateRequest;
@@ -28,11 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
-    private final EnderecoService enderecoService;
-    private final TelefoneRepository telefoneRepository;
     private final UsuarioPetRepository usuarioPetRepository;
     private final TarefaRepository tarefaRepository;
-    private final AtendimentoRepository atendimentoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public Page<Usuario> findAll(Pageable pageable) {
@@ -48,16 +40,8 @@ public class UsuarioService {
     }
 
     public Usuario create(UsuarioRequest usuarioRequest) {
-        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
-        Telefone telefone = telefoneRepository.save(
-                Telefone.builder()
-                        .ddd(usuarioRequest.ddd())
-                        .numero(usuarioRequest.numeroTelefone())
-                        .build()
-        );
-        Usuario usuario = usuarioRequest.toEntity(telefone);
+        Usuario usuario = usuarioRequest.toEntity();
         usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
-        usuario.getEnderecos().add(endereco);
         return usuarioRepository.save(usuario);
     }
 
@@ -65,18 +49,8 @@ public class UsuarioService {
     public Usuario update(Long id, UsuarioUpdateRequest usuarioUpdateRequest) {
         Usuario usuarioExistente = findUsuarioById(id);
 
-        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioUpdateRequest.endereco());
-        Telefone telefone = telefoneRepository.save(
-                Telefone.builder()
-                        .ddd(usuarioUpdateRequest.ddd())
-                        .numero(usuarioUpdateRequest.numeroTelefone())
-                        .build()
-        );
-
         usuarioExistente.setNome(usuarioUpdateRequest.nome().trim());
         usuarioExistente.setEmail(usuarioUpdateRequest.email().trim().toLowerCase());
-        usuarioExistente.setTelefone(telefone);
-        usuarioExistente.getEnderecos().add(endereco);
 
         if (usuarioUpdateRequest.senha() != null && !usuarioUpdateRequest.senha().isBlank()) {
             usuarioExistente.setSenha(passwordEncoder.encode(usuarioUpdateRequest.senha()));
@@ -100,7 +74,7 @@ public class UsuarioService {
             return new RedeCuidadoResponse(
                     usuarioId, usuario.getNome(),
                     List.of(), List.of(),
-                    0, 0, 0, 0
+                    0, 0, 0
             );
         }
 
@@ -108,15 +82,13 @@ public class UsuarioService {
         for (UsuarioPet vinculo : meusVinculos) {
             Long petId = vinculo.getPet().getId();
             List<Long> tarefaIds = tarefaRepository.findIdsByPetId(petId);
-            List<Long> atendimentoIds = atendimentoRepository.findIdsByPetId(petId);
 
             petResumos.add(new RedeCuidadoResponse.PetResumo(
                     petId,
                     vinculo.getPet().getNome(),
                     vinculo.getPet().getRaca() != null ? vinculo.getPet().getRaca().getNome() : null,
                     Boolean.TRUE.equals(vinculo.getResponsavelPrincipal()),
-                    tarefaIds,
-                    atendimentoIds
+                    tarefaIds
             ));
         }
 
@@ -151,7 +123,6 @@ public class UsuarioService {
 
         int totalPendentes = tarefaRepository.countPendentesByPetIdIn(petIds);
         int totalConcluidas = tarefaRepository.countConcluidasByPetIdIn(petIds);
-        int totalAtendimentos = atendimentoRepository.countByPetIdIn(petIds);
         int pontos = tarefaRepository.calcularPontosTotaisUsuario(usuarioId);
 
         return new RedeCuidadoResponse(
@@ -161,7 +132,6 @@ public class UsuarioService {
                 coCuidadores,
                 totalPendentes,
                 totalConcluidas,
-                totalAtendimentos,
                 pontos
         );
     }

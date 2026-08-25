@@ -1,5 +1,8 @@
 package fiap.com.br.petguardian.security;
 
+import fiap.com.br.petguardian.familia.FamiliaMembroRepository;
+import fiap.com.br.petguardian.usuario.Usuario;
+import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,8 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,7 +22,10 @@ public class SecurityFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private FamiliaMembroRepository familiaMembroRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -29,17 +33,24 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         var tokenJWT = recuperarToken(request);
 
-        // Valida se o token realmente existe e possui formato JWT (não pode ser vazio, null ou "undefined")
         if (tokenJWT != null && !tokenJWT.isBlank() && !tokenJWT.equals("null") && !tokenJWT.equals("undefined")) {
             try {
                 var subject = tokenService.getSubject(tokenJWT);
                 if (subject != null) {
-                    UserDetails usuario = userDetailsService.loadUserByUsername(subject);
-                    var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    Long usuarioId = Long.parseLong(subject);
+                    Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+
+                    if (usuario != null) {
+                        boolean ehDonoDeFamilia = familiaMembroRepository.findByUsuarioId(usuario.getId())
+                                .map(membro -> Boolean.TRUE.equals(membro.getResponsavelPrincipal()))
+                                .orElse(false);
+                        usuario.setResponsavelPrincipalFamilia(ehDonoDeFamilia);
+
+                        var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             } catch (Exception e) {
-                // Se o token for inválido, apenas limpa o contexto e prossegue para a cadeia de segurança
                 SecurityContextHolder.clearContext();
             }
         }

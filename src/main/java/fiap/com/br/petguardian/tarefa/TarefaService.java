@@ -43,6 +43,31 @@ public class TarefaService {
         return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, pageable);
     }
 
+    public Page<Tarefa> findAllByFamilia(Long usuarioId, Pageable pageable) {
+        expirarTarefasPendentesAtrasadas();
+
+        var membroOpt = familiaMembroRepository.findByUsuarioId(usuarioId);
+        if (membroOpt.isEmpty()) {
+            return tarefaRepository.findTodasDoCuidador(usuarioId, pageable);
+        }
+
+        Long familiaId = membroOpt.get().getFamilia().getId();
+        List<Long> usuarioIds = familiaMembroRepository.findByFamiliaId(familiaId)
+                .stream().map(m -> m.getUsuario().getId()).toList();
+
+        List<Long> petIds = usuarioIds.stream()
+                .flatMap(uid -> usuarioPetRepository.findAllByUsuarioId(uid).stream())
+                .map(up -> up.getPet().getId())
+                .distinct()
+                .toList();
+
+        if (petIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return tarefaRepository.findTodasByPetIdIn(petIds, pageable);
+    }
+
     public Tarefa findById(Long id) {
         expirarTarefasPendentesAtrasadas();
         return findTarefaById(id);
@@ -60,7 +85,6 @@ public class TarefaService {
 
         Tarefa tarefa = request.toEntity(null, pet);
 
-        // Garante o preenchimento de campos obrigatórios
         if (tarefa.getCriacao() == null) {
             tarefa.setCriacao(LocalDateTime.now());
         }
@@ -122,7 +146,6 @@ public class TarefaService {
         tarefa.setStatus(statusService.findStatusByNome("CONCLUIDO"));
         tarefa.setConclusao(LocalDateTime.now());
 
-        // Incrementa o XP do membro na família com segurança
         try {
             familiaMembroRepository.findByUsuarioId(usuario.getId()).ifPresent(membro -> {
                 int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
@@ -142,7 +165,6 @@ public class TarefaService {
             throw new IllegalArgumentException("Apenas tarefas concluídas podem ser reabertas.");
         }
 
-        // Se solicitante for informado, impede que outro cuidador reabra a tarefa de outrem
         if (tarefa.getUsuario() != null && solicitanteId != null) {
             if (!tarefa.getUsuario().getId().equals(solicitanteId)) {
                 throw new IllegalArgumentException("Você não pode desmarcar uma tarefa realizada por outro cuidador.");
@@ -187,17 +209,19 @@ public class TarefaService {
             if (!isDonoFamilia && !isDonoPet) {
                 throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para excluir tarefas.");
             }
+        }
 
-            if ("CONCLUIDO".equalsIgnoreCase(tarefa.getStatus().getNome_status().name()) && tarefa.getUsuario() != null) {
-                try {
-                    familiaMembroRepository.findByUsuarioId(tarefa.getUsuario().getId()).ifPresent(membro -> {
-                        int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
-                        int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
-                        membro.setXp(Math.max(0, xpAtual - pontos));
-                        familiaMembroRepository.save(membro);
-                    });
-                } catch (Exception ignored) {}
-            }
+        // Agora roda sempre, independente de ter solicitanteId — se a tarefa dava XP,
+        // excluir ela sempre devolve os pontos ao membro, sem depender de quem pediu.
+        if ("CONCLUIDO".equalsIgnoreCase(tarefa.getStatus().getNome_status().name()) && tarefa.getUsuario() != null) {
+            try {
+                familiaMembroRepository.findByUsuarioId(tarefa.getUsuario().getId()).ifPresent(membro -> {
+                    int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
+                    int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
+                    membro.setXp(Math.max(0, xpAtual - pontos));
+                    familiaMembroRepository.save(membro);
+                });
+            } catch (Exception ignored) {}
         }
 
         tarefaRepository.delete(tarefa);
