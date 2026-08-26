@@ -29,9 +29,4 @@ public interface UsuarioPetRepository extends JpaRepository<UsuarioPet, UsuarioP
     @Transactional
     @Query("update UsuarioPet up set up.responsavelPrincipal = false where up.pet.id = :petId")
     void limparResponsavelPrincipalPorPet(@Param("petId") Long petId);
-
-    @Modifying
-    @Transactional
-    @Query("delete from UsuarioPet up where up.pet.id = :petId")
-    void deleteByPetId(@Param("petId") Long petId);
 }

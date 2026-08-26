@@ -28,7 +28,7 @@ public class EnderecoController {
             .map(EnderecoResponse::fromEntity);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Buscar endereco por ID")
     public EnderecoResponse findById(@PathVariable Long id) {
@@ -42,14 +42,14 @@ public class EnderecoController {
         return EnderecoResponse.fromEntity(enderecoService.create(enderecoRequest));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Atualizar endereco")
     public EnderecoResponse update(@PathVariable Long id, @Valid @RequestBody EnderecoRequest enderecoRequest) {
         return EnderecoResponse.fromEntity(enderecoService.update(id, enderecoRequest));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar endereco")
     public void delete(@PathVariable Long id) {

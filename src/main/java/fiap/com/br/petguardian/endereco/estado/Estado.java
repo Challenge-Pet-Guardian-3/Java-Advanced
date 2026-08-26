@@ -3,22 +3,18 @@ package fiap.com.br.petguardian.endereco.estado;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fiap.com.br.petguardian.endereco.cidade.Cidade;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Table(name = "estado")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "estado")
 public class Estado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +26,6 @@ public class Estado {
 
     @OneToMany(mappedBy = "estado")
     @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @Builder.Default
     private Set<Cidade> cidades = new HashSet<>();
 }

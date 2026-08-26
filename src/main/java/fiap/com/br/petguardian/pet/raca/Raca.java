@@ -1,17 +1,15 @@
 package fiap.com.br.petguardian.pet.raca;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Table(name = "raca")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "raca")
 public class Raca {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

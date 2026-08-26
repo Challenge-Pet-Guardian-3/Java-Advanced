@@ -37,43 +37,32 @@
 O **PetGuardian** é uma API REST corporativa em Spring Boot desenvolvida sob a **Arquitetura Pet-Centric** (diretriz da Mentoria Clyvo para o Challenge 2026), focada na saúde contínua, governança de cuidados e gamificação centrada no animal.
 
 ### 🌟 Pilares da Arquitetura Pet-Centric
-- **Ecossistema Centrado no Pet:** O animal é a entidade nuclear (`pet`), possuindo sua própria evolução de bem-estar, peso e prontuário.
-- **Gamificação Pet-Centric:** O score de bem-estar (`score_bem_estar` / `pontos_bem_estar`) acumula **diretamente no Pet** conforme as rotinas de cuidado e módulos de treinamento são concluídos pela família.
-- **Rotina Familiar Colaborativa:** Cuidadores e tutores gerenciam as tarefas diárias do pet (alimentação, remédios, passeios, higiene) com sincronização em tempo real entre co-cuidadores, sem necessidade de prescrição veterinária para tarefas domésticas.
-- **Acompanhamento Clínico & Emergência 24h:** Prontuário clínico estruturado (`atendimento`) com histórico de consultas, vacinas e busca especializada de clínicas veterinárias 24h / pronto-socorro.
+- **Ecossistema Centrado no Pet:** O animal é a entidade nuclear (`pet`), possuindo sua própria evolução de bem-estar e histórico consolidado.
+- **Gamificação Pet-Centric:** O score de bem-estar (`pontos_tarefa`) acumula conforme as rotinas de cuidado são concluídas pelos cuidadores.
+- **Rotina Familiar Colaborativa:** Cuidadores e tutores gerenciam as tarefas diárias do pet (alimentação, remédios, passeios, higiene) com sincronização em tempo real entre co-cuidadores.
+- **Rede de Cuidados (Care Circle):** Visualização consolidada de vínculos de tutoria, histórico de cuidados e pontos acumulados.
 
 ---
 
 ### Gamificação: Score e Bem-Estar no Pet
 
 O sistema incentiva o cuidado preventivo e a consistência da rotina:
-- Cada tarefa de rotina e módulo de adestramento concluído gera **pontos de bem-estar** para o Pet.
-- O Pet evolui de nível de saúde e bem-estar na plataforma (`PetScoreBar`).
-- O histórico de cuidados e o score alimentam a Assistente de IA para sugestões personalizadas de saúde preventiva.
+- Cada tarefa de rotina concluída gera **pontos de bem-estar** para o cuidador e para o histórico do Pet.
+- O ciclo de vida das tarefas (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`) garante previsibilidade e histórico auditável.
 
 ### Rede de Cuidado Familiar (Care Circle)
 
 A rede de cuidado organiza os vínculos de tutores em torno de cada animal:
 - Vínculos colaborativos entre usuários e pets em `usuario_pet`;
 - Visão agregada por usuário em `/usuarios/{id}/rede-cuidado`;
-- Histórico compartilhado entre todos os membros da família.
+- Histórico compartilhado entre todos os membros da família em `/pets/{id}/historico`.
 
 ### Rotina e Tarefas
 
-As tarefas representam cuidados diários da rotina familiar (alimentar, medicar, passear, higienizar, adestrar):
+As tarefas representam cuidados diários da rotina familiar (alimentar, medicar, passear, higienizar):
 - Criadas diretamente pelos tutores da família vinculados ao Pet;
-- Conclusão reativa que credita pontos imediatamente ao Score do Pet;
+- Conclusão reativa que credita pontos ao cuidador;
 - Status controlado por ciclo de vida (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
-
----
-
-### Atendimentos Veterinários
-
-Cada atendimento está vinculado a:
-- um pet,
-- um veterinário,
-- um tipo de atendimento,
-- um status.
 
 ---
 
@@ -92,23 +81,18 @@ Cada atendimento está vinculado a:
 
 ```
 src/main/java/fiap/com/br/petguardian/
-├── config/              # Configuracoes (Swagger, seed, cache)
+├── config/              # Configuracoes (Swagger, seed)
 ├── exception/           # Tratamento centralizado de erros
 ├── validation/          # Validacoes customizadas (CEP, DDD, Enum)
 │
-├── usuario/             # Usuario (CRUD + paginação)
-├── usuariopet/          # Relacao N:N Usuario x Pet
-├── pet/                 # Pet (CRUD + paginacao + historico)
+├── usuario/             # Usuario (CRUD + paginacao + rede de cuidado)
+├── usuariopet/          # Relacao N:N Usuario x Pet (vinculos e co-cuidadores)
+├── pet/                 # Pet (CRUD + paginacao + historico de tarefas)
 │   └── raca/            # Raca do pet
 │
-├── tarefa/              # Tarefa gamificada (prescricao/conclusao/pontos)
+├── tarefa/              # Tarefa gamificada (criacao/conclusao/pontos)
 ├── status/              # Status de dominio
-├── atendimento/         # Atendimento veterinario
-│   └── tipoatendimento/ # Tipo de atendimento
-│
-├── clinica/             # Clinica veterinaria
-├── veterinario/         # Veterinario
-├── endereco/            # Endereco
+├── endereco/            # Endereco (integracao ViaCEP)
 │   ├── bairro/
 │   ├── cidade/
 │   └── estado/
@@ -126,7 +110,6 @@ src/main/java/fiap/com/br/petguardian/
 | Spring Boot 4.0.6 | Framework principal |
 | Spring Data JPA | Persistencia e ORM |
 | Spring Validation | Bean Validation |
-| Spring Cache | Cache de consultas |
 | SpringDoc OpenAPI | Documentacao Swagger |
 | H2 Database | Banco em memoria |
 | Lombok | Reducao de boilerplate |
@@ -136,7 +119,7 @@ src/main/java/fiap/com/br/petguardian/
 
 ## Endpoints da API
 
-Todos os endpoints usam DTOs, Bean Validation e documentação Swagger.
+Todos os endpoints usam DTOs (Records), Bean Validation e documentação Swagger.
 
 ### Usuarios (`/usuarios`)
 
@@ -158,7 +141,7 @@ Todos os endpoints usam DTOs, Bean Validation e documentação Swagger.
 | `GET` | `/pets` | Listar todos os pets (paginado) |
 | `GET` | `/pets/by-nome` | Buscar pets por nome (paginado, `?nome=`) |
 | `GET` | `/pets/{id}` | Buscar pet por ID |
-| `GET` | `/pets/{id}/historico` | Historico consolidado (atendimentos + tarefas concluidas) |
+| `GET` | `/pets/{id}/historico` | Historico consolidado (tarefas concluidas) |
 | `POST` | `/pets` | Criar pet |
 | `PUT` | `/pets/{id}` | Atualizar pet |
 | `DELETE` | `/pets/{id}` | Deletar pet |
@@ -180,40 +163,6 @@ Todos os endpoints usam DTOs, Bean Validation e documentação Swagger.
 | `PATCH` | `/tarefas/{id}/concluir` | Concluir tarefa (enviar `concluinteId` no body) |
 | `GET` | `/tarefas/by-usuario/pontos` | Pontos totais do cuidador (`?usuarioId=`) |
 | `DELETE` | `/tarefas/{id}` | Deletar tarefa |
-
-### Atendimentos (`/atendimentos`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/atendimentos` | Listar todos os atendimentos (paginado) |
-| `GET` | `/atendimentos/by-usuario` | Listar atendimentos por usuario (paginado, `?usuarioId=`) |
-| `GET` | `/atendimentos/{id}` | Buscar atendimento por ID |
-| `POST` | `/atendimentos` | Criar atendimento |
-| `PUT` | `/atendimentos/{id}` | Atualizar atendimento |
-| `DELETE` | `/atendimentos/{id}` | Deletar atendimento |
-
-### Clinicas (`/clinicas`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/clinicas` | Listar todas as clinicas (paginado) |
-| `GET` | `/clinicas/by-nome` | Buscar clinicas por nome (paginado, `?nome=`) |
-| `GET` | `/clinicas/{id}` | Buscar clinica por ID |
-| `POST` | `/clinicas` | Criar clinica |
-| `PUT` | `/clinicas/{id}` | Atualizar clinica |
-| `DELETE` | `/clinicas/{id}` | Deletar clinica |
-
-### Veterinarios (`/veterinarios`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/veterinarios` | Listar todos os veterinarios (paginado) |
-| `GET` | `/veterinarios/by-nome` | Buscar veterinarios por nome (paginado, `?nome=`) |
-| `GET` | `/veterinarios/by-email` | Buscar veterinario por e-mail (`?email=`) |
-| `GET` | `/veterinarios/{id}` | Buscar veterinario por ID |
-| `POST` | `/veterinarios` | Criar veterinario |
-| `PUT` | `/veterinarios/{id}` | Atualizar veterinario |
-| `DELETE` | `/veterinarios/{id}` | Deletar veterinario |
 
 ### Enderecos (`/enderecos`)
 

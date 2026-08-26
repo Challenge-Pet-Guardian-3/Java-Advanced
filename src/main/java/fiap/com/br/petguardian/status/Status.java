@@ -1,17 +1,15 @@
 package fiap.com.br.petguardian.status;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Table(name = "status")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "status")
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +18,5 @@ public class Status {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "nome_status", nullable = false, length = 15)
-    private EnumStatus nome_status;
+    private EnumStatus nomeStatus;
 }

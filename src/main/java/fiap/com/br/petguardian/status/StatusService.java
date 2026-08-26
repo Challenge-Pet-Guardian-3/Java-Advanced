@@ -1,13 +1,11 @@
 package fiap.com.br.petguardian.status;
 
+import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +22,10 @@ public class StatusService {
 
     @Cacheable(value = "status", key = "#nome.toUpperCase()")
     public Status findStatusByNome(String nome) {
-        return statusRepository.findByNomeStatus(EnumStatus.valueOf(nome.toUpperCase())).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Status '" + nome + "' não encontrado."));
+        return statusRepository.findByNomeStatus(EnumStatus.valueOf(nome.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Status '" + nome + "' não encontrado."));
     }
 
     private Status findStatusById(Long id) {
-        return statusRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Status com id " + id + " não encontrado."));
+        return statusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Status com id " + id + " não encontrado."));
     }
 }

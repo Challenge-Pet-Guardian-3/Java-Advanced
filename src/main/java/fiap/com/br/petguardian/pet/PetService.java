@@ -1,7 +1,5 @@
 package fiap.com.br.petguardian.pet;
 
-import fiap.com.br.petguardian.atendimento.AtendimentoRepository;
-import fiap.com.br.petguardian.atendimento.dto.AtendimentoResponse;
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,6 @@ public class PetService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioPetRepository usuarioPetRepository;
     private final RacaRepository racaRepository;
-    private final AtendimentoRepository atendimentoRepository;
     private final TarefaRepository tarefaRepository;
 
     public Page<Pet> findAll(Pageable pageable) {
@@ -40,6 +38,7 @@ public class PetService {
         return findPetById(id);
     }
 
+    @Transactional
     public Pet create(PetRequest petRequest) {
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
@@ -49,6 +48,7 @@ public class PetService {
         return petSalvo;
     }
 
+    @Transactional
     public Pet update(Long id, PetRequest petRequest) {
         Pet petAtual = findPetById(id);
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
@@ -62,7 +62,7 @@ public class PetService {
         UsuarioPet usuarioPet = usuarioPetRepository.findByUsuarioIdAndPetId(usuario.getId(), petAtual.getId())
                 .orElseGet(() -> UsuarioPet.of(usuario, petAtual, false));
 
-        usuarioPet.setResponsavelPrincipal(Boolean.TRUE);
+        usuarioPet.setResponsavelPrincipal(true);
         usuarioPetRepository.save(usuarioPet);
 
         return petSalvo;
@@ -70,10 +70,10 @@ public class PetService {
 
     public void delete(Long id) {
         findPetById(id);
-        usuarioPetRepository.deleteByPetId(id);
         petRepository.deleteById(id);
     }
 
+    @Transactional
     public void vincularUsuario(Long petId, Long usuarioId, boolean principal) {
         Pet pet = findPetById(petId);
         Usuario usuario = findUsuarioById(usuarioId);
@@ -93,7 +93,7 @@ public class PetService {
         UsuarioPet usuarioPet = usuarioPetRepository.findByUsuarioIdAndPetId(usuarioId, petId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vinculo nao encontrado entre o usuario e o pet informados."));
 
-        if (Boolean.TRUE.equals(usuarioPet.getResponsavelPrincipal())) {
+        if (usuarioPet.isResponsavelPrincipal()) {
             throw new IllegalArgumentException("Nao e permitido desvincular o responsavel principal do pet.");
         }
 
@@ -124,11 +124,6 @@ public class PetService {
     public PetHistoryResponse getConsolidatedHistory(Long petId) {
         Pet pet = findPetById(petId);
 
-        var atendimentos = atendimentoRepository.findAllByPetIdOrderByDataDesc(petId)
-                .stream()
-                .map(AtendimentoResponse::fromEntity)
-                .toList();
-
         var tarefasConcluidas = tarefaRepository.findConcluidasByPetId(petId)
                 .stream()
                 .map(TarefaResponse::fromEntity)
@@ -137,7 +132,6 @@ public class PetService {
         return new PetHistoryResponse(
                 pet.getId(),
                 pet.getNome(),
-                atendimentos,
                 tarefasConcluidas
         );
     }

@@ -8,15 +8,14 @@ import fiap.com.br.petguardian.endereco.cidade.CidadeRepository;
 import fiap.com.br.petguardian.endereco.dto.EnderecoRequest;
 import fiap.com.br.petguardian.endereco.estado.Estado;
 import fiap.com.br.petguardian.endereco.estado.EstadoRepository;
+import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.server.ResponseStatusException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +36,12 @@ public class EnderecoService {
         return findEnderecoById(id);
     }
 
+    @Transactional
     public Endereco create(EnderecoRequest enderecoRequest) {
         return findOrCreateByCepAndNumero(enderecoRequest);
     }
 
+    @Transactional
     public Endereco update(Long id, EnderecoRequest enderecoRequest) {
         findEnderecoById(id);
         Endereco endereco = buildEnderecoFromCep(enderecoRequest);
@@ -53,6 +54,7 @@ public class EnderecoService {
         enderecoRepository.deleteById(id);
     }
 
+    @Transactional
     public Endereco findOrCreateByCepAndNumero(EnderecoRequest enderecoRequest) {
         String cleanCep = enderecoRequest.cep().replaceAll("\\D", "");
         ResolvedAddress resolvedAddress = resolveAddressFromCep(cleanCep);
@@ -61,7 +63,7 @@ public class EnderecoService {
     }
 
     private Endereco findEnderecoById(Long id) {
-        return enderecoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Endereço com id " + id + " não encontrado."));
+        return enderecoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Endereço com id " + id + " não encontrado."));
     }
 
     private Endereco buildEnderecoFromCep(EnderecoRequest enderecoRequest) {
@@ -77,7 +79,7 @@ public class EnderecoService {
                     .retrieve()
                     .body(ViaCepResponse.class);
 
-            if (response == null || Boolean.TRUE.equals(response.erro())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CEP " + cep + " não encontrado.");
+            if (response == null || Boolean.TRUE.equals(response.erro())) throw new IllegalArgumentException("CEP " + cep + " não encontrado.");
 
             Estado estado = findOrCreateEstado(response.estado());
             Cidade cidade = findOrCreateCidade(response.localidade(), estado);
@@ -85,7 +87,7 @@ public class EnderecoService {
 
             return new ResolvedAddress(response.logradouro(), bairro);
         } catch (RestClientException error) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao consultar o serviço de CEP.", error);
+            throw new IllegalArgumentException("Erro ao consultar o serviço de CEP: " + error.getMessage(), error);
         }
     }
 

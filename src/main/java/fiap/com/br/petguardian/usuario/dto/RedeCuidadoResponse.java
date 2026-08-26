@@ -9,7 +9,6 @@ public record RedeCuidadoResponse(
         List<CuidadorResumo> coCuidadores,
         int totalTarefasPendentes,
         int totalTarefasConcluidas,
-        int totalAtendimentos,
         int pontosAcumulados
 ) {
     public record PetResumo(
@@ -17,8 +16,7 @@ public record RedeCuidadoResponse(
             String nome,
             String raca,
             boolean responsavelPrincipal,
-            List<Long> tarefaIds,
-            List<Long> atendimentoIds
+            List<Long> tarefaIds
     ) {}
 
     public record CuidadorResumo(

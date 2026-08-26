@@ -5,6 +5,7 @@ import fiap.com.br.petguardian.usuario.dto.UsuarioRequest;
 import fiap.com.br.petguardian.usuario.dto.UsuarioResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -29,7 +29,7 @@ public class UsuarioController {
                 .map(UsuarioResponse::fromEntity);
     }
 
-    @GetMapping("by-nome")
+    @GetMapping("/by-nome")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Buscar usuários por nome com paginação e ordenação")
     public Page<UsuarioResponse> findByNome(@RequestParam String nome, @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -37,23 +37,23 @@ public class UsuarioController {
                 .map(UsuarioResponse::fromEntity);
     }
 
-    @GetMapping("by-email")
+    @GetMapping("/by-email")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Buscar usuário por e-mail")
     public UsuarioResponse findByEmail(@RequestParam String email) {
         return UsuarioResponse.fromEntity(usuarioService.findUsuarioByEmail(email));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Buscar usuário por ID")
     public UsuarioResponse findById(@PathVariable Long id) {
         return UsuarioResponse.fromEntity(usuarioService.findById(id));
     }
 
-    @GetMapping("{id}/rede-cuidado")
+    @GetMapping("/{id}/rede-cuidado")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Visualizar rede de cuidado do usuário (pets, co-cuidadores, tarefas e atendimentos agrupados)")
+    @Operation(summary = "Visualizar rede de cuidado do usuário (pets, co-cuidadores e tarefas agrupadas)")
     public RedeCuidadoResponse getRedeCuidado(@PathVariable Long id) {
         return usuarioService.getRedeCuidado(id);
     }
@@ -65,14 +65,14 @@ public class UsuarioController {
         return UsuarioResponse.fromEntity(usuarioService.create(usuarioRequest));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Atualizar usuário")
     public UsuarioResponse update(@PathVariable Long id, @Valid @RequestBody UsuarioRequest usuarioRequest) {
         return UsuarioResponse.fromEntity(usuarioService.update(id, usuarioRequest));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar usuário")
     public void delete(@PathVariable Long id) {
