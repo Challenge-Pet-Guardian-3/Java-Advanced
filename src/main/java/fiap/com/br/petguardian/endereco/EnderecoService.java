@@ -58,12 +58,15 @@ public class EnderecoService {
     public Endereco findOrCreateByCepAndNumero(EnderecoRequest enderecoRequest) {
         String cleanCep = enderecoRequest.cep().replaceAll("\\D", "");
         ResolvedAddress resolvedAddress = resolveAddressFromCep(cleanCep);
-        return enderecoRepository.findByCepAndNumeroAndBairroId(cleanCep, enderecoRequest.numero(), resolvedAddress.bairro().getId())
-                .orElseGet(() -> enderecoRepository.save(enderecoRequest.toEntity(resolvedAddress.rua(), resolvedAddress.bairro())));
+        return enderecoRepository
+                .findByCepAndNumeroAndBairroId(cleanCep, enderecoRequest.numero(), resolvedAddress.bairro().getId())
+                .orElseGet(() -> enderecoRepository
+                        .save(enderecoRequest.toEntity(resolvedAddress.rua(), resolvedAddress.bairro())));
     }
 
     private Endereco findEnderecoById(Long id) {
-        return enderecoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Endereço com id " + id + " não encontrado."));
+        return enderecoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço com id " + id + " não encontrado."));
     }
 
     private Endereco buildEnderecoFromCep(EnderecoRequest enderecoRequest) {
@@ -79,7 +82,8 @@ public class EnderecoService {
                     .retrieve()
                     .body(ViaCepResponse.class);
 
-            if (response == null || Boolean.TRUE.equals(response.erro())) throw new IllegalArgumentException("CEP " + cep + " não encontrado.");
+            if (response == null || Boolean.TRUE.equals(response.erro()))
+                throw new IllegalArgumentException("CEP " + cep + " não encontrado.");
 
             Estado estado = findOrCreateEstado(response.estado());
             Cidade cidade = findOrCreateCidade(response.localidade(), estado);
@@ -112,8 +116,9 @@ public class EnderecoService {
             String bairro,
             String localidade,
             String estado,
-            Boolean erro
-    ) {}
+            Boolean erro) {
+    }
 
-    private record ResolvedAddress(String rua, Bairro bairro) {}
+    private record ResolvedAddress(String rua, Bairro bairro) {
+    }
 }

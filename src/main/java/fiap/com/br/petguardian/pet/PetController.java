@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/pets")
 @RequiredArgsConstructor
-@Tag(name = "Pets", description = "Gerenciamento de pets e rede de co-cuidadores")
+@Tag(name = "Pets", description = "Gerenciamento de pets e historico clinico")
 public class PetController {
+
     private final PetService petService;
 
     @GetMapping
@@ -70,33 +71,5 @@ public class PetController {
     @Operation(summary = "Deletar pet")
     public void delete(@PathVariable Long id) {
         petService.delete(id);
-    }
-
-    @PostMapping("/{id}/usuarios/{usuarioId}")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Vincular um usuário a um pet")
-    public void vincularUsuario(@PathVariable Long id, @PathVariable Long usuarioId, @RequestParam(defaultValue = "false") boolean principal) {
-        petService.vincularUsuario(id, usuarioId, principal);
-    }
-
-    @DeleteMapping("/{id}/usuarios/{usuarioId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Desvincular um usuário de um pet")
-    public void desvincularUsuario(@PathVariable Long id, @PathVariable Long usuarioId) {
-        petService.desvincularUsuario(id, usuarioId);
-    }
-
-    @PostMapping("/{id}/convidar")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Convidar co-cuidador por ID (somente responsável principal)")
-    public void convidarCuidadorPorId(@PathVariable Long id, @RequestParam Long responsavelPrincipalId, @RequestParam Long usuarioConvidadoId) {
-        petService.vincularCuidadorPorResponsavelPrincipal(id, responsavelPrincipalId, usuarioConvidadoId);
-    }
-
-    @PostMapping("/{id}/convidar-email")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Convidar co-cuidador por e-mail (somente responsável principal)")
-    public void convidarCuidadorPorEmail(@PathVariable Long id, @RequestParam Long responsavelPrincipalId, @RequestParam String email) {
-        petService.vincularCuidadorPorEmail(id, responsavelPrincipalId, email);
     }
 }

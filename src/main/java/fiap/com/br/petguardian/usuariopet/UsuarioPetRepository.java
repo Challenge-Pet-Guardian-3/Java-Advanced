@@ -10,20 +10,27 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioPetRepository extends JpaRepository<UsuarioPet, UsuarioPetId> {
+
     @Query("select case when count(up) > 0 then true else false end from UsuarioPet up where up.usuario.id = :usuarioId and up.pet.id = :petId")
     boolean existsByUsuarioIdAndPetId(@Param("usuarioId") Long usuarioId, @Param("petId") Long petId);
 
     @Query("select case when count(up) > 0 then true else false end from UsuarioPet up where up.usuario.id = :usuarioId and up.pet.id = :petId and up.responsavelPrincipal = true")
     boolean isResponsavelPrincipal(@Param("usuarioId") Long usuarioId, @Param("petId") Long petId);
 
-    @Query("select up from UsuarioPet up where up.usuario.id = :usuarioId and up.pet.id = :petId")
+    @Query("select up from UsuarioPet up join fetch up.usuario u join fetch up.pet p where up.usuario.id = :usuarioId and up.pet.id = :petId")
     Optional<UsuarioPet> findByUsuarioIdAndPetId(@Param("usuarioId") Long usuarioId, @Param("petId") Long petId);
 
-    @Query("select up from UsuarioPet up join fetch up.pet join fetch up.usuario where up.usuario.id = :usuarioId")
+    @Query("select up from UsuarioPet up join fetch up.pet p join fetch p.raca r join fetch up.usuario u where up.usuario.id = :usuarioId")
     List<UsuarioPet> findAllByUsuarioId(@Param("usuarioId") Long usuarioId);
 
-    @Query("select up from UsuarioPet up join fetch up.pet join fetch up.usuario where up.pet.id in :petIds")
+    @Query("select up from UsuarioPet up join fetch up.usuario u join fetch up.pet p where up.pet.id = :petId")
+    List<UsuarioPet> findAllByPetId(@Param("petId") Long petId);
+
+    @Query("select up from UsuarioPet up join fetch up.pet p join fetch up.usuario u where up.pet.id in :petIds")
     List<UsuarioPet> findAllByPetIdIn(@Param("petIds") List<Long> petIds);
+
+    @Query("select up from UsuarioPet up join fetch up.usuario u where up.pet.id = :petId and up.responsavelPrincipal = true")
+    Optional<UsuarioPet> findResponsavelPrincipalByPetId(@Param("petId") Long petId);
 
     @Modifying
     @Transactional

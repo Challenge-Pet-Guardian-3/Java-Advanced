@@ -13,33 +13,25 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UsuarioPet {
+
     @EmbeddedId
     private UsuarioPetId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("usuarioId")
-    @JoinColumn(name = "usuario_id_usuario")
+    @JoinColumn(name = "usuario_id_usuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("petId")
-    @JoinColumn(name = "pet_id_pet")
+    @JoinColumn(name = "pet_id_pet", nullable = false)
     private Pet pet;
 
     @Builder.Default
     @Column(name = "respon_princ", nullable = false)
     private boolean responsavelPrincipal = false;
 
-    public static UsuarioPet of(Usuario usuario, Pet pet, boolean responsavelPrincipal) {
-        return UsuarioPet.builder()
-                .id(new UsuarioPetId(usuario.getId(), pet.getId()))
-                .usuario(usuario)
-                .pet(pet)
-                .responsavelPrincipal(responsavelPrincipal)
-                .build();
-    }
-
-    public static UsuarioPet principal(Usuario usuario, Pet pet) {
-        return of(usuario, pet, true);
+    public void promoverResponsavelPrincipal() {
+        this.responsavelPrincipal = true;
     }
 }

@@ -8,11 +8,12 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Embeddable
 public class UsuarioPetId implements Serializable {
+
     @Column(name = "usuario_id_usuario")
     private Long usuarioId;
 

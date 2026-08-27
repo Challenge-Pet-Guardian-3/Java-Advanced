@@ -39,6 +39,9 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     @Query("select t.id from Tarefa t where t.pet.id = :petId")
     List<Long> findIdsByPetId(@Param("petId") Long petId);
 
+    @Query("select t.pet.id, t.id from Tarefa t where t.pet.id in :petIds")
+    List<Object[]> findTarefaIdsByPetIdIn(@Param("petIds") List<Long> petIds);
+
     @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.PENDENTE")
     int countPendentesByPetIdIn(@Param("petIds") List<Long> petIds);
 

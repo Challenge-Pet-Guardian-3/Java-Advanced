@@ -47,12 +47,14 @@ public class TarefaService {
     public Tarefa findByUsuarioIdAndTarefaId(Long usuarioId, Long tarefaId) {
         expirarTarefasPendentesAtrasadas();
         return tarefaRepository.findByIdAndUsuarioId(tarefaId, usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tarefa com id " + tarefaId + " nao encontrada para o usuario informado."));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Tarefa com id " + tarefaId + " nao encontrada para o usuario informado."));
     }
 
     public Tarefa create(TarefaRequest request) {
         if (request.usuarioId() != null) {
-            throw new IllegalArgumentException("Tarefa deve ser criada sem usuario executor. Use o endpoint de conclusao para registrar o cuidador.");
+            throw new IllegalArgumentException(
+                    "Tarefa deve ser criada sem usuario executor. Use o endpoint de conclusao para registrar o cuidador.");
         }
 
         Pet pet = findPetById(request.petId());

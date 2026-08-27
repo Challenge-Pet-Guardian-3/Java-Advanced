@@ -43,4 +43,11 @@ public record UsuarioRequest(
                 .telefone(telefone)
                 .build();
     }
+
+    public Telefone toTelefone() {
+        return Telefone.builder()
+                .ddd(ddd)
+                .numero(numeroTelefone)
+                .build();
+    }
 }
