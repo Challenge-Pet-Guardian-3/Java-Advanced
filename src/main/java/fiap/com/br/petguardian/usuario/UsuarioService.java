@@ -6,6 +6,7 @@ import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.telefone.Telefone;
 import fiap.com.br.petguardian.telefone.TelefoneRepository;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import fiap.com.br.petguardian.usuario.dto.UsuarioRequest;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class UsuarioService {
     private final EnderecoService enderecoService;
     private final TelefoneRepository telefoneRepository;
     private final UsuarioPetService usuarioPetService;
+    private final PasswordEncoder passwordEncoder;
 
     public Page<Usuario> findAll(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
@@ -66,6 +68,7 @@ public class UsuarioService {
 
         Usuario usuario = request.toEntity(telefone);
         usuario.setId(id);
+        usuario.setSenha(passwordEncoder.encode(request.senha()));
         usuario.getEnderecos().add(endereco);
         return usuarioRepository.save(usuario);
     }

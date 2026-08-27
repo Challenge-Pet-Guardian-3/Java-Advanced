@@ -29,7 +29,7 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     private String senha;
 
     @ManyToOne(cascade = CascadeType.ALL)

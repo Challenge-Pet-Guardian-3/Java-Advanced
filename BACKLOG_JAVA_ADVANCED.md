@@ -14,10 +14,10 @@
 
 | Requisito Oficial | Peso / Pontos | Status no Backlog | Destaque Técnico & Mentoria Clyvo |
 | :--- | :---: | :---: | :--- |
-| **1. Refatoração SOLID, DRY & Clean Code** | **Penalidades (-10 a -15 pts)** | **Concluído (PBI-01 a PBI-04)** | Injeção por construtor (`@RequiredArgsConstructor`), eliminação total de `ResponseStatusException`, Global Exception Handler, DTOs desacoplados, `@Transactional` seletivo, tipos primitivos `boolean` e SpringDoc OpenAPI/Swagger. |
-| **2. Spring Security & Controle de Acesso** | **30 pts** | **Crítico (PBI-05 a PBI-08)** | Mínimo 2 perfis de usuário (`ADMIN`, `TUTOR`, `CUIDADOR`), BCrypt, tokens JWT Stateless para consumo Mobile (React Native), proteção de rotas via `SecurityFilterChain`, CORS e `@PreAuthorize`. |
-| **3. Flyway (Controle de Versão de BD)** | **20 pts** | **Crítico (PBI-09 e PBI-10)** | Migrações versionadas (`V1`, `V2`, `V3`) com tabelas Pet-Centric: `usuario`, `pet`, `usuario_pet` (gestão N:N familiar), `tarefa`, `status`, `endereco`, `bairro`, `cidade`, `estado`, `telefone`. |
-| **4. Funcionalidades Completas (Fluxos Não-CRUD)** | **20 pts** | **Crítico (PBI-11 a PBI-14)** | **Dois fluxos ponta a ponta complexos:**<br>1) *Rede Familiar & Co-Cuidadores:* Vínculo N:N entre tutores e pets, gestão de Responsável Principal, convite de co-cuidadores por e-mail/ID, agregação visual da Rede de Cuidado (`/usuarios/{id}/rede-cuidado`) e histórico consolidado do pet.<br>2) *Rotina Familiar, Expiração Automática & Gamificação:* Tutores criam rotinas com prazo e pontuação, mecanismo atômico de expiração automática de tarefas pendentes vencidas, conclusão com atribuição de cuidador executor e cálculo de ranking/pontuação. |
+| **1. Refatoração SOLID, DRY & Clean Code** | **Penalidades (-10 a -15 pts)** | **Concluído (PBI-01 a PBI-04)** | Injeção por construtor (`@RequiredArgsConstructor`), eliminação total de `ResponseStatusException`, Global Exception Handler, DTOs desacoplados com fábrica `toEntity()`/`fromEntity()`, `@Transactional` seletivo, tipos primitivos `boolean` e SpringDoc OpenAPI/Swagger. |
+| **2. Spring Security & Controle de Acesso** | **30 pts** | **Crítico (PBI-05 a PBI-08)** | Autenticação via Spring Security OAuth2 Resource Server com par de chaves assimétricas **RSA 2048-bit** (`NimbusJwtEncoder` / `NimbusJwtDecoder`), BCrypt, tokens JWT Stateless para consumo Mobile (React Native), `CorsConfig` dedicado e proteção centralizada via `SecurityFilterChain`. |
+| **3. Flyway (Controle de Versão de BD)** | **20 pts** | **Crítico (PBI-09 e PBI-10)** | Migrações versionadas (`V1`, `V2`, `V3`) com tabelas Pet-Centric: `usuario`, `pet`, `usuario_pet` (gestão N:N familiar com PK composta `@EmbeddedId`), `tarefa`, `status`, `endereco`, `bairro`, `cidade`, `estado`, `telefone`. |
+| **4. Funcionalidades Completas (Fluxos Não-CRUD)** | **20 pts** | **Crítico (PBI-11 a PBI-14)** | **Dois fluxos ponta a ponta complexos:**<br>1) *Rede Familiar & Co-Cuidadores:* Vínculo N:N entre tutores e pets com `UsuarioPetController` (`/pets/{petId}/cuidadores`), gestão de Responsável Principal, convite de co-cuidadores exclusivamente por **e-mail**, transferência de titularidade, agregação performática da Rede de Cuidado (`RedeCuidadoMapper` com batch query anti-N+1) e histórico consolidado do pet.<br>2) *Rotina Familiar, Expiração Automática & Gamificação:* Tutores criam rotinas com prazo e pontuação, mecanismo atômico de expiração automática de tarefas pendentes vencidas via query `@Modifying`, conclusão com atribuição de cuidador executor e cálculo de ranking/pontuação. |
 | **5. Documentação, Vídeo (10 min) & Avaliação Oral** | **Obrigatório** | **Alto (PBI-15 a PBI-17)** | README detalhado, gravação com demonstração das rotas/segurança/fluxos e guia de estudo para defesa individual com foco em decisões de arquitetura e Clean Code. |
 
 ---
@@ -36,27 +36,27 @@
 │   └── [PBI-04] Configuração e Documentação Interativa com SpringDoc OpenAPI 3 / Swagger (3 pts)
 │
 ├── 🔐 [FEATURE 03] Autenticação e Gestão de Credenciais com JWT (Spring Security Core)
-│   ├── [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT (5 pts)
-│   └── [PBI-06] Endpoints de Autenticação e Registro com Emissão de Token JWT (/auth/login e /auth/register) (3 pts)
+│   ├── [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT RSA (5 pts)
+│   └── [PBI-06] Endpoints de Autenticação (/login) e Registro (/usuarios) com Emissão de JWT (3 pts)
 │
 ├── 🛡️ [FEATURE 04] Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)
-│   ├── [PBI-07] Configuração do SecurityFilterChain Stateless, Filtro JWT e CORS para Mobile (5 pts)
-│   └── [PBI-08] Segurança Granular por Método (@PreAuthorize) e Handlers 401/403 (3 pts)
+│   ├── [PBI-07] Configuração do SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada (5 pts)
+│   └── [PBI-08] Segurança Granular por Método (@EnableMethodSecurity) e Handlers 401/403 (3 pts)
 │
 ├── 🏛️ [FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)
 │   ├── [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) (5 pts)
 │   └── [PBI-10] Migrações Incrementais de Domínio, Status e Seeds de Segurança (V2 e V3) (3 pts)
 │
 ├── 🐾 [FEATURE 06] Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)
-│   ├── [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores (5 pts)
-│   └── [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado e Histórico Consolidado do Pet (5 pts)
+│   ├── [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail (5 pts)
+│   └── [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado (RedeCuidadoMapper) e Histórico do Pet (5 pts)
 │
 ├── 🎮 [FEATURE 07] Fluxo 2: Gestão da Rotina do Pet, Expiração Atômica & Gamificação
 │   ├── [PBI-13] [Fluxo 2.1] Criação de Rotina Familiar e Mecanismo Atômico de Expiração Automática (5 pts)
 │   └── [PBI-14] [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Sistema de Pontuação (5 pts)
 │
 └── 📹 [FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral
-    ├── [PBI-15] Atualização Completa do README.md e Guia de Execução (3 pts)
+    ├── [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle) (3 pts)
     ├── [PBI-16] Roteiro e Gravação do Vídeo Demonstrativo da Aplicação (Máx. 10 min) (5 pts)
     └── [PBI-17] Matriz de Argumentação e Preparação para a Avaliação Oral Individual (3 pts)
 ```
@@ -115,10 +115,10 @@
 > **Para que** o código respeite os princípios SOLID (especialmente SRP e DIP), injeção por construtor com Lombok e utilize transações de forma atômica e seletiva.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Injeção de dependências estritamente por construtor utilizando `@RequiredArgsConstructor` (Lombok) com atributos `private final` nos Services (`PetService`, `UsuarioService`, `TarefaService`, `EnderecoService`, `StatusService`).
-- [ ] Eliminação de módulos legados e queries mortas/inúteis nos repositórios.
+- [ ] Injeção de dependências estritamente por construtor utilizando `@RequiredArgsConstructor` (Lombok) com atributos `private final` nos Services (`PetService`, `UsuarioService`, `UsuarioPetService`, `TarefaService`, `EnderecoService`, `StatusService`).
+- [ ] Eliminação de indireções e métodos privados duplicados de busca (`findById` direto).
 - [ ] Padronização de tipos primitivos `boolean` (`responsavelPrincipal`, `castrado`) para evitar verificações defensivas redundantes de `null`.
-- [ ] Anotação `@Transactional` mantida estritamente em métodos de escrita que alteram múltiplas tabelas (ex: criação/atualização de usuário com telefone e endereço, criação de pet com vínculo de tutor, atualização e conclusão de tarefas).
+- [ ] Anotação `@Transactional` mantida estritamente em métodos de escrita e `@Transactional(readOnly = true)` em consultas.
 
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 2.1:** Refatorar `UsuarioService` e `PetService` aplicando `@RequiredArgsConstructor` e regras atômicas de transação. *(Estimativa: 2.5h)*
@@ -150,12 +150,13 @@
 
 ##### Critérios de Aceite (Acceptance Criteria)
 - [ ] DTOs de Request anotados com constraints precisas (`@NotBlank`, `@NotNull`, `@Size`, `@Email`, `@FutureOrPresent`, `@Positive`, `@Pattern`).
-- [ ] Validadores customizados: `@CepValidation`, `@DddValidation` e `@EnumValidation`.
-- [ ] DTOs de Response desacoplados das entidades (`UsuarioResponse`, `PetResponse`, `TarefaResponse`, `EnderecoResponse`, `RedeCuidadoResponse`).
+- [ ] Validadores customizados: `@CepValidation`, `@DddValidation`, `@EnumValidation` e `@DiferentesUsuariosValidation`.
+- [ ] Métodos de fábrica `toEntity()` embutidos nos DTOs de Request e `fromEntity()` nos DTOs de Response.
+- [ ] DTOs de Response desacoplados das entidades (`UsuarioResponse`, `PetResponse`, `TarefaResponse`, `EnderecoResponse`, `RedeCuidadoResponse`, `CoCuidadorResponse`).
 - [ ] Anotação `@Valid` aplicada em todos os parâmetros `@RequestBody` nos métodos dos Controllers.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 3.1:** Revisar e aplicar Bean Validation completo em `PetRequest`, `UsuarioRequest`, `TarefaRequest`, `TarefaConclusaoRequest` e `EnderecoRequest`. *(Estimativa: 2.0h)*
+* **Task 3.1:** Revisar e aplicar Bean Validation completo em `PetRequest`, `UsuarioRequest`, `TarefaRequest`, `TarefaConclusaoRequest`, `CoCuidadorRequest` e `EnderecoRequest`. *(Estimativa: 2.0h)*
 * **Task 3.2:** Garantir que todos os Responses utilizem DTOs Records imutáveis e testar respostas 400 Bad Request. *(Estimativa: 1.5h)*
 
 ---
@@ -174,14 +175,14 @@
 > **Para que** eu possa testar todos os endpoints, parâmetros e validar os contratos de dados diretamente pelo navegador.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Dependência `springdoc-openapi-starter-webmvc-ui` configurada.
-- [ ] `OpenApiConfig` configurada com metadados do projeto PetGuardian.
+- [ ] Dependência `org.springdoc:springdoc-openapi-starter-webmvc-ui` configurada no `build.gradle`.
+- [ ] `SwaggerConfig` configurada com metadados do projeto PetGuardian.
 - [ ] Controllers documentados com anotações `@Tag`, `@Operation` e `@ResponseStatus`.
-- [ ] Swagger UI acessível e funcional em `/swagger-ui.html` e `/v3/api-docs`.
+- [ ] Swagger UI acessível e funcional em `/swagger-ui/index.html` e `/v3/api-docs`.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 4.1:** Configurar metadados do OpenAPI em `OpenApiConfig`. *(Estimativa: 1.5h)*
-* **Task 4.2:** Enriquecer `PetController`, `UsuarioController`, `TarefaController` e `EnderecoController` com `@Tag` e `@Operation`. *(Estimativa: 2.0h)*
+* **Task 4.1:** Configurar metadados do OpenAPI em `SwaggerConfig`. *(Estimativa: 1.5h)*
+* **Task 4.2:** Enriquecer `PetController`, `UsuarioController`, `UsuarioPetController`, `TarefaController` e `EnderecoController` com `@Tag` e `@Operation`. *(Estimativa: 2.0h)*
 * **Task 4.3:** Validar documentação interativa e execução dos endpoints no Swagger UI. *(Estimativa: 1.0h)*
 
 ---
@@ -189,40 +190,39 @@
 ### 🔐 FEATURE 03: Autenticação e Gestão de Credenciais com JWT (Spring Security Core)
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
-* **Tags:** `JavaAdvanced`, `Security`, `Authentication`, `BCrypt`, `JWT`, `MobileIntegration`
+* **Tags:** `JavaAdvanced`, `Security`, `Authentication`, `BCrypt`, `JWT`, `RSA2048`, `MobileIntegration`
 * **Start Date:** `2026-08-25`
 * **Target Date:** `2026-08-26`
-* **Descrição:** Estruturação da arquitetura de autenticação com Spring Security e JWT (JSON Web Token), criptografia BCrypt, UserDetails e emissão de tokens de acesso para consumo pelo aplicativo Mobile (React Native).
+* **Descrição:** Estruturação da arquitetura de autenticação com Spring Security e OAuth2 Resource Server com par de chaves assimétricas RSA 2048-bit, criptografia BCrypt, UserDetailsService e emissão de tokens JWT para consumo pelo aplicativo Mobile (React Native).
 
-#### 🔹 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT
+#### 🔹 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT RSA
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Autenticação e Gestão de Credenciais com JWT (Spring Security Core)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `JavaAdvanced`, `SpringSecurity`, `BCrypt`, `UserDetails`, `JWT`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `SpringSecurity`, `BCrypt`, `UserDetails`, `JWT`, `RSA`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Arquiteto de Software Backend,  
-> **Eu quero** configurar o Spring Security com `BCryptPasswordEncoder`, `UserDetails` na entidade `Usuario`, `UserDetailsService` e um serviço emissor de tokens JWT (`TokenService`),  
-> **Para que** as credenciais sejam salvas com hash seguro e a aplicação emita tokens JWT assinados para autenticar o app Mobile.
+> **Eu quero** configurar o Spring Security com `BCryptPasswordEncoder`, par de chaves RSA 2048-bit (`NimbusJwtEncoder`/`NimbusJwtDecoder`), `UserDetailsService` e um serviço emissor de tokens JWT (`TokenService`),  
+> **Para que** as credenciais sejam salvas com hash seguro e a aplicação emita tokens JWT assinados digitalmente para autenticar o app Mobile.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Dependências `spring-boot-starter-security` e biblioteca JWT (`java-jwt` da Auth0 ou `jjwt`) adicionadas ao `pom.xml`.
-- [ ] Criação do `enum PerfilUsuario` (`ROLE_ADMIN`, `ROLE_TUTOR`, `ROLE_CUIDADOR`) com mapeamento de authorities.
-- [ ] Entidade `Usuario` implementa a interface `UserDetails` do Spring Security.
-- [ ] Bean `PasswordEncoder` configurado com `BCryptPasswordEncoder`.
-- [ ] `TokenService` implementado gerando tokens JWT assinados com tempo de expiração e claims (`id`, `email`, `role`, `nome`) e validação de integridade.
-- [ ] Serviço `UserDetailsServiceImpl` busca usuário por email no banco de dados.
+- [ ] Dependências `spring-boot-starter-security` e `spring-boot-starter-oauth2-resource-server` configuradas no `build.gradle`.
+- [ ] Par de chaves RSA de 2048 bits (`private_key.pem`, `public_key.pem`) gerado em `src/main/resources/keys/` e injetado via `@ConfigurationProperties(prefix = "rsa")`.
+- [ ] Bean `PasswordEncoder` configurado com `BCryptPasswordEncoder` e coluna de senha no `Usuario` dimensionada com segurança.
+- [ ] `TokenService` implementado gerando tokens JWT assinados com tempo de expiração, claims (`role`, `sub: email`) e issuer `petguardian-api`.
+- [ ] Serviço `AuthService` implementando `UserDetailsService` para busca de usuário por e-mail no banco de dados.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 5.1:** Configurar Maven com dependências de segurança e criar enum `Perfil` / `Role`. *(Estimativa: 1.5h)*
-* **Task 5.2:** Implementar `UserDetails` na entidade `Usuario` e criar `UserDetailsServiceImpl`. *(Estimativa: 2.0h)*
-* **Task 5.3:** Desenvolver `TokenService` com geração e validação de tokens JWT assinados (HMAC-SHA256). *(Estimativa: 2.0h)*
+* **Task 5.1:** Configurar Gradle com dependências de segurança e gerar par de chaves RSA 2048-bit. *(Estimativa: 1.5h)*
+* **Task 5.2:** Implementar `AuthService` (`UserDetailsService`) e configurar `BCryptPasswordEncoder`. *(Estimativa: 2.0h)*
+* **Task 5.3:** Desenvolver `TokenService` com `JwtEncoder` baseado em chaves assimétricas RSA. *(Estimativa: 2.0h)*
 
 ---
 
-#### 🔹 [PBI-06] Endpoints de Autenticação e Registro com Emissão de Token JWT (/auth/login e /auth/register)
+#### 🔹 [PBI-06] Endpoints de Autenticação (/login) e Registro (/usuarios) com Emissão de JWT
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Autenticação e Gestão de Credenciais com JWT (Spring Security Core)`
 * **State:** `Approved`
@@ -231,82 +231,79 @@
 * **Tags:** `JavaAdvanced`, `AuthEndpoints`, `Login`, `Register`, `JWT`, `MobileAPI`, `Sprint3`
 
 ##### Descrição (História de Usuário)
-> **Como** Usuário do aplicativo Mobile (Tutor, Cuidador ou Admin),  
-> **Eu quero** realizar login e cadastro através de endpoints públicos dedicados (`/auth/login` e `/auth/register`),  
-> **Para que** eu receba um token JWT válido e os dados do meu perfil para manter a sessão ativa no aplicativo.
+> **Como** Usuário do aplicativo Mobile (Tutor ou Cuidador),  
+> **Eu quero** realizar login através do endpoint `/login` e cadastro via `POST /usuarios`,  
+> **Para que** eu receba um token JWT válido e os dados do meu perfil (`user`) no payload para manter a sessão ativa no aplicativo.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Criação do `AuthController` com mapeamento explícito de `/auth/login` e `/auth/register`.
-- [ ] DTOs específicos: `LoginRequest`, `LoginResponse` (contendo `token`, `tipo: "Bearer"`, `expiraEm`, `usuario`), `RegistroUsuarioRequest` e `UsuarioResponse`.
-- [ ] `/auth/login` autentica credenciais via `AuthenticationManager`, gera token JWT e retorna o `LoginResponse`.
-- [ ] `/auth/register` valida unicidade de email, criptografa a senha com BCrypt, persiste o usuário e retorna o `LoginResponse` com token JWT.
-- [ ] Retorno de status HTTP 401 para credenciais inválidas e HTTP 400/409 para email duplicado com corpo JSON padronizado.
+- [ ] Endpoint `POST /login` no `AuthController` recebendo `LoginRequest` (`email`, `senha`) com `@NotBlank` e `@Email`.
+- [ ] `LoginResponse` contendo `token` e o objeto `user` (`UsuarioResponse`) para armazenamento direto no `AsyncStorage` do Mobile.
+- [ ] `POST /usuarios` criptografa a senha com BCrypt via `UsuarioService` e persiste o usuário com seus dados de endereço e telefone.
+- [ ] Retorno de status HTTP 401 para credenciais inválidas e HTTP 400 para erros de validação de payload.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 6.1:** Desenvolver DTOs de autenticação (`LoginRequest`, `LoginResponse`, `RegistroUsuarioRequest`). *(Estimativa: 1.0h)*
-* **Task 6.2:** Implementar endpoints `/auth/login` e `/auth/register` no `AuthController` e `AuthService`. *(Estimativa: 2.0h)*
-* **Task 6.3:** Testar cenários de login válido, senha incorreta e cadastro de email repetido. *(Estimativa: 1.0h)*
+* **Task 6.1:** Desenvolver DTOs `LoginRequest` e `LoginResponse` no `AuthController`. *(Estimativa: 1.0h)*
+* **Task 6.2:** Implementar autenticação via `AuthenticationManager` e delegar busca de dados do usuário para `UsuarioService`. *(Estimativa: 2.0h)*
+* **Task 6.3:** Testar cenários de login válido, senha incorreta e persistência de senhas com hash BCrypt. *(Estimativa: 1.0h)*
 
 ---
 
 ### 🛡️ FEATURE 04: Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
-* **Tags:** `JavaAdvanced`, `Security`, `RBAC`, `SecurityFilterChain`, `JWTFilter`, `CORS`
+* **Tags:** `JavaAdvanced`, `Security`, `RBAC`, `SecurityFilterChain`, `JWT`, `CorsConfig`
 * **Start Date:** `2026-08-25`
 * **Target Date:** `2026-08-26`
-* **Descrição:** Configuração da cadeia de filtros `SecurityFilterChain` em modo STATELESS com filtro de autenticação JWT (`JwtAuthenticationFilter`), suporte a CORS para o aplicativo Mobile (React Native), isolamento de rotas por perfis (RBAC) e proteção granular por método (`@PreAuthorize`).
+* **Descrição:** Configuração da cadeia de filtros `SecurityFilterChain` em modo STATELESS com decodificação automática de JWT via OAuth2 Resource Server, suporte a CORS isolado no `CorsConfig` para o aplicativo Mobile (React Native) e política de segurança centralizada *Secure by Default*.
 
-#### 🔹 [PBI-07] Configuração do SecurityFilterChain Stateless, Filtro JWT e CORS para Mobile
+#### 🔹 [PBI-07] Configuração do SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `JavaAdvanced`, `SecurityFilterChain`, `Stateless`, `JwtFilter`, `CORS`, `Mobile`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `SecurityFilterChain`, `Stateless`, `OAuth2ResourceServer`, `CORS`, `Mobile`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Arquiteto de Software e Administrador de Segurança,  
-> **Eu quero** configurar o `SecurityFilterChain` em modo Stateless com um filtro interceptor de JWT e liberação de CORS para o app Mobile,  
-> **Para que** o aplicativo React Native consiga consumir a API enviando o header `Authorization: Bearer <token>` sem problemas de CORS ou sessão no servidor.
+> **Eu quero** configurar o `SecurityFilterChain` em modo Stateless com decodificação JWT e classe `CorsConfig` dedicada,  
+> **Para que** o aplicativo React Native consiga consumir a API enviando o header `Authorization: Bearer <token>` sem bloqueios de CORS ou sessão no servidor.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] `SecurityConfig` configurado com `SessionCreationPolicy.STATELESS` e CSRF desabilitado.
-- [ ] Implementação de `JwtAuthenticationFilter` (`OncePerRequestFilter`) extraindo `Bearer <token>` e populando o `SecurityContextHolder`.
-- [ ] Filtro registrado antes do `UsernamePasswordAuthenticationFilter`.
-- [ ] Configuração de CORS (`CorsConfigurationSource`) liberando métodos (GET, POST, PUT, PATCH, DELETE, OPTIONS) e headers para o ambiente Mobile.
-- [ ] Rotas públicas liberadas (`/auth/**`, `/h2-console/**`, `/swagger-ui/**`, `/v3/api-docs/**`, `/actuator/health`).
-- [ ] Rotas privadas protegidas por perfil (`ADMIN`, `TUTOR`, `CUIDADOR`).
+- [ ] `SecurityConfig` configurado com `SessionCreationPolicy.STATELESS`, CSRF desabilitado e `headers.frameOptions.sameOrigin` para o console H2.
+- [ ] `CorsConfig` dedicado liberando métodos (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`) e todos os headers.
+- [ ] Configuração de Resource Server `.oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` com conversão de claims para `ROLE_`.
+- [ ] Whitelist de rotas públicas: `POST /login`, `POST /usuarios`, `/swagger-ui/**`, `/v3/api-docs/**`, `/h2-console/**`, `/actuator/**`.
+- [ ] Todos os demais endpoints protegidos por padrão (`anyRequest().authenticated()`).
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 7.1:** Implementar o filtro `JwtAuthenticationFilter` (`OncePerRequestFilter`). *(Estimativa: 2.0h)*
-* **Task 7.2:** Configurar `SecurityConfig` com `SecurityFilterChain` Stateless, CORS e registro do filtro JWT. *(Estimativa: 2.0h)*
-* **Task 7.3:** Validar requisições autenticadas com Bearer Token e rejeição de tokens expirados/inválidos. *(Estimativa: 1.0h)*
+* **Task 7.1:** Implementar classe `CorsConfig` no pacote `config`. *(Estimativa: 1.5h)*
+* **Task 7.2:** Configurar `SecurityConfig` com `SecurityFilterChain` Stateless e OAuth2 Resource Server JWT. *(Estimativa: 2.5h)*
+* **Task 7.3:** Validar requisições autenticadas com Bearer Token e bloqueio 401 para requisições não autenticadas. *(Estimativa: 1.0h)*
 
 ---
 
-#### 🔹 [PBI-08] Segurança Granular por Método (@PreAuthorize) e Handlers 401/403
+#### 🔹 [PBI-08] Segurança Granular por Método (@EnableMethodSecurity) e Handlers 401/403
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `3`
-* **Tags:** `JavaAdvanced`, `PreAuthorize`, `MethodSecurity`, `AccessDeniedHandler`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `MethodSecurity`, `EnableMethodSecurity`, `RBAC`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Desenvolvedor Backend,  
-> **Eu quero** habilitar segurança por método com `@EnableMethodSecurity` e customizar os handlers de erro de segurança (401 e 403),  
-> **Para que** a aplicação execute validações finas de autorização nos controllers e retorne payloads JSON claros quando o app Mobile enviar requisições não autorizadas.
+> **Eu quero** habilitar segurança por método com `@EnableMethodSecurity`,  
+> **Para que** a aplicação suporte autorizações granulares e retorne payloads JSON claros quando requisições não autorizadas forem recebidas.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] `@EnableMethodSecurity(prePostEnabled = true)` habilitado na configuração de segurança.
-- [ ] Anotações `@PreAuthorize` aplicadas nos métodos dos Controllers.
-- [ ] Implementação de `CustomAuthenticationEntryPoint` (401) e `CustomAccessDeniedHandler` (403) em JSON padronizado.
+- [ ] `@EnableMethodSecurity` habilitado no `SecurityConfig`.
+- [ ] `JwtAuthenticationConverter` mapeia o claim `role` para a autoridade `ROLE_USER` / `ROLE_ADMIN`.
+- [ ] Tratamento padronizado de 401 Unauthorized e 403 Forbidden sem stacktrace exposto.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 8.1:** Habilitar method security e aplicar `@PreAuthorize` nos Controllers. *(Estimativa: 2.0h)*
-* **Task 8.2:** Criar handlers customizados de erro de segurança (`CustomAuthenticationEntryPoint` e `CustomAccessDeniedHandler`). *(Estimativa: 2.0h)*
-* **Task 8.3:** Testar respostas de erro 401 e 403 garantindo a ausência de stacktrace exposto. *(Estimativa: 1.0h)*
+* **Task 8.1:** Habilitar `@EnableMethodSecurity` e configurar `JwtAuthenticationConverter`. *(Estimativa: 2.0h)*
+* **Task 8.2:** Validar respostas de erro 401 e 403 no Swagger e Postman. *(Estimativa: 1.5h)*
 
 ---
 
@@ -332,7 +329,7 @@
 > **Para que** todas as tabelas do sistema sejam criadas com integridade referencial, constraints limpas e console interativo `/h2-console` para testes com o app Mobile.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Dependências `flyway-core` e `com.h2database:h2` configuradas no `pom.xml`.
+- [ ] Dependências `org.flywaydb:flyway-core` e `com.h2database:h2` configuradas no `build.gradle`.
 - [ ] Propriedades do Spring configuradas para habilitar o Flyway e H2 (`spring.datasource.url=jdbc:h2:mem:petguardian`, `spring.h2.console.enabled=true`, `spring.flyway.enabled=true`, `spring.jpa.hibernate.ddl-auto=validate`).
 - [ ] Script `V1__criar_tabelas_iniciais_petcentric.sql` criado em `src/main/resources/db/migration/` contendo:
   - Tabela `estado`, `cidade`, `bairro`, `endereco`, `telefone`.
@@ -345,7 +342,7 @@
 - [ ] Console do H2 acessível em `/h2-console` para inspeção visual dos dados.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 9.1:** Configurar dependências do Flyway e H2 no `pom.xml` e `application.properties`. *(Estimativa: 1.5h)*
+* **Task 9.1:** Configurar dependências do Flyway e H2 no `build.gradle` e `application.properties`. *(Estimativa: 1.5h)*
 * **Task 9.2:** Elaborar script DDL completo `V1__criar_tabelas_iniciais_petcentric.sql` com todas as tabelas do domínio limpo. *(Estimativa: 3.5h)*
 * **Task 9.3:** Testar a inicialização do Spring Boot validando a criação da tabela `flyway_schema_history` e acesso ao `/h2-console`. *(Estimativa: 1.0h)*
 
@@ -368,7 +365,7 @@
 - [ ] Script `V2__popular_status_e_racas.sql` insere:
   - Status de tarefas (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
   - Raças iniciais de cães e gatos.
-- [ ] Script `V3__adicionar_perfis_e_usuarios_iniciais.sql` insere usuários de teste com senhas hash BCrypt (`ROLE_ADMIN`, `ROLE_TUTOR`), telefones, endereços, pets e vínculos familiares.
+- [ ] Script `V3__adicionar_perfis_e_usuarios_iniciais.sql` insere usuários de teste com senhas hash BCrypt, telefones, endereços, pets e vínculos familiares.
 - [ ] Migrações são idempotentes e executam sequencialmente.
 
 ##### Tarefas Técnicas (Child Tasks)
@@ -381,63 +378,63 @@
 ### 🐾 FEATURE 06: Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)
 * **Work Item Type:** `Feature`
 * **Parent Epic:** `PetGuardian - Evolução da Arquitetura Spring Boot, Segurança e Governança Pet-Centric (Sprint 3)`
-* **Tags:** `JavaAdvanced`, `BusinessFlow`, `RedeCuidado`, `CoCuidadores`, `PetHistory`, `NonCRUD`
+* **Tags:** `JavaAdvanced`, `BusinessFlow`, `RedeCuidado`, `UsuarioPet`, `CoCuidadores`, `PetHistory`, `NonCRUD`
 * **Start Date:** `2026-08-27`
 * **Target Date:** `2026-08-28`
-* **Descrição:** Implementação do primeiro fluxo de negócio complexo não-CRUD obrigatório: gestão colaborativa do pet por múltiplos tutores/cuidadores (N:N), definição de Responsável Principal, convite de co-cuidadores por e-mail ou ID, proteção contra desvinculação indevida e consolidação do Histórico de Cuidados do Pet.
+* **Descrição:** Implementação do primeiro fluxo de negócio complexo não-CRUD obrigatório: governança do Care Circle através do `UsuarioPetController` e `UsuarioPetService`, gestão de Responsável Principal, convite de co-cuidadores exclusivamente por e-mail, transferência de responsabilidade e agregação de alta performance da Rede de Cuidado com `RedeCuidadoMapper`.
 
-#### 🔹 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores
+#### 🔹 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `JavaAdvanced`, `PetService`, `UsuarioPet`, `CoCuidadores`, `ResponsavelPrincipal`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `UsuarioPetService`, `UsuarioPetController`, `CoCuidadores`, `ResponsavelPrincipal`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Tutor e Responsável Principal pelo Pet,  
-> **Eu quero** cadastrar meus pets, definir quem é o responsável principal e convidar outros membros da família (co-cuidadores) por ID ou e-mail,  
-> **Para que** a rotina de cuidados do animal possa ser compartilhada de forma segura entre várias pessoas.
+> **Eu quero** cadastrar meus pets, definir quem é o responsável principal, convidar co-cuidadores por e-mail e transferir a titularidade,  
+> **Para que** a rotina de cuidados do animal possa ser compartilhada de forma segura e colaborativa entre membros da família.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Na criação do pet (`POST /pets`), o usuário criador é automaticamente vinculado como `responsavelPrincipal = true`.
-- [ ] Endpoint `POST /pets/{id}/convidar` permite convidar co-cuidador por ID, garantindo que somente o `responsavelPrincipal` possa convidar.
-- [ ] Endpoint `POST /pets/{id}/convidar-email` permite convidar co-cuidador por e-mail com busca case-insensitive no repositório.
-- [ ] Endpoint `DELETE /pets/{id}/usuarios/{usuarioId}` desvincula um co-cuidador, impedindo a desvinculação do `responsavelPrincipal` (lança `IllegalArgumentException` 400 Bad Request).
-- [ ] Atualização de pet (`PUT /pets/{id}`) com troca de responsável principal atualiza atomicamente as flags na tabela `usuario_pet`.
+- [ ] Na criação do pet (`POST /pets`), o tutor criador é automaticamente vinculado como `responsavelPrincipal = true`.
+- [ ] Sub-recurso RESTful no `UsuarioPetController`:
+  - `POST /pets/{petId}/cuidadores`: convida co-cuidador por e-mail (`CoCuidadorRequest`), validando se quem convida é o responsável principal.
+  - `GET /pets/{petId}/cuidadores`: lista os co-cuidadores vinculados ao pet em `CoCuidadorResponse`.
+  - `DELETE /pets/{petId}/cuidadores/{usuarioId}`: desvincula co-cuidador, impedindo desvinculação do responsável principal.
+  - `PATCH /pets/{petId}/responsavel-principal`: transfere a titularidade principal com validação `@DiferentesUsuariosValidation`.
+- [ ] Validações de domínio encapsuladas no `UsuarioPetValidator` sem poluir a camada de serviço com blocos condicionais.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 11.1:** Implementar entidade `UsuarioPet` com chave composta `@EmbeddedId` e queries especializadas em `UsuarioPetRepository`. *(Estimativa: 2.0h)*
-* **Task 11.2:** Desenvolver regras de convite por ID/e-mail, validação de permissão de responsável principal e proteção de desvinculação no `PetService`. *(Estimativa: 2.5h)*
-* **Task 11.3:** Criar endpoints no `PetController` e testar cenários de autorização e vínculos familiares. *(Estimativa: 1.5h)*
+* **Task 11.1:** Implementar entidade `UsuarioPet` com chave composta `@EmbeddedId` `UsuarioPetId` e queries com `JOIN FETCH` no repositório. *(Estimativa: 2.0h)*
+* **Task 11.2:** Desenvolver `UsuarioPetService` e `UsuarioPetValidator` com regras de convite por e-mail, titularidade e transferência. *(Estimativa: 2.5h)*
+* **Task 11.3:** Criar endpoints no `UsuarioPetController` e testar operações de vínculo familiar. *(Estimativa: 1.5h)*
 
 ---
 
-#### 🔹 [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado e Histórico Consolidado do Pet
+#### 🔹 [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado (RedeCuidadoMapper) e Histórico do Pet
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
 * **Effort (Story Points):** `5`
-* **Tags:** `JavaAdvanced`, `RedeCuidado`, `Streams`, `GroupingBy`, `PetHistory`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `RedeCuidado`, `RedeCuidadoMapper`, `AntiNPlusOne`, `PetHistory`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Cuidador ou Tutor cadastrado,  
 > **Eu quero** visualizar a rede completa de cuidado vinculada ao meu perfil e o histórico consolidado de tarefas cumpridas de cada pet,  
-> **Para que** eu acompanhe todos os co-cuidadores, pets sob minha responsabilidade, tarefas pendentes/concluídas e pontos acumulados.
+> **Para que** eu acompanhe todos os co-cuidadores, pets compartilhados, tarefas pendentes/concluídas e pontos acumulados de forma instantânea.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Endpoint `GET /usuarios/{id}/rede-cuidado` retorna DTO `RedeCuidadoResponse` contendo:
-  - Lista de pets do usuário com flag de responsável principal e IDs de tarefas vinculadas.
-  - Lista de co-cuidadores agrupados via Java Streams (`Collectors.groupingBy`) com seus respectivos pets compartilhados.
-  - Totais consolidados de tarefas pendentes, tarefas concluídas e pontos totais acumulados.
-- [ ] Endpoint `GET /pets/{id}/historico` retorna DTO `PetHistoryResponse` com a lista ordenada de todas as tarefas concluídas para aquele pet.
-- [ ] Resposta otimizada sem queries N+1 utilizando `join fetch` nas consultas de repositório.
+- [ ] Endpoint `GET /usuarios/{id}/rede-cuidado` retorna DTO `RedeCuidadoResponse` com dados agregados de pets, co-cuidadores e métricas.
+- [ ] Mapeamento e transformação desacoplados no componente `@Component` `RedeCuidadoMapper`.
+- [ ] Eliminação de consultas N+1 de tarefas com consulta em lote no `TarefaRepository` (`findTarefaIdsByPetIdIn`) e agrupamento em memória.
+- [ ] Endpoint `GET /pets/{id}/historico` retorna DTO `PetHistoryResponse` com a lista ordenada de tarefas concluídas do pet.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 12.1:** Implementar pipeline funcional no `UsuarioService.getRedeCuidado` com `Collectors.groupingBy` e DTOs aninhados (`PetResumo`, `CuidadorResumo`). *(Estimativa: 2.5h)*
-* **Task 12.2:** Desenvolver método `getConsolidatedHistory` no `PetService` consultando tarefas concluídas com ordenação por data. *(Estimativa: 2.0h)*
-* **Task 12.3:** Testar visualização da rede de cuidado com múltiplos pets e co-cuidadores cruzados. *(Estimativa: 1.5h)*
+* **Task 12.1:** Implementar `RedeCuidadoMapper` puro com conversão funcional de `PetResumo` e `CuidadorResumo`. *(Estimativa: 2.5h)*
+* **Task 12.2:** Desenvolver query de carregamento em lote de tarefas no `TarefaRepository` e método `getConsolidatedHistory` no `PetService`. *(Estimativa: 2.0h)*
+* **Task 12.3:** Validar performance e integridade dos dados da Rede de Cuidado. *(Estimativa: 1.5h)*
 
 ---
 
@@ -499,7 +496,7 @@
 ##### Tarefas Técnicas (Child Tasks)
 * **Task 14.1:** Implementar método transacional `@Transactional` `concluir` no `TarefaService` com validações de vínculo e status. *(Estimativa: 2.0h)*
 * **Task 14.2:** Implementar query agregadora de pontos `calcularPontosTotaisUsuario` no `TarefaRepository`. *(Estimativa: 1.5h)*
-* **Task 14.3:** Criar testes de integração validando o ciclo completo de vida da tarefa (criação ➔ expiração / conclusão ➔ pontos). *(Estimativa: 2.0h)*
+* **Task 14.3:** Criar testes de validação do ciclo completo de vida da tarefa (criação ➔ expiração / conclusão ➔ pontos). *(Estimativa: 2.0h)*
 
 ---
 
@@ -511,29 +508,29 @@
 * **Target Date:** `2026-08-29`
 * **Descrição:** Elaboração da documentação técnica no README, gravação do vídeo demonstrativo de até 10 minutos e consolidação da matriz de argumentação para a avaliação oral individual da disciplina.
 
-#### 🔹 [PBI-15] Atualização Completa do README.md e Guia de Execução
+#### 🔹 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle)
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral`
 * **State:** `Approved`
 * **Priority:** `2 - High`
 * **Effort (Story Points):** `3`
-* **Tags:** `JavaAdvanced`, `Documentation`, `README`, `Sprint3`
+* **Tags:** `JavaAdvanced`, `Documentation`, `README`, `Gradle`, `Sprint3`
 
 ##### Descrição (História de Usuário)
 > **Como** Professor avaliador e Desenvolvedor da equipe,  
 > **Eu quero** um README.md completo e organizado no repositório GitHub,  
-> **Para que** qualquer pessoa consiga clonar, rodar a aplicação, autenticar e testar os fluxos de rede de cuidado e rotina de tarefas.
+> **Para que** qualquer pessoa consiga clonar, compilar via Gradle, rodar a aplicação, autenticar e testar os fluxos de rede de cuidado e rotina de tarefas.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Pré-requisitos documentados (Java 17+, Maven 3.8+).
-- [ ] Passo a passo de build e execução (`mvn clean spring-boot:run` / `./mvnw.cmd test`).
+- [ ] Pré-requisitos documentados (JDK 21, Gradle 8.12+).
+- [ ] Passo a passo de build e execução (`.\gradlew.bat bootRun` / `./gradlew bootRun` / `./gradlew compileJava`).
 - [ ] Tabela com credenciais de teste e descrição de perfis.
 - [ ] Documentação dos endpoints principais, URLs do Swagger UI, H2 Console e Actuator.
-- [ ] Descrição arquitetural dos princípios SOLID, Clean Code, Spring Security, Flyway e dos 2 fluxos complexos.
+- [ ] Descrição arquitetural dos princípios SOLID, Clean Code, Spring Security com RSA 2048, Flyway e dos 2 fluxos complexos.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 15.1:** Atualizar introdução, arquitetura, stack tecnológica e princípios SOLID no `README.md`. *(Estimativa: 1.5h)*
-* **Task 15.2:** Documentar credenciais de teste, instruções de execução e links do Swagger/H2. *(Estimativa: 1.5h)*
+* **Task 15.1:** Atualizar introdução, arquitetura, stack tecnológica Gradle e princípios SOLID no `README.md`. *(Estimativa: 1.5h)*
+* **Task 15.2:** Documentar credenciais de teste, instruções de execução Gradle e links do Swagger/H2. *(Estimativa: 1.5h)*
 
 ---
 
@@ -579,8 +576,8 @@
 > **Para que** eu esteja plenamente preparado para responder individualmente às perguntas do professor na banca avaliativa.
 
 ##### Critérios de Aceite (Acceptance Criteria)
-- [ ] Cada integrante domina a explicação de trechos específicos do código (SecurityFilterChain, Streams/groupingBy, GlobalExceptionHandler, Services transacionais, ViaCEP).
-- [ ] Justificativas claras formuladas para as decisões de design (por que DTOs Records, por que BCrypt, por que injeção por construtor, por que `@Transactional` seletivo).
+- [ ] Cada integrante domina a explicação de trechos específicos do código (SecurityFilterChain, Streams/groupingBy, RedeCuidadoMapper, GlobalExceptionHandler, Services transacionais, ViaCEP).
+- [ ] Justificativas claras formuladas para as decisões de design (por que DTOs Records, por que RSA 2048-bit, por que injeção por construtor, por que `@Transactional` seletivo).
 - [ ] Mapeamento das dificuldades encontradas e soluções implementadas.
 
 ##### Tarefas Técnicas (Child Tasks)
@@ -597,17 +594,17 @@
 | **PBI-02** | Refatoração dos Serviços de Negócio com Princípios SOLID | FEAT-01 (SOLID & Qualidade) | **5 pts** | 6.5h | `1 - Critical` |
 | **PBI-03** | Padronização de DTOs e Bean Validation Avançado (@Valid) | FEAT-02 (Validação & Swagger) | **3 pts** | 3.5h | `2 - High` |
 | **PBI-04** | Documentação Interativa com SpringDoc OpenAPI 3 / Swagger | FEAT-02 (Validação & Swagger) | **3 pts** | 4.5h | `2 - High` |
-| **PBI-05** | Arquitetura de Autenticação, UserDetails, BCrypt & JWT Service | FEAT-03 (Security Core JWT) | **5 pts** | 5.5h | `1 - Critical` |
-| **PBI-06** | Endpoints de Autenticação e Registro com Emissão de JWT | FEAT-03 (Security Core JWT) | **3 pts** | 4.0h | `1 - Critical` |
-| **PBI-07** | SecurityFilterChain Stateless, Filtro JWT e CORS para Mobile | FEAT-04 (Autorização RBAC) | **5 pts** | 5.0h | `1 - Critical` |
-| **PBI-08** | Segurança Granular por Método (@PreAuthorize) e Handlers 401/403 | FEAT-04 (Autorização RBAC) | **3 pts** | 5.0h | `1 - Critical` |
+| **PBI-05** | Arquitetura de Autenticação, UserDetails, BCrypt & JWT Service RSA | FEAT-03 (Security Core JWT) | **5 pts** | 5.5h | `1 - Critical` |
+| **PBI-06** | Endpoints de Autenticação (/login) e Registro (/usuarios) com JWT | FEAT-03 (Security Core JWT) | **3 pts** | 4.0h | `1 - Critical` |
+| **PBI-07** | SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada | FEAT-04 (Autorização RBAC) | **5 pts** | 5.0h | `1 - Critical` |
+| **PBI-08** | Segurança Granular por Método (@EnableMethodSecurity) e Handlers 401/403 | FEAT-04 (Autorização RBAC) | **3 pts** | 5.0h | `1 - Critical` |
 | **PBI-09** | Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) | FEAT-05 (Flyway & Banco) | **5 pts** | 6.0h | `1 - Critical` |
 | **PBI-10** | Migrações Incrementais, Status e Seeds de Segurança (V2/V3) | FEAT-05 (Flyway & Banco) | **3 pts** | 4.5h | `2 - High` |
-| **PBI-11** | [Fluxo 1.1] Gestão Vínculos N:N, Responsável Principal e Convites | FEAT-06 (Fluxo 1 Rede Cuidado) | **5 pts** | 6.0h | `1 - Critical` |
-| **PBI-12** | [Fluxo 1.2] Rede de Cuidado Agregada e Histórico do Pet | FEAT-06 (Fluxo 1 Rede Cuidado) | **5 pts** | 6.0h | `1 - Critical` |
+| **PBI-11** | [Fluxo 1.1] Gestão Vínculos N:N, Responsável Principal e Convites por E-mail | FEAT-06 (Fluxo 1 Rede Cuidado) | **5 pts** | 6.0h | `1 - Critical` |
+| **PBI-12** | [Fluxo 1.2] Rede de Cuidado Agregada (RedeCuidadoMapper) e Histórico do Pet | FEAT-06 (Fluxo 1 Rede Cuidado) | **5 pts** | 6.0h | `1 - Critical` |
 | **PBI-13** | [Fluxo 2.1] Rotina Familiar e Expiração Automática de Tarefas | FEAT-07 (Fluxo 2 Gamificação) | **5 pts** | 5.5h | `1 - Critical` |
 | **PBI-14** | [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Pontos | FEAT-07 (Fluxo 2 Gamificação) | **5 pts** | 5.5h | `1 - Critical` |
-| **PBI-15** | Atualização Completa do README.md e Guia de Execução | FEAT-08 (Documentação/Vídeo) | **3 pts** | 3.0h | `2 - High` |
+| **PBI-15** | Atualização Completa do README.md e Guia de Execução (Gradle) | FEAT-08 (Documentação/Vídeo) | **3 pts** | 3.0h | `2 - High` |
 | **PBI-16** | Roteiro e Gravação do Vídeo Demonstrativo (Máx. 10 min) | FEAT-08 (Documentação/Vídeo) | **5 pts** | 5.5h | `1 - Critical` |
 | **PBI-17** | Matriz de Argumentação e Preparação para a Avaliação Oral | FEAT-08 (Documentação/Vídeo) | **3 pts** | 3.5h | `2 - High` |
 | **TOTAL** | **17 PBIs / 43 Tasks** | **8 Features** | **63 pts** | **74.5h** | — |
@@ -616,12 +613,12 @@
 
 ## 🚀 5. Ordem Recomendada de Execução (Sprint Roadmap)
 
-1. **Fase 1 — Refatoração de Qualidade e Exceções (SOLID & Clean Code):** Executar `PBI-01` e `PBI-02`. Criar Global Exception Handler, exceções de domínio e refatorar Services com `@RequiredArgsConstructor` (Lombok) e atributos `private final`.
-2. **Fase 2 — Validações de Contratos e Swagger/OpenAPI:** Executar `PBI-03` e `PBI-04`. Aplicar Bean Validation nos DTOs (`@Valid`), isolar responses de entidades e documentar contratos no Swagger UI.
-3. **Fase 3 — Segurança Core (Autenticação e Criptografia com JWT):** Executar `PBI-05` e `PBI-06`. Configurar BCrypt, UserDetails, emissão de JWT no `TokenService` e rotas de login/registro.
-4. **Fase 4 — Segurança RBAC (Proteção de Rotas, Filtro JWT e CORS):** Executar `PBI-07` e `PBI-08`. Proteger controllers via `SecurityFilterChain` Stateless e `@PreAuthorize`, tratando 401/403 e liberando CORS para o app Mobile.
+1. **Fase 1 — Refatoração de Qualidade e Exceções (SOLID & Clean Code):** Executar `PBI-01` e `PBI-02`. Criar Global Exception Handler, exceções de domínio e refatorar Services com `@RequiredArgsConstructor` (Lombok) e injeção de dependências limpa.
+2. **Fase 2 — Validações de Contratos e Swagger/OpenAPI:** Executar `PBI-03` e `PBI-04`. Aplicar Bean Validation nos DTOs (`@Valid`), métodos de fábrica `toEntity()`/`fromEntity()` e documentar contratos no Swagger UI.
+3. **Fase 3 — Segurança Core (Autenticação e Criptografia com JWT RSA):** Executar `PBI-05` e `PBI-06`. Configurar BCrypt, UserDetails, emissão de JWT no `TokenService` com RSA 2048-bit e rotas `/login` e `/usuarios`.
+4. **Fase 4 — Segurança RBAC (Proteção de Rotas, Filtro JWT e CORS):** Executar `PBI-07` e `PBI-08`. Proteger controllers via `SecurityFilterChain` Stateless com `CorsConfig` dedicado e `@EnableMethodSecurity`.
 5. **Fase 5 — Fundação e Governança de Banco (Flyway):** Executar `PBI-09` e `PBI-10`. Criar migrações versionadas DDL V1 e Seeds V2/V3 com a base de dados já madura e protegida.
-6. **Fase 6 — Fluxos Especializados de Negócio:** Executar `PBI-11` e `PBI-12` (Fluxo 1 - Rede de Co-Cuidadores N:N & Histórico Consolidado) e `PBI-13` e `PBI-14` (Fluxo 2 - Rotina Familiar, Expiração Atômica & Gamificação de Tarefas).
+6. **Fase 6 — Fluxos Especializados de Negócio:** Executar `PBI-11` e `PBI-12` (Fluxo 1 - Rede de Co-Cuidadores N:N com `UsuarioPetController` e `RedeCuidadoMapper` anti-N+1) e `PBI-13` e `PBI-14` (Fluxo 2 - Rotina Familiar, Expiração Atômica & Gamificação de Tarefas).
 7. **Fase 7 — Documentação, Vídeo e Preparação da Banca:** Executar `PBI-15`, `PBI-16` e `PBI-17`.
 
 ---
