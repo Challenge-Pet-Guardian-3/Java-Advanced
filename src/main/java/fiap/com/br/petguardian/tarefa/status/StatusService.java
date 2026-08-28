@@ -1,4 +1,4 @@
-package fiap.com.br.petguardian.status;
+package fiap.com.br.petguardian.tarefa.status;
 
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;

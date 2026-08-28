@@ -1,4 +1,4 @@
-package fiap.com.br.petguardian.status;
+package fiap.com.br.petguardian.tarefa.status;
 
 public enum EnumStatus {
     PENDENTE,

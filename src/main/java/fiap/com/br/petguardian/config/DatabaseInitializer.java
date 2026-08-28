@@ -1,8 +1,8 @@
 package fiap.com.br.petguardian.config;
 
-import fiap.com.br.petguardian.status.EnumStatus;
-import fiap.com.br.petguardian.status.Status;
-import fiap.com.br.petguardian.status.StatusRepository;
+import fiap.com.br.petguardian.tarefa.status.EnumStatus;
+import fiap.com.br.petguardian.tarefa.status.Status;
+import fiap.com.br.petguardian.tarefa.status.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package fiap.com.br.petguardian.status;
+package fiap.com.br.petguardian.tarefa.status;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;

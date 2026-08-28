@@ -1,6 +1,6 @@
 package fiap.com.br.petguardian.tarefa;
 
-import fiap.com.br.petguardian.status.Status;
+import fiap.com.br.petguardian.tarefa.status.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,15 +25,15 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             "join t.pet p " +
             "join p.usuarioPets up " +
             "where up.usuario.id = :usuarioId " +
-            "and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.PENDENTE")
+            "and t.status.nomeStatus = EnumStatus.PENDENTE")
     Page<Tarefa> findTarefasPendentesDoCuidador(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
     @Query("select coalesce(sum(t.pontosTarefa), 0) from Tarefa t " +
             "where t.usuario.id = :usuarioId " +
-            "and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.CONCLUIDO")
+            "and t.status.nomeStatus = EnumStatus.CONCLUIDO")
     Integer calcularPontosTotaisUsuario(@Param("usuarioId") Long usuarioId);
 
-    @Query("select t from Tarefa t where t.pet.id = :petId and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.CONCLUIDO order by t.conclusao desc")
+    @Query("select t from Tarefa t where t.pet.id = :petId and t.status.nomeStatus = EnumStatus.CONCLUIDO order by t.conclusao desc")
     List<Tarefa> findConcluidasByPetId(@Param("petId") Long petId);
 
     @Query("select t.id from Tarefa t where t.pet.id = :petId")
@@ -42,10 +42,10 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     @Query("select t.pet.id, t.id from Tarefa t where t.pet.id in :petIds")
     List<Object[]> findTarefaIdsByPetIdIn(@Param("petIds") List<Long> petIds);
 
-    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.PENDENTE")
+    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = EnumStatus.PENDENTE")
     int countPendentesByPetIdIn(@Param("petIds") List<Long> petIds);
 
-    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = fiap.com.br.petguardian.status.EnumStatus.CONCLUIDO")
+    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = EnumStatus.CONCLUIDO")
     int countConcluidasByPetIdIn(@Param("petIds") List<Long> petIds);
 
     @Modifying

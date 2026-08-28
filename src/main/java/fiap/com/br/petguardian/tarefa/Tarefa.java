@@ -1,7 +1,7 @@
 package fiap.com.br.petguardian.tarefa;
 
 import fiap.com.br.petguardian.pet.Pet;
-import fiap.com.br.petguardian.status.Status;
+import fiap.com.br.petguardian.tarefa.status.Status;
 import fiap.com.br.petguardian.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,6 +36,7 @@ public class Tarefa {
     @Column(nullable = false)
     private LocalDateTime prazo;
 
+    @Column(nullable = true)
     private LocalDateTime conclusao;
 
     @ManyToOne(fetch = FetchType.LAZY)
