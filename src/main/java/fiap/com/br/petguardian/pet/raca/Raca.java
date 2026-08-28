@@ -16,6 +16,6 @@ public class Raca {
     @Column(name = "id_raca")
     private Long id;
 
-    @Column(name = "nome_raca", nullable = false, length = 30)
+    @Column(name = "nome_raca", nullable = false, length = 30, unique = true)
     private String nome;
 }

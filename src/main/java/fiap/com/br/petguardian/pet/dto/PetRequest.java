@@ -37,9 +37,19 @@ public record PetRequest(
                 .nome(nome)
                 .idade(idade)
                 .raca(racaObj)
-                .porte(PetPorte.valueOf(porte.toUpperCase()))
+                .porte(PetPorte.valueOf(porte.trim().toUpperCase()))
                 .sexo(sexo)
                 .castrado(castrado)
                 .build();
+    }
+
+    public Pet aplicarEm(Pet pet, Raca racaObj) {
+        pet.setNome(nome);
+        pet.setIdade(idade);
+        pet.setRaca(racaObj);
+        pet.setPorte(PetPorte.valueOf(porte.trim().toUpperCase()));
+        pet.setSexo(sexo);
+        pet.setCastrado(castrado);
+        return pet;
     }
 }

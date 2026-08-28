@@ -6,7 +6,7 @@
 
 <p>
   <img src="https://img.shields.io/badge/Java-17-007396?logo=openjdk&logoColor=white" alt="Java 17" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 4.0.6" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.4.3-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 3.4.3" />
   <img src="https://img.shields.io/badge/Build-Gradle-02303A?logo=gradle&logoColor=white" alt="Gradle" />
   <img src="https://img.shields.io/badge/Database-H2-0B5394" alt="H2" />
   <img src="https://img.shields.io/badge/API-REST-2B2B2B" alt="REST API" />
@@ -91,7 +91,7 @@ src/main/java/fiap/com/br/petguardian/
 │   └── raca/            # Raca do pet
 │
 ├── tarefa/              # Tarefa gamificada (criacao/conclusao/pontos)
-├── status/              # Status de dominio
+├── tarefa/status/       # Status de dominio das tarefas
 ├── endereco/            # Endereco (integracao ViaCEP)
 │   ├── bairro/
 │   ├── cidade/
@@ -107,13 +107,13 @@ src/main/java/fiap/com/br/petguardian/
 | Tecnologia | Finalidade |
 |---|---|
 | Java 17 | Linguagem principal |
-| Spring Boot 4.0.6 | Framework principal |
+| Spring Boot 3.4.3 | Framework principal |
 | Spring Data JPA | Persistencia e ORM |
 | Spring Validation | Bean Validation |
 | SpringDoc OpenAPI | Documentacao Swagger |
 | H2 Database | Banco em memoria |
 | Lombok | Reducao de boilerplate |
-| Maven | Build e dependencias |
+| Gradle | Build e dependencias |
 
 ---
 
@@ -145,10 +145,10 @@ Todos os endpoints usam DTOs (Records), Bean Validation e documentação Swagger
 | `POST` | `/pets` | Criar pet |
 | `PUT` | `/pets/{id}` | Atualizar pet |
 | `DELETE` | `/pets/{id}` | Deletar pet |
-| `POST` | `/pets/{id}/usuarios/{usuarioId}` | Vincular usuario ao pet (`?principal=true/false`) |
-| `DELETE` | `/pets/{id}/usuarios/{usuarioId}` | Desvincular usuario do pet |
-| `POST` | `/pets/{id}/convidar` | Convidar co-cuidador por ID (`?responsavelPrincipalId=&usuarioConvidadoId=`) |
-| `POST` | `/pets/{id}/convidar-email` | Convidar co-cuidador por e-mail (`?responsavelPrincipalId=&email=`) |
+| `GET` | `/pets/{id}/cuidadores` | Listar os cuidadores vinculados ao pet |
+| `POST` | `/pets/{id}/cuidadores` | Convidar co-cuidador por e-mail |
+| `DELETE` | `/pets/{id}/cuidadores/{usuarioId}` | Desvincular co-cuidador do pet |
+| `PATCH` | `/pets/{id}/responsavel-principal` | Transferir a responsabilidade principal |
 
 ### Tarefas (`/tarefas`)
 
@@ -181,18 +181,17 @@ Todos os endpoints usam DTOs (Records), Bean Validation e documentação Swagger
 ### Pre-requisitos
 
 - Java 17+
-- Maven (ou Maven Wrapper)
 
 ### Passos
 
 Linux/Mac:
 ```bash
-./mvnw spring-boot:run
+./gradlew bootRun
 ```
 
 Windows:
 ```bat
-mvnw.cmd spring-boot:run
+.\gradlew.bat bootRun
 ```
 
 ### Acessos

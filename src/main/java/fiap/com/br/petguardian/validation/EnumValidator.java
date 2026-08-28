@@ -25,6 +25,6 @@ public class EnumValidator implements ConstraintValidator<EnumValidation, String
             return true;
         }
 
-        return acceptedValues.contains(value.toUpperCase());
+        return acceptedValues.contains(value.trim().toUpperCase());
     }
 }

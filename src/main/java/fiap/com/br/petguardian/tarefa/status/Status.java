@@ -17,6 +17,6 @@ public class Status {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "nome_status", nullable = false, length = 15)
+    @Column(name = "nome_status", nullable = false, length = 15, unique = true)
     private EnumStatus nomeStatus;
 }

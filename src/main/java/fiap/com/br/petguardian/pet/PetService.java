@@ -6,6 +6,7 @@ import fiap.com.br.petguardian.pet.dto.PetRequest;
 import fiap.com.br.petguardian.pet.raca.Raca;
 import fiap.com.br.petguardian.pet.raca.RacaRepository;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
+import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.tarefa.dto.TarefaResponse;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
@@ -54,14 +55,12 @@ public class PetService {
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
 
-        Pet pet = petRequest.toEntity(raca);
-        pet.setId(id);
-        Pet petSalvo = petRepository.save(pet);
-
+        petRequest.aplicarEm(petAtual, raca);
         usuarioPetService.vincularResponsavelPrincipal(usuario, petAtual);
-        return petSalvo;
+        return petAtual;
     }
 
+    @Transactional
     public void delete(Long id) {
         findPetById(id);
         petRepository.deleteById(id);
@@ -70,7 +69,7 @@ public class PetService {
     public PetHistoryResponse getConsolidatedHistory(Long petId) {
         Pet pet = findPetById(petId);
 
-        var tarefasConcluidas = tarefaRepository.findConcluidasByPetId(petId)
+        var tarefasConcluidas = tarefaRepository.findConcluidasByPetId(petId, EnumStatus.CONCLUIDO)
                 .stream()
                 .map(TarefaResponse::fromEntity)
                 .toList();
@@ -92,7 +91,8 @@ public class PetService {
     }
 
     private Raca findOrCreateRaca(String nomeRaca) {
-        return racaRepository.findByNome(nomeRaca)
-                .orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeRaca).build()));
+        String nomeNormalizado = nomeRaca.trim();
+        return racaRepository.findByNomeIgnoreCase(nomeNormalizado)
+                .orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeNormalizado).build()));
     }
 }

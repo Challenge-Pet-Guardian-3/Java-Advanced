@@ -1,5 +1,6 @@
 package fiap.com.br.petguardian.tarefa;
 
+import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.tarefa.status.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,30 +26,33 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             "join t.pet p " +
             "join p.usuarioPets up " +
             "where up.usuario.id = :usuarioId " +
-            "and t.status.nomeStatus = EnumStatus.PENDENTE")
-    Page<Tarefa> findTarefasPendentesDoCuidador(@Param("usuarioId") Long usuarioId, Pageable pageable);
+            "and t.status.nomeStatus = :status")
+    Page<Tarefa> findTarefasPendentesDoCuidador(
+            @Param("usuarioId") Long usuarioId,
+            @Param("status") EnumStatus status,
+            Pageable pageable);
 
     @Query("select coalesce(sum(t.pontosTarefa), 0) from Tarefa t " +
             "where t.usuario.id = :usuarioId " +
-            "and t.status.nomeStatus = EnumStatus.CONCLUIDO")
-    Integer calcularPontosTotaisUsuario(@Param("usuarioId") Long usuarioId);
+            "and t.status.nomeStatus = :status")
+    Integer calcularPontosTotaisUsuario(
+            @Param("usuarioId") Long usuarioId,
+            @Param("status") EnumStatus status);
 
-    @Query("select t from Tarefa t where t.pet.id = :petId and t.status.nomeStatus = EnumStatus.CONCLUIDO order by t.conclusao desc")
-    List<Tarefa> findConcluidasByPetId(@Param("petId") Long petId);
-
-    @Query("select t.id from Tarefa t where t.pet.id = :petId")
-    List<Long> findIdsByPetId(@Param("petId") Long petId);
+    @Query("select t from Tarefa t where t.pet.id = :petId and t.status.nomeStatus = :status order by t.conclusao desc")
+    List<Tarefa> findConcluidasByPetId(
+            @Param("petId") Long petId,
+            @Param("status") EnumStatus status);
 
     @Query("select t.pet.id, t.id from Tarefa t where t.pet.id in :petIds")
     List<Object[]> findTarefaIdsByPetIdIn(@Param("petIds") List<Long> petIds);
 
-    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = EnumStatus.PENDENTE")
-    int countPendentesByPetIdIn(@Param("petIds") List<Long> petIds);
+    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = :status")
+    int countByPetIdInAndStatus(
+            @Param("petIds") List<Long> petIds,
+            @Param("status") EnumStatus status);
 
-    @Query("select count(t) from Tarefa t where t.pet.id in :petIds and t.status.nomeStatus = EnumStatus.CONCLUIDO")
-    int countConcluidasByPetIdIn(@Param("petIds") List<Long> petIds);
-
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Transactional
     @Query("update Tarefa t set t.status = :expirada where t.status = :pendente and t.prazo < :agora")
     void expirarTarefasPendentesAtrasadas(

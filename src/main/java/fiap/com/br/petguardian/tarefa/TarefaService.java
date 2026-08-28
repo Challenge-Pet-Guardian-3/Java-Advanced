@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,21 +28,25 @@ public class TarefaService {
     private final UsuarioPetRepository usuarioPetRepository;
     private final StatusService statusService;
 
+    @Transactional(readOnly = true)
     public Page<Tarefa> findAll(Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
         return tarefaRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<Tarefa> findAll(Long usuarioId, Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
-        return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, pageable);
+        return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, EnumStatus.PENDENTE, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Tarefa findById(Long id) {
         expirarTarefasPendentesAtrasadas();
         return findTarefaById(id);
     }
 
+    @Transactional(readOnly = true)
     public Tarefa findByUsuarioIdAndTarefaId(Long usuarioId, Long tarefaId) {
         expirarTarefasPendentesAtrasadas();
         return tarefaRepository.findByIdAndUsuarioId(tarefaId, usuarioId)
@@ -51,47 +54,27 @@ public class TarefaService {
                         "Tarefa com id " + tarefaId + " nao encontrada para o usuario informado."));
     }
 
+    @Transactional
     public Tarefa create(TarefaRequest request) {
-        if (request.usuarioId() != null) {
-            throw new IllegalArgumentException(
-                    "Tarefa deve ser criada sem usuario executor. Use o endpoint de conclusao para registrar o cuidador.");
-        }
-
+        validarCriacao(request);
+        LocalDateTime agora = LocalDateTime.now();
         Pet pet = findPetById(request.petId());
-
-        Tarefa tarefa = request.toEntity(null, pet, LocalDateTime.now());
-        tarefa.setStatus(statusService.findStatusByNome("PENDENTE"));
-        tarefa.setConclusao(null);
-        return tarefaRepository.save(tarefa);
+        Status statusPendente = statusService.findStatusByNome(EnumStatus.PENDENTE);
+        return tarefaRepository.save(request.toEntity(pet, statusPendente, agora));
     }
 
     @Transactional
     public Tarefa update(Long id, TarefaRequest request) {
         Tarefa tarefaAtual = findTarefaById(id);
         Pet pet = findPetById(request.petId());
+        EnumStatus status = request.statusEnum();
+        LocalDateTime agora = LocalDateTime.now();
+        Usuario usuario = buscarUsuarioExecutor(request.usuarioId(), pet);
+        validarAtualizacao(status, usuario, request.prazo(), agora);
 
-        Usuario usuario = null;
-        if (request.usuarioId() != null) {
-            usuario = findUsuarioById(request.usuarioId());
-            validarCuidadorDoPet(usuario.getId(), pet.getId());
-        }
-
-        Tarefa tarefa = request.toEntity(usuario, pet, tarefaAtual.getCriacao());
-        tarefa.setId(tarefaAtual.getId());
-
-        String statusStr = request.status();
-        if ("EXPIRADO".equalsIgnoreCase(statusStr) && request.prazo().isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Nao e permitido marcar como EXPIRADO antes do vencimento do prazo.");
-        }
-
-        tarefa.setStatus(statusService.findStatusByNome(statusStr));
-        if ("CONCLUIDO".equalsIgnoreCase(statusStr)) {
-            tarefa.setConclusao(Objects.requireNonNullElseGet(tarefaAtual.getConclusao(), LocalDateTime::now));
-        } else {
-            tarefa.setConclusao(null);
-        }
-
-        return tarefaRepository.save(tarefa);
+        Status novoStatus = statusService.findStatusByNome(status);
+        LocalDateTime conclusao = definirConclusao(tarefaAtual, status, agora);
+        return request.aplicarEm(tarefaAtual, pet, usuario, novoStatus, conclusao);
     }
 
     @Transactional
@@ -99,31 +82,73 @@ public class TarefaService {
         expirarTarefasPendentesAtrasadas();
 
         Tarefa tarefa = findTarefaById(id);
-        if (tarefa.getStatus().getNomeStatus() != EnumStatus.PENDENTE) {
+        if (!tarefa.estaPendente()) {
             throw new IllegalArgumentException("Apenas tarefas pendentes podem ser concluidas.");
         }
 
         Usuario usuario = findUsuarioById(request.concluinteId());
         validarCuidadorDoPet(usuario.getId(), tarefa.getPet().getId());
 
-        if (tarefa.getUsuario() != null && !tarefa.getUsuario().getId().equals(usuario.getId())) {
-            throw new IllegalArgumentException("Tarefa ja possui cuidador associado.");
-        }
-
-        tarefa.setUsuario(usuario);
-        tarefa.setStatus(statusService.findStatusByNome("CONCLUIDO"));
-        tarefa.setConclusao(LocalDateTime.now());
-        return tarefaRepository.save(tarefa);
+        tarefa.concluir(usuario, statusService.findStatusByNome(EnumStatus.CONCLUIDO), LocalDateTime.now());
+        return tarefa;
     }
 
+    @Transactional(readOnly = true)
     public Integer calcularPontosTotaisUsuario(Long usuarioId) {
         findUsuarioById(usuarioId);
-        return tarefaRepository.calcularPontosTotaisUsuario(usuarioId);
+        return tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
     }
 
+    @Transactional
     public void delete(Long id) {
         findTarefaById(id);
         tarefaRepository.deleteById(id);
+    }
+
+    private void validarCriacao(TarefaRequest request) {
+        if (request.usuarioId() != null) {
+            throw new IllegalArgumentException(
+                    "Tarefa deve ser criada sem usuario executor. Use o endpoint de conclusao para registrar o cuidador.");
+        }
+    }
+
+    private Usuario buscarUsuarioExecutor(Long usuarioId, Pet pet) {
+        if (usuarioId == null) {
+            return null;
+        }
+
+        Usuario usuario = findUsuarioById(usuarioId);
+        validarCuidadorDoPet(usuario.getId(), pet.getId());
+        return usuario;
+    }
+
+    private void validarAtualizacao(
+            EnumStatus status,
+            Usuario usuario,
+            LocalDateTime prazo,
+            LocalDateTime agora) {
+        if (status == EnumStatus.EXPIRADO && prazo.isAfter(agora)) {
+            throw new IllegalArgumentException("Nao e permitido marcar como EXPIRADO antes do vencimento do prazo.");
+        }
+
+        if (status != EnumStatus.EXPIRADO && prazo.isBefore(agora)) {
+            throw new IllegalArgumentException("Prazo nao pode estar no passado para uma tarefa nao expirada.");
+        }
+
+        if (status == EnumStatus.CONCLUIDO && usuario == null) {
+            throw new IllegalArgumentException("Uma tarefa concluida deve informar o usuario executor.");
+        }
+
+        if (status != EnumStatus.CONCLUIDO && usuario != null) {
+            throw new IllegalArgumentException("Somente tarefas concluidas podem possuir usuario executor.");
+        }
+    }
+
+    private LocalDateTime definirConclusao(Tarefa tarefa, EnumStatus status, LocalDateTime agora) {
+        if (status == EnumStatus.CONCLUIDO) {
+            return tarefa.getConclusao() == null ? agora : tarefa.getConclusao();
+        }
+        return null;
     }
 
     private void validarCuidadorDoPet(Long usuarioId, Long petId) {
@@ -148,8 +173,8 @@ public class TarefaService {
     }
 
     private void expirarTarefasPendentesAtrasadas() {
-        Status pendente = statusService.findStatusByNome("PENDENTE");
-        Status expirado = statusService.findStatusByNome("EXPIRADO");
+        Status pendente = statusService.findStatusByNome(EnumStatus.PENDENTE);
+        Status expirado = statusService.findStatusByNome(EnumStatus.EXPIRADO);
         tarefaRepository.expirarTarefasPendentesAtrasadas(LocalDateTime.now(), pendente, expirado);
     }
 }

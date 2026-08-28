@@ -1,6 +1,7 @@
 package fiap.com.br.petguardian.tarefa;
 
 import fiap.com.br.petguardian.pet.Pet;
+import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.tarefa.status.Status;
 import fiap.com.br.petguardian.usuario.Usuario;
 import jakarta.persistence.*;
@@ -50,4 +51,14 @@ public class Tarefa {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id_pet", nullable = false)
     private Pet pet;
+
+    public boolean estaPendente() {
+        return this.status != null && this.status.getNomeStatus() == EnumStatus.PENDENTE;
+    }
+
+    public void concluir(Usuario usuario, Status statusConcluido, LocalDateTime conclusao) {
+        this.usuario = usuario;
+        this.status = statusConcluido;
+        this.conclusao = conclusao;
+    }
 }

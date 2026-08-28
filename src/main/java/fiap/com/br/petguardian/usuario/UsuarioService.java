@@ -39,15 +39,24 @@ public class UsuarioService {
 
     @Transactional
     public Usuario create(UsuarioRequest usuarioRequest) {
-        return salvarUsuarioComRelacionamentos(null, usuarioRequest);
+        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
+        Telefone telefone = telefoneRepository.save(usuarioRequest.toTelefone());
+
+        Usuario usuario = usuarioRequest.toEntity(telefone, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
+        usuario.getEnderecos().add(endereco);
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional
     public Usuario update(Long id, UsuarioRequest usuarioRequest) {
-        findUsuarioById(id);
-        return salvarUsuarioComRelacionamentos(id, usuarioRequest);
+        Usuario usuario = findUsuarioById(id);
+        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
+        usuarioRequest.aplicarEm(usuario, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
+        usuario.getEnderecos().add(endereco);
+        return usuario;
     }
 
+    @Transactional
     public void delete(Long id) {
         findUsuarioById(id);
         usuarioRepository.deleteById(id);
@@ -60,17 +69,6 @@ public class UsuarioService {
     public Usuario findUsuarioByEmail(String email) {
         return usuarioRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario com email " + email + " nao encontrado."));
-    }
-
-    private Usuario salvarUsuarioComRelacionamentos(Long id, UsuarioRequest request) {
-        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(request.endereco());
-        Telefone telefone = telefoneRepository.save(request.toTelefone());
-
-        Usuario usuario = request.toEntity(telefone);
-        usuario.setId(id);
-        usuario.setSenha(passwordEncoder.encode(request.senha()));
-        usuario.getEnderecos().add(endereco);
-        return usuarioRepository.save(usuario);
     }
 
     private Usuario findUsuarioById(Long id) {

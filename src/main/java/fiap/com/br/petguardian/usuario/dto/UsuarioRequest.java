@@ -35,19 +35,28 @@ public record UsuarioRequest(
         @Valid
         EnderecoRequest endereco
 ) {
-    public Usuario toEntity(Telefone telefone) {
+    public Usuario toEntity(Telefone telefone, String email, String senhaCodificada) {
         return Usuario.builder()
                 .nome(nome)
-                .email(email)
-                .senha(senha)
+                .email(email.trim().toLowerCase())
+                .senha(senhaCodificada)
                 .telefone(telefone)
                 .build();
     }
 
     public Telefone toTelefone() {
         return Telefone.builder()
-                .ddd(ddd)
-                .numero(numeroTelefone)
+                .ddd(ddd.trim())
+                .numero(numeroTelefone.trim())
                 .build();
+    }
+
+    public Usuario aplicarEm(Usuario usuario, String email, String senhaCodificada) {
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setSenha(senhaCodificada);
+        usuario.getTelefone().setDdd(ddd.trim());
+        usuario.getTelefone().setNumero(numeroTelefone.trim());
+        return usuario;
     }
 }

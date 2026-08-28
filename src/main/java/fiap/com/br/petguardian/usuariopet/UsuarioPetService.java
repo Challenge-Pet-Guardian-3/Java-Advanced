@@ -4,6 +4,7 @@ import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetRepository;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
+import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
@@ -91,9 +92,9 @@ public class UsuarioPetService {
         Map<Long, List<Long>> tarefasPorPet = carregarMapaTarefasPorPet(petIds);
         List<UsuarioPet> todosVinculosDosPets = usuarioPetRepository.findAllByPetIdIn(petIds);
 
-        int totalPendentes = tarefaRepository.countPendentesByPetIdIn(petIds);
-        int totalConcluidas = tarefaRepository.countConcluidasByPetIdIn(petIds);
-        int pontosTotais = tarefaRepository.calcularPontosTotaisUsuario(usuarioId);
+        int totalPendentes = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.PENDENTE);
+        int totalConcluidas = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.CONCLUIDO);
+        int pontosTotais = tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
 
         var petResumos = redeCuidadoMapper.toPetResumoList(meusVinculos, tarefasPorPet);
         var coCuidadores = redeCuidadoMapper.toCuidadorResumoList(todosVinculosDosPets, usuarioId);
