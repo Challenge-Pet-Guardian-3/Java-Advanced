@@ -41,7 +41,7 @@ CREATE TABLE usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
     senha VARCHAR(60) NOT NULL,
-    role VARCHAR(10) NOT NULL DEFAULT 'COMUM',
+    role VARCHAR(10) NOT NULL DEFAULT 'PREMIUM',
     telefone_id_telefone BIGINT NOT NULL UNIQUE,
     CONSTRAINT fk_usuario_telefone FOREIGN KEY (telefone_id_telefone) REFERENCES telefone(id_telefone)
 );

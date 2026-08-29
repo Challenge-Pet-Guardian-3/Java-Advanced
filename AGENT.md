@@ -227,4 +227,4 @@ O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
 2. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
 3. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
 4. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
-5. **Sem Verificações Redundantes de Null:** Não incluir checagens manuais de `null` ou ternários defensivos em atributos que já possuem valor padrão na entidade (como `role = UsuarioRole.COMUM`) ou que são obrigatórios via `@NotNull`/`@NotBlank`.
+5. **Sem Verificações Redundantes de Null:** Não incluir checagens manuais de `null` ou ternários defensivos em atributos que já possuem valor padrão na entidade (como `role = UsuarioRole.PREMIUM`) ou que são obrigatórios via `@NotNull`/`@NotBlank`.
