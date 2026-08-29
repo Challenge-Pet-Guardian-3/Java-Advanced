@@ -6,6 +6,8 @@ import fiap.com.br.petguardian.usuariopet.UsuarioPet;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +27,8 @@ public class Pet {
     @Column(nullable = false, length = 30)
     private String nome;
 
-    @Column(nullable = false)
-    private Integer idade;
+    @Column(name = "data_nasc", nullable = false)
+    private LocalDate dataNasc;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "raca_id_raca", nullable = false)
@@ -40,7 +42,8 @@ public class Pet {
     private Character sexo;
 
     @Column(nullable = false)
-    private boolean castrado;
+    @Builder.Default
+    private boolean castrado = false;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -49,4 +52,8 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<UsuarioPet> usuarioPets = new HashSet<>();
+
+    public Integer getIdade() {
+        return Period.between(dataNasc, LocalDate.now()).getYears();
+    }
 }

@@ -18,15 +18,15 @@ public class TokenService {
     private final JwtEncoder encoder;
     private final UsuarioRepository userRepository;
 
-    public String generateToken(String username) {
-        var user = userRepository.findByEmailIgnoreCase(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+    public String generateToken(String email) {
+        var user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
         var now = Instant.now();
         var claims = JwtClaimsSet.builder()
                 .issuer("petguardian-api")
                 .issuedAt(now)
-                .expiresAt(now.plus(30, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(user.getEmail())
                 .claim("role", "USER")
                 .build();

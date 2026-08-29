@@ -39,6 +39,13 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             @Param("usuarioId") Long usuarioId,
             @Param("status") EnumStatus status);
 
+    @Query("select coalesce(sum(t.pontosTarefa), 0) from Tarefa t " +
+            "where t.pet.id = :petId " +
+            "and t.status.nomeStatus = :status")
+    Integer calcularPontosTarefasPorPet(
+            @Param("petId") Long petId,
+            @Param("status") EnumStatus status);
+
     @Query("select t from Tarefa t where t.pet.id = :petId and t.status.nomeStatus = :status order by t.conclusao desc")
     List<Tarefa> findConcluidasByPetId(
             @Param("petId") Long petId,

@@ -3,9 +3,12 @@ package fiap.com.br.petguardian.pet.dto;
 import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetPorte;
 
+import java.time.LocalDate;
+
 public record PetResponse(
         Long id,
         String nome,
+        LocalDate dataNasc,
         Integer idade,
         String raca,
         PetPorte porte,
@@ -16,6 +19,7 @@ public record PetResponse(
         return new PetResponse(
                 pet.getId(),
                 pet.getNome(),
+                pet.getDataNasc(),
                 pet.getIdade(),
                 pet.getRaca().getNome(),
                 pet.getPorte(),

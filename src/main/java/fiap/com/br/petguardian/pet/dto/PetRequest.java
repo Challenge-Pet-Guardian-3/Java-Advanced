@@ -4,17 +4,19 @@ import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetPorte;
 import fiap.com.br.petguardian.pet.raca.Raca;
 import fiap.com.br.petguardian.validation.EnumValidation;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+
+import java.time.LocalDate;
 
 public record PetRequest(
         @NotBlank
         String nome,
 
         @NotNull
-        @Min(0)
-        Integer idade,
+        @PastOrPresent(message = "Data de nascimento não pode estar no futuro.")
+        LocalDate dataNasc,
 
         @NotBlank
         String raca,
@@ -35,21 +37,11 @@ public record PetRequest(
     public Pet toEntity(Raca racaObj) {
         return Pet.builder()
                 .nome(nome)
-                .idade(idade)
+                .dataNasc(dataNasc)
                 .raca(racaObj)
                 .porte(PetPorte.valueOf(porte.trim().toUpperCase()))
                 .sexo(sexo)
                 .castrado(castrado)
                 .build();
-    }
-
-    public Pet aplicarEm(Pet pet, Raca racaObj) {
-        pet.setNome(nome);
-        pet.setIdade(idade);
-        pet.setRaca(racaObj);
-        pet.setPorte(PetPorte.valueOf(porte.trim().toUpperCase()));
-        pet.setSexo(sexo);
-        pet.setCastrado(castrado);
-        return pet;
     }
 }

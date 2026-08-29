@@ -1,6 +1,7 @@
 package fiap.com.br.petguardian.pet;
 
 import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
+import fiap.com.br.petguardian.pet.dto.PetPontuacaoResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
 import fiap.com.br.petguardian.pet.dto.PetResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +51,13 @@ public class PetController {
     @Operation(summary = "Obter histórico consolidado de cuidados do pet (tarefas concluídas)")
     public PetHistoryResponse getHistorico(@PathVariable Long id) {
         return petService.getConsolidatedHistory(id);
+    }
+
+    @GetMapping("/{id}/pontos")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Consultar pontuacao total acumulada pelo pet (tarefas + aulas concluidas)")
+    public PetPontuacaoResponse getPontosTotais(@PathVariable Long id) {
+        return petService.calcularPontuacaoTotalPet(id);
     }
 
     @PostMapping

@@ -2,12 +2,14 @@ package fiap.com.br.petguardian.pet;
 
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.pet.dto.PetHistoryResponse;
+import fiap.com.br.petguardian.pet.dto.PetPontuacaoResponse;
 import fiap.com.br.petguardian.pet.dto.PetRequest;
 import fiap.com.br.petguardian.pet.raca.Raca;
 import fiap.com.br.petguardian.pet.raca.RacaRepository;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
 import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.tarefa.dto.TarefaResponse;
+import fiap.com.br.petguardian.trilha.aula.AulaRepository;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetService;
@@ -26,6 +28,7 @@ public class PetService {
     private final UsuarioPetService usuarioPetService;
     private final RacaRepository racaRepository;
     private final TarefaRepository tarefaRepository;
+    private final AulaRepository aulaRepository;
 
     public Page<Pet> findAll(Pageable pageable) {
         return petRepository.findAll(pageable);
@@ -51,13 +54,16 @@ public class PetService {
 
     @Transactional
     public Pet update(Long id, PetRequest petRequest) {
-        Pet petAtual = findPetById(id);
+        findPetById(id);
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
 
-        petRequest.aplicarEm(petAtual, raca);
-        usuarioPetService.vincularResponsavelPrincipal(usuario, petAtual);
-        return petAtual;
+        Pet pet = petRequest.toEntity(raca);
+        pet.setId(id);
+        Pet petSalvo = petRepository.save(pet);
+
+        usuarioPetService.vincularResponsavelPrincipal(usuario, petSalvo);
+        return petSalvo;
     }
 
     @Transactional
@@ -78,6 +84,16 @@ public class PetService {
                 pet.getId(),
                 pet.getNome(),
                 tarefasConcluidas);
+    }
+
+    @Transactional(readOnly = true)
+    public PetPontuacaoResponse calcularPontuacaoTotalPet(Long petId) {
+        Pet pet = findPetById(petId);
+        int pontosTarefas = tarefaRepository.calcularPontosTarefasPorPet(petId, EnumStatus.CONCLUIDO);
+        int pontosAulas = aulaRepository.calcularPontosAulasConcluidasPorPet(petId);
+        int pontosTotais = pontosTarefas + pontosAulas;
+
+        return new PetPontuacaoResponse(pet.getId(), pet.getNome(), pontosTarefas, pontosAulas, pontosTotais);
     }
 
     private Pet findPetById(Long id) {
