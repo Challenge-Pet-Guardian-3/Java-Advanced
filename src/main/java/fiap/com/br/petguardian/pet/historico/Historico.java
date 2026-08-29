@@ -27,6 +27,6 @@ public class Historico {
     private LocalDateTime dataHist;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_pet", nullable = false)
+    @JoinColumn(name = "pet_id_pet", nullable = false)
     private Pet pet;
 }

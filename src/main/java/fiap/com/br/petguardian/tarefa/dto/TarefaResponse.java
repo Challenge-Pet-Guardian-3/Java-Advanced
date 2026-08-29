@@ -26,7 +26,7 @@ public record TarefaResponse(
                 tarefa.getPrazo(),
                 tarefa.getConclusao(),
                 tarefa.getStatus().getNomeStatus().name(),
-                tarefa.getUsuario() == null ? null : tarefa.getUsuario().getId(),
+                tarefa.getUsuario().getId(),
                 tarefa.getPet().getId()
         );
     }

@@ -29,7 +29,7 @@ public class Trilha {
     private String descricao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_pet", nullable = false)
+    @JoinColumn(name = "pet_id_pet", nullable = false)
     private Pet pet;
 
     @OneToMany(mappedBy = "trilha", cascade = CascadeType.ALL, orphanRemoval = true)

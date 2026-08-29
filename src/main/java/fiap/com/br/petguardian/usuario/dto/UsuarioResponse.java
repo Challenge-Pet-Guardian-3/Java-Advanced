@@ -10,6 +10,7 @@ public record UsuarioResponse(
         Long id,
         String nome,
         String email,
+        String role,
         String ddd,
         String numeroTelefone,
         Set<EnderecoResponse> enderecos
@@ -24,6 +25,7 @@ public record UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
+                usuario.getRole().name(),
                 usuario.getTelefone().getDdd(),
                 usuario.getTelefone().getNumero(),
                 enderecoResponses

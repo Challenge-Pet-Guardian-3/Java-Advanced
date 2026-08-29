@@ -24,6 +24,7 @@ public record AulaRequest(
         @Size(max = 20)
         String dificuldade,
 
+        @NotBlank
         @Size(max = 1000)
         String conteudo,
 

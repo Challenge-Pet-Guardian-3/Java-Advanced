@@ -30,7 +30,7 @@ public class Aula {
     @Column(nullable = false, length = 20)
     private String dificuldade;
 
-    @Column(length = 1000)
+    @Column(nullable = false, length = 1000)
     private String conteudo;
 
     @Column(nullable = false)
@@ -38,6 +38,6 @@ public class Aula {
     private boolean concluida = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_modulo", nullable = false)
+    @JoinColumn(name = "modulo_id_modulo", nullable = false)
     private Modulo modulo;
 }

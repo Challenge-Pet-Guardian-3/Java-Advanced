@@ -22,7 +22,7 @@ public class AuthService implements UserDetailsService {
         return User
                 .withUsername(user.getEmail())
                 .password(user.getSenha())
-                .roles("USER")
+                .roles(user.getRole().name())
                 .build();
     }
 }

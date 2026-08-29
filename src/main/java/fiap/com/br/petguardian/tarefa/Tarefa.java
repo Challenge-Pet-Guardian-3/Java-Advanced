@@ -44,7 +44,7 @@ public class Tarefa {
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id_usuario")
+    @JoinColumn(name = "usuario_id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)

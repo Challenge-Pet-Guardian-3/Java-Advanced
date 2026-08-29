@@ -29,8 +29,13 @@ public class Usuario {
     @Column(nullable = false, length = 50, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 60)
     private String senha;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    @Builder.Default
+    private UsuarioRole role = UsuarioRole.PREMIUM;
 
     @ManyToOne
     @JoinColumn(name = "telefone_id_telefone", nullable = false)

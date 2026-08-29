@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,7 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/aulas")
 @RequiredArgsConstructor
-@Tag(name = "Aulas", description = "Gerenciamento de aulas e conteudos educativos das trilhas")
+@PreAuthorize("hasRole('PREMIUM')")
+@Tag(name = "Aulas", description = "Gerenciamento de aulas e conteudos educativos das trilhas (Exclusivo Premium)")
 public class AulaController {
 
     private final AulaService aulaService;

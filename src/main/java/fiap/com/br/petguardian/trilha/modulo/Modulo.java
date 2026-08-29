@@ -32,7 +32,7 @@ public class Modulo {
     private String descricao;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_trilha", nullable = false)
+    @JoinColumn(name = "trilha_id_trilha", nullable = false)
     private Trilha trilha;
 
     @OneToMany(mappedBy = "modulo", cascade = CascadeType.ALL, orphanRemoval = true)

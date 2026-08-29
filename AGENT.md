@@ -1,6 +1,6 @@
 # 🐾 AGENT.md - PetGuardian API (Java-Advanced)
 
-Guia completo e documentação técnica da arquitetura, regras de negócio, endpoints, validações e padrões de implementação do projeto **PetGuardian** (`Java-Advanced`).
+Guia completo e documentação técnica da arquitetura, regras de negócio, perfis de acesso (RBAC), integração mobile, endpoints, validações e fluxos do projeto **PetGuardian** (`Java-Advanced`).
 
 ---
 
@@ -13,32 +13,76 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 - **Segurança:** Spring Security + OAuth2 Resource Server com tokens JWT assinados via par de chaves assimétricas RSA (PKCS#8).
 - **Cache:** Spring Starter Cache (cache em memória para lookups de Status).
 - **Documentação de API:** SpringDoc OpenAPI 3 (`/swagger-ui.html` e `/v3/api-docs`).
-- **Banco de Dados:** H2 Database (em memória para desenvolvimento/testes rápidos) e compatibilidade com Oracle Database / PostgreSQL.
+- **Banco de Dados:** H2 Database (em memória para desenvolvimento/testes rápidos) e Oracle Database 21c (produção/DER oficial).
 
 ---
 
-## 🔐 2. Autenticação & Segurança (Spring Security + RSA JWT)
+## 👥 2. Perfis de Usuário & Controle de Acesso (RBAC)
+
+O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
+
+| Perfil (`UsuarioRole`) | Escopo de Acesso | Recursos Bloqueados |
+| :--- | :--- | :--- |
+| **`COMUM`** (Tutor Gratuito) | Pets, Care Circle (Rede de Cuidado), Tarefas Diárias, Histórico Clínico, Endereço e Perfil | Trilhas, Módulos, Aulas e Assistente IA |
+| **`PREMIUM`** (Tutor Assinante) | Acesso total irrestrito a todos os módulos e gamificação educativa | Nenhum |
+
+### 🔒 Proteção de Rotas:
+- **Rotas Exclusivas Premium (`ROLE_PREMIUM`):**
+  - `/trilhas/**` (Gestão de Trilhas de Aprendizado)
+  - `/modulos/**` (Módulos Educativos)
+  - `/aulas/**` (Aulas e Conteúdos Instrutivos)
+  - *Assistente IA*
+- **Bloqueio Automático:** Requisições de usuários `COMUM` para essas rotas são barradas pelo Spring Security com **`403 Forbidden`** (`AccessDeniedException`).
+
+---
+
+## 🔐 3. Autenticação & Integração com o Mobile (JWT RSA)
+
+```
+[ Mobile App ] --- POST /login { email, senha } ---> [ Spring Boot API ]
+[ Mobile App ] <-- 200 OK { token, usuario: { role } } -- [ TokenService (RSA) ]
+```
 
 - **Fluxo Stateless:** Todas as rotas autenticadas utilizam tokens Bearer JWT no header `Authorization: Bearer <token>`.
 - **Rotas Públicas (`permitAll`):**
   - `POST /login` (autenticação de tutores)
   - `POST /usuarios` (cadastro de novos tutores)
   - `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`
-  - `/h2-console/**` (com suporte a frameOptions `sameOrigin`)
+  - `/h2-console/**` (com frameOptions `sameOrigin`)
   - `/actuator/health`, `/actuator/info`
 - **Token JWT:**
-  - Emissor: `pet-guardian`
+  - Emissor: `petguardian-api`
   - Expiração: 1 hora a partir da emissão.
-  - Claims: `role` (ex: `ROLE_USER`), `email`, `sub` (e-mail do usuário).
+  - Claims: `role` (ex: `COMUM` ou `PREMIUM` -> convertido para `ROLE_COMUM` / `ROLE_PREMIUM`), `sub` (e-mail do usuário).
+- **Consumo no Mobile:**
+  - O app armazena o token em armazenamento seguro (*SecureStorage* / *KeyStore*).
+  - Com base em `usuario.role`, o app libera a interface ou exibe um modal convidando o usuário a assinar o plano Premium.
 
 ---
 
-## 🌐 3. Catálogo Completo de Endpoints
+## 🔄 4. Dois Fluxos Funcionais Completos do Sistema
+
+### 🐾 **Fluxo 1: Cuidado Colaborativo e Rotina Diária (Acesso COMUM e PREMIUM)**
+1. **Cadastro & Login:** Tutor cadastra-se em `POST /usuarios` (recebe role `COMUM` por padrão ou `PREMIUM`) e faz login em `POST /login`.
+2. **Cadastro do Pet:** Criação do animal via `POST /pets` (o tutor criador torna-se automaticamente `responsavelPrincipal = true`).
+3. **Formação do Care Circle:** Tutor convida co-cuidadores pelo e-mail via `POST /pets/{petId}/cuidadores`.
+4. **Ciclo de Tarefas:** Cuidadores criam tarefas de rotina (`POST /tarefas` vinculadas obrigatoriamente a um cuidador) e concluem com `PATCH /tarefas/{id}/concluir`.
+5. **Score:** Consulta de pontos acumulados do cuidador e visualização consolidada da rede em `GET /usuarios/{id}/rede-cuidado`.
+
+### 🎓 **Fluxo 2: Gamificação Educativa & Trilhas (Exclusivo PREMIUM)**
+1. **Acesso Protegido:** Tutor `PREMIUM` acessa as trilhas de adestramento do pet via `GET /trilhas/pet/{petId}`.
+2. **Progresso de Conteúdo:** Tutor navega pelos módulos (`GET /modulos/trilha/{trilhaId}`) e acessa as aulas (`GET /aulas/modulo/{moduloId}`).
+3. **Conclusão de Aulas:** Conclusão de aula marcando `concluida = true` com pontuação educativa.
+4. **Gamificação Consolidada:** O endpoint `GET /pets/{id}/pontos` agrega em tempo real os pontos das tarefas de rotina + pontos das aulas concluídas, gerando o score total de evolução do pet.
+
+---
+
+## 🌐 5. Catálogo Completo de Endpoints
 
 ### 🔑 Autenticação (`/login`)
 | Método | Endpoint | Request Body | Response | Descrição |
 | :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/login` | `LoginRequest` (`email`, `senha`) | `LoginResponse` (`token`, `UsuarioResponse`) | Autentica o usuário e retorna o token JWT e o perfil. |
+| `POST` | `/login` | `LoginRequest` (`email`, `senha`) | `LoginResponse` (`token`, `UsuarioResponse`) | Autentica o usuário e retorna o token JWT e o perfil com `role`. |
 
 ---
 
@@ -50,7 +94,7 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 | `GET` | `/usuarios/by-email` | `@RequestParam String email` | `UsuarioResponse` | Busca usuário por e-mail exato. |
 | `GET` | `/usuarios/{id}` | `@PathVariable Long id` | `UsuarioResponse` | Busca usuário por ID. |
 | `GET` | `/usuarios/{id}/rede-cuidado` | `@PathVariable Long id` | `RedeCuidadoResponse` | Retorna o Care Circle consolidado (pets, co-cuidadores e tarefas). |
-| `POST` | `/usuarios` | `UsuarioRequest` | `UsuarioResponse` (201 Created) | Cadastra um novo usuário, telefone e endereço (via CEP). |
+| `POST` | `/usuarios` | `UsuarioRequest` | `UsuarioResponse` (201 Created) | Cadastra um novo usuário (`role` opcional, default `COMUM`), telefone e endereço. |
 | `PUT` | `/usuarios/{id}` | `UsuarioRequest` | `UsuarioResponse` (200 OK) | Atualiza os dados do usuário. |
 | `DELETE`| `/usuarios/{id}` | `@PathVariable Long id` | 204 No Content | Remove o usuário do sistema. |
 
@@ -88,7 +132,7 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 | `GET` | `/tarefas/{id}` | `@PathVariable Long id` | `TarefaResponse` | Busca tarefa por ID. |
 | `GET` | `/tarefas/by-usuario/{usuarioId}/{id}` | `usuarioId`, `id` | `TarefaResponse` | Busca tarefa específica pertencente ao cuidador. |
 | `GET` | `/tarefas/by-usuario/pontos` | `@RequestParam Long usuarioId` | `Integer` | Consulta total de pontos acumulados pelo cuidador. |
-| `POST` | `/tarefas` | `TarefaRequest` | `TarefaResponse` (201 Created) | Cria nova tarefa com status `PENDENTE`. |
+| `POST` | `/tarefas` | `TarefaRequest` (`usuarioId` NOT NULL) | `TarefaResponse` (201 Created) | Cria nova tarefa vinculada obrigatoriamente a um cuidador do pet com status `PENDENTE`. |
 | `PUT` | `/tarefas/{id}` | `TarefaRequest` | `TarefaResponse` (200 OK) | Atualiza os dados e status da tarefa. |
 | `PATCH`| `/tarefas/{id}/concluir` | `TarefaConclusaoRequest` (`concluinteId`) | `TarefaResponse` (200 OK) | Marca tarefa como `CONCLUIDO`, vincula executor e data de conclusão. |
 | `DELETE`| `/tarefas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma tarefa. |
@@ -106,7 +150,7 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 
 ---
 
-### 🎓 Trilhas de Aprendizado (`/trilhas`)
+### 🎓 Trilhas de Aprendizado (`/trilhas`) - ⭐ EXCLUSIVO PREMIUM
 | Método | Endpoint | Parâmetros / Body | Response | Descrição |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/trilhas/pet/{petId}` | `@PathVariable Long petId` | `List<TrilhaResponse>` | Lista trilhas cadastradas para o pet. |
@@ -117,7 +161,7 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 
 ---
 
-### 📦 Módulos das Trilhas (`/modulos`)
+### 📦 Módulos das Trilhas (`/modulos`) - ⭐ EXCLUSIVO PREMIUM
 | Método | Endpoint | Parâmetros / Body | Response | Descrição |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/modulos/trilha/{trilhaId}` | `@PathVariable Long trilhaId` | `List<ModuloResponse>` | Lista módulos pertencentes a uma trilha. |
@@ -128,12 +172,12 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 
 ---
 
-### 📝 Aulas e Conteúdos Educativos (`/aulas`)
+### 📝 Aulas e Conteúdos Educativos (`/aulas`) - ⭐ EXCLUSIVO PREMIUM
 | Método | Endpoint | Parâmetros / Body | Response | Descrição |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/aulas/modulo/{moduloId}` | `@PathVariable Long moduloId` | `List<AulaResponse>` | Lista aulas pertencentes a um módulo. |
 | `GET` | `/aulas/{id}` | `@PathVariable Long id` | `AulaResponse` | Busca aula por ID. |
-| `POST` | `/aulas` | `AulaRequest` | `AulaResponse` (201 Created) | Cria nova aula (com pontuação e conteúdo instrutivo). |
+| `POST` | `/aulas` | `AulaRequest` | `AulaResponse` (201 Created) | Cria nova aula (com pontuação, conteúdo NOT NULL até 1000 caracteres e concluida = false). |
 | `PUT` | `/aulas/{id}` | `AulaRequest` | `AulaResponse` (200 OK) | Atualiza aula existente (ex: marcar `concluida = true`). |
 | `DELETE`| `/aulas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma aula. |
 
@@ -150,74 +194,37 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, endp
 
 ---
 
-## 🧠 4. Lógica de Negócio dos Serviços
-
-1. **`UsuarioService`**:
-   - Criação de Usuário: normaliza e-mail com `trim().toLowerCase()`, codifica senha com BCrypt (`PasswordEncoder`), cria/recupera `Telefone` e busca/cria `Endereco` completo a partir do CEP consumido pelo `RestClient` do ViaCEP.
-2. **`PetService`**:
-   - Cadastro e Atualização de Pet: gerencia a data de nascimento (`LocalDate dataNasc`), busca ou cria a `Raca` automaticamente pelo nome normalizado e vincula o tutor criador como `responsavelPrincipal = true`.
-   - **Pontuação Consolidada (`calcularPontuacaoTotalPet`)**: soma consultas agregadas do `TarefaRepository` (tarefas `CONCLUIDO`) e do `AulaRepository` (aulas `concluida = true` associadas à trilha do pet).
-3. **`TarefaService`**:
-   - **Expiração Automática:** Em cada consulta ou conclusão, executa `expirarTarefasPendentesAtrasadas` via query `@Modifying` atualizando tarefas vencidas (`prazo < agora`) de `PENDENTE` para `EXPIRADO`.
-   - **Conclusão:** Valida se a tarefa está pendente, se o concluinte é membro do Care Circle do Pet, registra a data de conclusão e atribui o executor.
-4. **`EnderecoService`**:
-   - Integração com ViaCEP via Spring 6 `RestClient`: monta a cadeia geográfica normalizada `Estado` $\rightarrow$ `Cidade` $\rightarrow$ `Bairro` $\rightarrow$ `Endereco`, reutilizando instâncias existentes com `findBy...` para evitar duplicações no banco.
-
----
-
-## 👥 5. Como funciona o `UsuarioPet` (Care Circle / Rede de Cuidado)
-
-O `UsuarioPet` é a entidade central para o compartilhamento de responsabilidades sobre um animal:
-
-1. **Mapeamento JPA com Chave Composta:**
-   - Possui `@EmbeddedId UsuarioPetId id` com `usuarioId` e `petId`.
-   - Mapeado com `@MapsId("usuarioId")` e `@MapsId("petId")` para vincular bidirecionalmente `Usuario` e `Pet`.
-2. **Responsável Principal (`respon_princ`):**
-   - Cada Pet possui **exatamente um** responsável principal ativo (`responsavelPrincipal = true`).
-   - Os demais participantes são co-cuidadores (`responsavelPrincipal = false`).
-3. **Regras de Negócio (`UsuarioPetValidator`):**
-   - **Convite:** Apenas o `responsavelPrincipal` atual pode convidar novos membros para a rede do animal. Não é permitido convidar um usuário que já faz parte da rede.
-   - **Desvinculação:** O responsável principal não pode ser removido sem antes transferir a titularidade. Um co-cuidador pode sair voluntariamente ou ser removido pelo responsável principal.
-   - **Transferência de Titularidade:** Apenas o responsável principal atual pode transferir seu cargo para outro co-cuidador já vinculado ao pet (validação garantida também por `@DiferentesUsuariosValidation`).
-4. **Visualização Agregada (`RedeCuidadoMapper`):**
-   - Constrói o `RedeCuidadoResponse` listando todos os pets do tutor, co-cuidadores de cada pet, contagem de tarefas pendentes/concluídas e pontos acumulados.
-
----
-
 ## 🛡️ 6. Padrões de Validação no Projeto
 
-O projeto adota uma arquitetura em duas camadas de validação:
-
 ### A. Validação de Formato e Contrato (DTOs - Bean Validation)
-Anotações nativas e personalizadas sem mensagens embutidas (mensagens padronizadas pelo Spring Boot):
 - `@NotBlank`, `@NotNull`: Campos obrigatórios.
 - `@PastOrPresent`: Data de nascimento do Pet (`dataNasc`).
-- `@FutureOrPresent`: Prazo de criação/execução de tarefas (`prazo`).
+- `@FutureOrPresent`: Prazo de tarefas (`prazo`).
 - `@Positive`: Pontos de tarefas e aulas.
-- `@Email`: Validação de padrão de e-mail.
-- `@Size(max = ...)`: Limites de tamanho de caracteres (ex: `conteudo` até 1000).
-- `@DddValidation` / `@DddValidator`: Valida se o DDD informado é um código telefônico válido no Brasil.
-- `@CepValidation` / `@CepValidator`: Valida se o CEP possui formato numérico de 8 dígitos.
-- `@EnumValidation` / `@EnumValidator`: Valida dinamicamente se o valor pertence ao Enum informado (ex: `PetPorte`, `EnumStatus`).
-- `@DiferentesUsuariosValidation` / `@DiferentesUsuariosValidator`: Garante que `responsavelAtualId` $\neq$ `novoResponsavelId` na transferência de titularidade.
+- `@Email`: Formato do e-mail.
+- `@Size(max = ...)`: Limites de tamanho de string.
+- `@DddValidation` / `@DddValidator`: Valida DDD válido no Brasil.
+- `@CepValidation` / `@CepValidator`: Valida formato numérico de 8 dígitos de CEP.
+- `@EnumValidation` / `@EnumValidator`: Valida enums dinâmicos (`PetPorte`, `EnumStatus`, `UsuarioRole`).
+- `@DiferentesUsuariosValidation` / `@DiferentesUsuariosValidator`: Garante `responsavelAtualId != novoResponsavelId`.
 
-### B. Validação de Regras de Negócio (Spring Components)
-- **`TarefaValidator`**: Valida prazos futuros na criação, permissões de cuidadores e transições de status válidas para conclusão.
-- **`UsuarioPetValidator`**: Valida permissões de titularidade, vínculo prévio e desvinculação no Care Circle.
+### B. Validação de Regras de Negócio (Domain / Service Components)
+- **`TarefaValidator`**: Valida se o criador/executor é cuidador do pet e se a tarefa está apta para conclusão.
+- **`UsuarioPetValidator`**: Valida titularidade única de responsável principal, vínculo prévio e desvinculação no Care Circle.
 
 ### C. Tratamento Global de Erros (`GlobalExceptionHandler`)
-Captura e serializa respostas uniformes em JSON (`ApiErrorResponse`):
-- `400 Bad Request`: `MethodArgumentNotValidException` (detalhes dos campos), `IllegalArgumentException`, `HttpMessageNotReadableException`, `DataIntegrityViolationException`.
-- `401 Unauthorized`: `AuthenticationException` (credenciais inválidas ou token ausente/expirado).
-- `403 Forbidden`: `AccessDeniedException` (permissão insuficiente).
+- `400 Bad Request`: `MethodArgumentNotValidException`, `IllegalArgumentException`, `HttpMessageNotReadableException`, `DataIntegrityViolationException`.
+- `401 Unauthorized`: `AuthenticationException`.
+- `403 Forbidden`: `AccessDeniedException` (acesso negado para rotas Premium ou operações não autorizadas).
 - `404 Not Found`: `ResourceNotFoundException`.
-- `500 Internal Server Error`: Erros não mapeados.
+- `500 Internal Server Error`: Erros inesperados.
 
 ---
 
 ## 📏 7. Convenções de Código do Projeto
 
 1. **Sem `Locale.ROOT`:** Utilizar `.toUpperCase()` ou `.toLowerCase()` padrão.
-2. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`, eliminando chamadas repetitivas de múltiplos setters.
-3. **Inicialização com `@Builder.Default`:** Todos os campos booleanos e coleções (`Set<...> = new HashSet<>()`) em entidades JPA são anotados com `@Builder.Default` e inicializados, evitando `NullPointerException`.
-4. **DTOs Limpos:** Records de DTO contêm apenas as anotações essenciais de validação, sem `@Schema` nem `message = "..."` redundantes.
+2. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
+3. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
+4. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
+5. **Sem Verificações Redundantes de Null:** Não incluir checagens manuais de `null` ou ternários defensivos em atributos que já possuem valor padrão na entidade (como `role = UsuarioRole.COMUM`) ou que são obrigatórios via `@NotNull`/`@NotBlank`.

@@ -51,12 +51,13 @@ public class TarefaService {
 
     @Transactional
     public Tarefa create(TarefaRequest request) {
-        tarefaValidator.validarCriacao(request);
         LocalDateTime agora = LocalDateTime.now();
         Pet pet = findPetById(request.petId());
+        Usuario usuario = findUsuarioById(request.usuarioId());
+        tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
         Status statusPendente = statusService.findStatusByNome(EnumStatus.PENDENTE.name());
 
-        Tarefa tarefa = request.toEntity(null, pet, agora);
+        Tarefa tarefa = request.toEntity(usuario, pet, agora);
         tarefa.setStatus(statusPendente);
         return tarefaRepository.save(tarefa);
     }
@@ -65,10 +66,10 @@ public class TarefaService {
     public Tarefa update(Long id, TarefaRequest request) {
         Tarefa tarefaAtual = findTarefaById(id);
         Pet pet = findPetById(request.petId());
+        Usuario usuario = findUsuarioById(request.usuarioId());
+        tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
         EnumStatus status = EnumStatus.valueOf(request.status().trim().toUpperCase());
         LocalDateTime agora = LocalDateTime.now();
-        Usuario usuario = buscarUsuarioExecutor(request.usuarioId(), pet);
-        tarefaValidator.validarAtualizacao(status, usuario, request.prazo(), agora);
 
         Status novoStatus = statusService.findStatusByNome(status.name());
         LocalDateTime conclusao = definirConclusao(tarefaAtual, status, agora);
@@ -106,16 +107,6 @@ public class TarefaService {
     public void delete(Long id) {
         findTarefaById(id);
         tarefaRepository.deleteById(id);
-    }
-
-    private Usuario buscarUsuarioExecutor(Long usuarioId, Pet pet) {
-        if (usuarioId == null) {
-            return null;
-        }
-
-        Usuario usuario = findUsuarioById(usuarioId);
-        tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
-        return usuario;
     }
 
     private LocalDateTime definirConclusao(Tarefa tarefa, EnumStatus status, LocalDateTime agora) {

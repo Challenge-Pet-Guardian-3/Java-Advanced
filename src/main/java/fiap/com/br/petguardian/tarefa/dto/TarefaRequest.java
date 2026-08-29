@@ -29,6 +29,7 @@ public record TarefaRequest(
         @FutureOrPresent(message = "Prazo não pode estar no passado.")
         LocalDateTime prazo,
 
+        @NotNull
         Long usuarioId,
 
         @NotNull

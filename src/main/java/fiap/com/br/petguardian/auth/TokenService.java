@@ -23,12 +23,13 @@ public class TokenService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
 
         var now = Instant.now();
+
         var claims = JwtClaimsSet.builder()
                 .issuer("petguardian-api")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(user.getEmail())
-                .claim("role", "USER")
+                .claim("role", user.getRole().name())
                 .build();
 
         return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

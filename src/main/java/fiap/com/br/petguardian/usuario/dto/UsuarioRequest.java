@@ -3,7 +3,9 @@ package fiap.com.br.petguardian.usuario.dto;
 import fiap.com.br.petguardian.endereco.dto.EnderecoRequest;
 import fiap.com.br.petguardian.telefone.Telefone;
 import fiap.com.br.petguardian.usuario.Usuario;
+import fiap.com.br.petguardian.usuario.UsuarioRole;
 import fiap.com.br.petguardian.validation.DddValidation;
+import fiap.com.br.petguardian.validation.EnumValidation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +33,10 @@ public record UsuarioRequest(
         @Pattern(regexp = "\\d{9}", message = "Número de telefone deve conter exatamente 9 dígitos numéricos.")
         String numeroTelefone,
 
+        @NotBlank
+        @EnumValidation(enumClass = UsuarioRole.class)
+        String role,
+
         @NotNull
         @Valid
         EnderecoRequest endereco
@@ -40,6 +46,7 @@ public record UsuarioRequest(
                 .nome(nome)
                 .email(email.trim().toLowerCase())
                 .senha(senhaCodificada)
+                .role(UsuarioRole.valueOf(role))
                 .telefone(telefone)
                 .build();
     }
@@ -55,6 +62,7 @@ public record UsuarioRequest(
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setSenha(senhaCodificada);
+        usuario.setRole(UsuarioRole.valueOf(role));
         usuario.getTelefone().setDdd(ddd.trim());
         usuario.getTelefone().setNumero(numeroTelefone.trim());
         return usuario;
