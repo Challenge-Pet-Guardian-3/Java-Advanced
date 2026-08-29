@@ -28,37 +28,37 @@
 [EPIC] Sprint 3 - Java Advanced: Evolução da Arquitetura Spring Boot, Segurança JWT e Governança Pet-Centric
 │
 ├── 🏆 [FEATURE 01] Refatoração Arquitetural, SOLID & Tratamento de Exceções
-│   ├── 📄 [PBI-01] Arquitetura de Exceções de Domínio e Global Exception Handler (3 pts)
-│   └── 📄 [PBI-02] Refatoração dos Serviços de Negócio com Princípios SOLID (SRP, DIP & Injeção) (5 pts)
+│   ├── 📄 [PBI-01] Arquitetura de Exceções de Domínio e Global Exception Handler (1 pt)
+│   └── 📄 [PBI-02] Refatoração dos Serviços de Negócio com Princípios SOLID (SRP, DIP & Injeção) (1 pt)
 │
 ├── 🏆 [FEATURE 02] Validação de Contratos (Bean Validation) & Documentação OpenAPI
-│   ├── 📄 [PBI-03] Padronização de DTOs e Bean Validation Avançado (@Valid) (3 pts)
-│   └── 📄 [PBI-04] Configuração e Documentação Interativa com SpringDoc OpenAPI 3 / Swagger (3 pts)
+│   ├── 📄 [PBI-03] Padronização de DTOs e Bean Validation Avançado (@Valid) (1 pt)
+│   └── 📄 [PBI-04] Configuração e Documentação Interativa com SpringDoc OpenAPI 3 / Swagger (1 pt)
 │
 ├── 🏆 [FEATURE 03] Autenticação e Gestão de Credenciais com JWT (Spring Security Core)
-│   ├── 📄 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT RSA (5 pts)
-│   └── 📄 [PBI-06] Endpoints de Autenticação (/login) e Registro (/usuarios) com Emissão de JWT (3 pts)
+│   ├── 📄 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT RSA (2 pts)
+│   └── 📄 [PBI-06] Endpoints de Autenticação (/login) e Registro (/usuarios) com Emissão de JWT (1 pt)
 │
 ├── 🏆 [FEATURE 04] Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)
-│   ├── 📄 [PBI-07] Configuração do SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada (5 pts)
-│   └── 📄 [PBI-08] Segurança Granular por Método (@EnableMethodSecurity) e Handlers 401/403 (3 pts)
+│   ├── 📄 [PBI-07] Configuração do SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada (2 pts)
+│   └── 📄 [PBI-08] Segurança Granular por Método (@EnableMethodSecurity) e Handlers 401/403 (1 pt)
 │
 ├── 🏆 [FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)
-│   ├── 📄 [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) (5 pts)
-│   └── 📄 [PBI-10] Migrações Incrementais de Domínio, Status e Seeds de Segurança (V2 e V3) (3 pts)
+│   ├── 📄 [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) (2 pts)
+│   └── 📄 [PBI-10] Migrações Incrementais de Domínio, Status e Seeds de Segurança (V2 e V3) (1 pt)
 │
 ├── 🏆 [FEATURE 06] Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)
-│   ├── 📄 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail (5 pts)
-│   └── 📄 [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado (RedeCuidadoMapper) e Histórico do Pet (5 pts)
+│   ├── 📄 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail (2 pts)
+│   └── 📄 [PBI-12] [Fluxo 1.2] Visualização Agregada da Rede de Cuidado (RedeCuidadoMapper) e Histórico do Pet (2 pts)
 │
 ├── 🏆 [FEATURE 07] Fluxo 2: Gestão da Rotina do Pet, Expiração Atômica & Gamificação
-│   ├── 📄 [PBI-13] [Fluxo 2.1] Criação de Rotina Familiar e Mecanismo Atômico de Expiração Automática (5 pts)
-│   └── 📄 [PBI-14] [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Sistema de Pontuação (5 pts)
+│   ├── 📄 [PBI-13] [Fluxo 2.1] Criação de Rotina Familiar e Mecanismo Atômico de Expiração Automática (2 pts)
+│   └── 📄 [PBI-14] [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Sistema de Pontuação (2 pts)
 │
 └── 🏆 [FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral
-    ├── 📄 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle) (3 pts)
-    ├── 📄 [PBI-16] Roteiro e Gravação do Vídeo Demonstrativo da Aplicação (Máx. 10 min) (5 pts)
-    └── 📄 [PBI-17] Matriz de Argumentação e Preparação para a Avaliação Oral Individual (3 pts)
+    ├── 📄 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle) (1 pt)
+    ├── 📄 [PBI-16] Roteiro e Gravação do Vídeo Demonstrativo da Aplicação (Máx. 10 min) (1 pt)
+    └── 📄 [PBI-17] Matriz de Argumentação e Preparação para a Avaliação Oral Individual (1 pt)
 ```
 
 ---
@@ -67,24 +67,24 @@
 
 | Feature Pai | ID do PBI | Título do Item de Backlog (PBI) | Story Points | Prioridade | Horas Estimadas |
 | :--- | :--- | :--- | :---: | :---: | :---: |
-| **[FEATURE 01] SOLID & Qualidade** | **PBI-01** | Arquitetura de Exceções de Domínio e Global Exception Handler | 3 pts | 1 - Critical | 4.5h |
-| | **PBI-02** | Refatoração dos Serviços de Negócio com Princípios SOLID | 5 pts | 1 - Critical | 6.5h |
-| **[FEATURE 02] Validação & Swagger** | **PBI-03** | Padronização de DTOs e Bean Validation Avançado (@Valid) | 3 pts | 2 - High | 3.5h |
-| | **PBI-04** | Configuração e Documentação com SpringDoc OpenAPI 3 / Swagger | 3 pts | 2 - High | 4.5h |
-| **[FEATURE 03] Security Core JWT** | **PBI-05** | Arquitetura de Autenticação, UserDetails, BCrypt & JWT Service RSA | 5 pts | 1 - Critical | 5.5h |
-| | **PBI-06** | Endpoints de Autenticação (/login) e Registro (/usuarios) com JWT | 3 pts | 1 - Critical | 4.0h |
-| **[FEATURE 04] Autorização RBAC** | **PBI-07** | SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada | 5 pts | 1 - Critical | 5.0h |
-| | **PBI-08** | Segurança Granular por Método (@EnableMethodSecurity) e Handlers | 3 pts | 1 - Critical | 5.0h |
-| **[FEATURE 05] Flyway & Banco** | **PBI-09** | Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) | 5 pts | 1 - Critical | 6.0h |
-| | **PBI-10** | Migrações Incrementais, Status e Seeds de Segurança (V2/V3) | 3 pts | 2 - High | 4.5h |
-| **[FEATURE 06] Fluxo 1 Rede Cuidado** | **PBI-11** | [Fluxo 1.1] Gestão Vínculos N:N, Responsável Principal e Convite E-mail | 5 pts | 1 - Critical | 6.0h |
-| | **PBI-12** | [Fluxo 1.2] Rede Cuidado Agregada (RedeCuidadoMapper) e Histórico Pet | 5 pts | 1 - Critical | 6.0h |
-| **[FEATURE 07] Fluxo 2 Gamificação** | **PBI-13** | [Fluxo 2.1] Criação Rotina Familiar e Expiração Automática de Tarefas | 5 pts | 1 - Critical | 5.5h |
-| | **PBI-14** | [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Pontuação | 5 pts | 1 - Critical | 5.5h |
-| **[FEATURE 08] Docs, Vídeo & Banca** | **PBI-15** | Atualização Completa do README.md e Guia de Execução (Gradle) | 3 pts | 2 - High | 3.0h |
-| | **PBI-16** | Roteiro e Gravação do Vídeo Demonstrativo (Máx. 10 min) | 5 pts | 1 - Critical | 5.5h |
-| | **PBI-17** | Matriz de Argumentação e Preparação para a Avaliação Oral | 3 pts | 2 - High | 3.5h |
-| **TOTAL CONSOLIDADO** | **8 Features** | **17 PBIs / 43 Child Tasks Técnicas** | **69 pts** | — | **74.5h** |
+| **[FEATURE 01] SOLID & Qualidade** | **PBI-01** | Arquitetura de Exceções de Domínio e Global Exception Handler | 1 pts | 1 - Critical | 4.5h |
+| | **PBI-02** | Refatoração dos Serviços de Negócio com Princípios SOLID | 1 pts | 1 - Critical | 6.5h |
+| **[FEATURE 02] Validação & Swagger** | **PBI-03** | Padronização de DTOs e Bean Validation Avançado (@Valid) | 1 pts | 2 - High | 3.5h |
+| | **PBI-04** | Configuração e Documentação com SpringDoc OpenAPI 3 / Swagger | 1 pts | 2 - High | 4.5h |
+| **[FEATURE 03] Security Core JWT** | **PBI-05** | Arquitetura de Autenticação, UserDetails, BCrypt & JWT Service RSA | 2 pts | 1 - Critical | 5.5h |
+| | **PBI-06** | Endpoints de Autenticação (/login) e Registro (/usuarios) com JWT | 1 pts | 1 - Critical | 4.0h |
+| **[FEATURE 04] Autorização RBAC** | **PBI-07** | SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada | 2 pts | 1 - Critical | 5.0h |
+| | **PBI-08** | Segurança Granular por Método (@EnableMethodSecurity) e Handlers | 1 pts | 1 - Critical | 5.0h |
+| **[FEATURE 05] Flyway & Banco** | **PBI-09** | Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) | 2 pts | 1 - Critical | 6.0h |
+| | **PBI-10** | Migrações Incrementais, Status e Seeds de Segurança (V2/V3) | 1 pts | 2 - High | 4.5h |
+| **[FEATURE 06] Fluxo 1 Rede Cuidado** | **PBI-11** | [Fluxo 1.1] Gestão Vínculos N:N, Responsável Principal e Convite E-mail | 2 pts | 1 - Critical | 6.0h |
+| | **PBI-12** | [Fluxo 1.2] Rede Cuidado Agregada (RedeCuidadoMapper) e Histórico Pet | 2 pts | 1 - Critical | 6.0h |
+| **[FEATURE 07] Fluxo 2 Gamificação** | **PBI-13** | [Fluxo 2.1] Criação Rotina Familiar e Expiração Automática de Tarefas | 2 pts | 1 - Critical | 5.5h |
+| | **PBI-14** | [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Pontuação | 2 pts | 1 - Critical | 5.5h |
+| **[FEATURE 08] Docs, Vídeo & Banca** | **PBI-15** | Atualização Completa do README.md e Guia de Execução (Gradle) | 1 pts | 2 - High | 3.0h |
+| | **PBI-16** | Roteiro e Gravação do Vídeo Demonstrativo (Máx. 10 min) | 1 pts | 1 - Critical | 5.5h |
+| | **PBI-17** | Matriz de Argumentação e Preparação para a Avaliação Oral | 1 pts | 2 - High | 3.5h |
+| **TOTAL CONSOLIDADO** | **8 Features** | **17 PBIs / 43 Child Tasks Técnicas** | **24 pts** | — | **74.5h** |
 
 ---
 
@@ -99,7 +99,7 @@
 * **Start Date:** `2026-08-24`
 * **Target Date:** `2026-08-29`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `69`
+* **Effort (Story Points):** `24`
 * **Business Value:** `100`
 * **Description:** Evolução corporativa do backend Spring Boot aplicando governança de código SOLID/Clean Code, autenticação Stateless via OAuth2 Resource Server com par de chaves assimétricas RSA 2048-bit, migrações versionadas com Flyway e implementação de 2 fluxos de negócio complexos não-CRUD (Care Circle familiar N:N e rotina com expiração atômica e gamificação).
 
@@ -113,7 +113,7 @@
 * **Start Date:** `2026-08-24`
 * **Target Date:** `2026-08-25`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `8`
+* **Effort (Story Points):** `2`
 * **Description:** Refatoração da camada de serviços e tratamento de erros para cumprir os princípios de Clean Code, SRP e DIP, eliminando ResponseStatusException solta, unificando o tratamento de exceções de domínio no GlobalExceptionHandler e aplicando @Transactional seletivo.
 
 #### 🔹 [PBI-01] Arquitetura de Exceções de Domínio e Global Exception Handler
@@ -121,7 +121,7 @@
 * **Parent Feature:** `[FEATURE 01] Refatoração Arquitetural, SOLID & Tratamento de Exceções`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, Exceptions, GlobalExceptionHandler, ControllerAdvice`
 
 ##### Descrição (História de Usuário)
@@ -150,7 +150,7 @@
 * **Parent Feature:** `[FEATURE 01] Refatoração Arquitetural, SOLID & Tratamento de Exceções`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, SOLID, CleanCode, SRP, DIP, Lombok`
 
 ##### Descrição (História de Usuário)
@@ -182,7 +182,7 @@
 * **Start Date:** `2026-08-24`
 * **Target Date:** `2026-08-25`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `6`
+* **Effort (Story Points):** `2`
 * **Description:** Padronização de DTOs de entrada e saída com Bean Validation avançado, isolamento das entidades JPA e documentação interativa completa da API utilizando SpringDoc OpenAPI 3 / Swagger UI.
 
 #### 🔹 [PBI-03] Padronização de DTOs e Bean Validation Avançado (@Valid)
@@ -190,7 +190,7 @@
 * **Parent Feature:** `[FEATURE 02] Validação de Contratos (Bean Validation) & Documentação OpenAPI`
 * **State:** `Approved`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, BeanValidation, DTO, Validation`
 
 ##### Descrição (História de Usuário)
@@ -218,7 +218,7 @@
 * **Parent Feature:** `[FEATURE 02] Validação de Contratos (Bean Validation) & Documentação OpenAPI`
 * **State:** `Approved`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, Swagger, OpenAPI, SpringDoc, Documentation`
 
 ##### Descrição (História de Usuário)
@@ -250,7 +250,7 @@
 * **Start Date:** `2026-08-25`
 * **Target Date:** `2026-08-26`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `8`
+* **Effort (Story Points):** `3`
 * **Description:** Estruturação da arquitetura de autenticação com Spring Security e OAuth2 Resource Server com par de chaves assimétricas RSA 2048-bit, criptografia BCrypt, UserDetailsService e emissão de tokens JWT para consumo pelo aplicativo Mobile (React Native).
 
 #### 🔹 [PBI-05] Arquitetura de Autenticação, UserDetails, BCrypt & Serviço de Tokens JWT RSA
@@ -258,7 +258,7 @@
 * **Parent Feature:** `[FEATURE 03] Autenticação e Gestão de Credenciais com JWT (Spring Security Core)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, SpringSecurity, BCrypt, UserDetails, JWT, RSA`
 
 ##### Descrição (História de Usuário)
@@ -288,7 +288,7 @@
 * **Parent Feature:** `[FEATURE 03] Autenticação e Gestão de Credenciais com JWT (Spring Security Core)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, AuthEndpoints, Login, Register, JWT, MobileAPI`
 
 ##### Descrição (História de Usuário)
@@ -320,7 +320,7 @@
 * **Start Date:** `2026-08-25`
 * **Target Date:** `2026-08-26`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `8`
+* **Effort (Story Points):** `3`
 * **Description:** Configuração da cadeia de filtros SecurityFilterChain em modo STATELESS com decodificação automática de JWT via OAuth2 Resource Server, suporte a CORS isolado no CorsConfig para o aplicativo Mobile e política Secure by Default.
 
 #### 🔹 [PBI-07] Configuração do SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada
@@ -328,7 +328,7 @@
 * **Parent Feature:** `[FEATURE 04] Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, SecurityFilterChain, Stateless, OAuth2ResourceServer, CORS`
 
 ##### Descrição (História de Usuário)
@@ -358,7 +358,7 @@
 * **Parent Feature:** `[FEATURE 04] Autorização, Filtro JWT Stateless e Proteção de Endpoints (RBAC)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, MethodSecurity, EnableMethodSecurity, RBAC`
 
 ##### Descrição (História de Usuário)
@@ -387,7 +387,7 @@
 * **Start Date:** `2026-08-26`
 * **Target Date:** `2026-08-27`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `8`
+* **Effort (Story Points):** `3`
 * **Description:** Implementação de controle de versão de banco de dados relacional através do Flyway, estruturando tabelas Pet-Centric limpas (usuario, pet, usuario_pet, tarefa, status, endereco, bairro, cidade, estado, telefone).
 
 #### 🔹 [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1)
@@ -395,7 +395,7 @@
 * **Parent Feature:** `[FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, Spring-Boot, Flyway, DDL, PetCentric`
 
 ##### Descrição (História de Usuário)
@@ -431,7 +431,7 @@
 * **Parent Feature:** `[FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)`
 * **State:** `Approved`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, Flyway, SeedData`
 
 ##### Descrição (História de Usuário)
@@ -462,7 +462,7 @@
 * **Start Date:** `2026-08-27`
 * **Target Date:** `2026-08-28`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `10`
+* **Effort (Story Points):** `4`
 * **Description:** Implementação do primeiro fluxo de negócio complexo não-CRUD obrigatório: governança do Care Circle através do UsuarioPetController e UsuarioPetService, gestão de Responsável Principal, convite de co-cuidadores exclusivamente por e-mail, transferência de responsabilidade e agregação de alta performance da Rede de Cuidado com RedeCuidadoMapper.
 
 #### 🔹 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail
@@ -470,7 +470,7 @@
 * **Parent Feature:** `[FEATURE 06] Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, UsuarioPetService, UsuarioPetController, CoCuidadores, ResponsavelPrincipal`
 
 ##### Descrição (História de Usuário)
@@ -502,7 +502,7 @@
 * **Parent Feature:** `[FEATURE 06] Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, RedeCuidado, RedeCuidadoMapper, AntiNPlusOne, PetHistory`
 
 ##### Descrição (História de Usuário)
@@ -534,7 +534,7 @@
 * **Start Date:** `2026-08-27`
 * **Target Date:** `2026-08-28`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `10`
+* **Effort (Story Points):** `4`
 * **Description:** Implementação do segundo fluxo de negócio complexo não-CRUD obrigatório: gestão de tarefas da rotina do pet por cuidadores, mecanismo atômico de expiração automática de tarefas pendentes com prazo vencido, conclusão com atribuição de cuidador e cálculo de pontuação acumulada.
 
 #### 🔹 [PBI-13] [Fluxo 2.1] Criação de Rotina Familiar e Mecanismo Atômico de Expiração Automática
@@ -542,7 +542,7 @@
 * **Parent Feature:** `[FEATURE 07] Fluxo 2: Gestão da Rotina do Pet, Expiração Atômica & Gamificação`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, Rotina, Tarefas, ExpiracaoAutomatica, ModifyingQuery`
 
 ##### Descrição (História de Usuário)
@@ -572,7 +572,7 @@
 * **Parent Feature:** `[FEATURE 07] Fluxo 2: Gestão da Rotina do Pet, Expiração Atômica & Gamificação`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `2`
 * **Tags:** `Sprint3, JavaAdvanced, Gamification, ConclusaoTarefa, Pontuacao`
 
 ##### Descrição (História de Usuário)
@@ -605,7 +605,7 @@
 * **Start Date:** `2026-08-28`
 * **Target Date:** `2026-08-29`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `11`
+* **Effort (Story Points):** `3`
 * **Description:** Elaboração da documentação técnica no README, gravação do vídeo demonstrativo de até 10 minutos e consolidação da matriz de argumentação para a avaliação oral individual da disciplina.
 
 #### 🔹 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle)
@@ -613,7 +613,7 @@
 * **Parent Feature:** `[FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral`
 * **State:** `Approved`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, Documentation, README, Gradle`
 
 ##### Descrição (História de Usuário)
@@ -641,7 +641,7 @@
 * **Parent Feature:** `[FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral`
 * **State:** `Approved`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `5`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, Video, Demonstracao`
 
 ##### Descrição (História de Usuário)
@@ -672,7 +672,7 @@
 * **Parent Feature:** `[FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral`
 * **State:** `Approved`
 * **Priority:** `2 - High`
-* **Effort (Story Points):** `3`
+* **Effort (Story Points):** `1`
 * **Tags:** `Sprint3, JavaAdvanced, AvaliacaoOral, Estudo`
 
 ##### Descrição (História de Usuário)
