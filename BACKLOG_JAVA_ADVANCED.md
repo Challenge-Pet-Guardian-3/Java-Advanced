@@ -691,14 +691,3 @@
 * **Task 17.2:** [TASK-47] Realizar rodada interna de simulação da avaliação oral entre os membros do grupo. *(Activity: Testing, Est: 1.5h)*
   * *Descrição:* Praticar respostas e defesa técnica do código-fonte.
 
----
-
-## 👥 5. Integrantes do Grupo e Responsabilidades (Ordem Alfabética Estrita)
-
-| Integrante | RM | Turma | Responsabilidade Principal na Sprint 3 |
-| :--- | :---: | :---: | :--- |
-| **Enzo Okuizumi** | **561432** | 2TDSPG | Mobile Development (React Native), Integração TanStack Query & Coordenação Geral |
-| **Gustavo Okada** | **563428** | 2TDSPG | Java Advanced (Spring Security JWT, Flyway e SOLID) & .NET Observabilidade |
-| **Lucas Barros Gouveia** | **566422** | 2TDSPG | Database Advanced (PL/SQL, Funções, Procedures e Triggers DML) |
-| **Luna de Carvalho Guimarães** | **562290** | 2TDSPG | Disruptive Architectures (FastAPI, IA Generativa, RAG e Chat) & Compliance |
-| **Milton Marcelino** | **564836** | 2TDSPG | DevOps Tools & Cloud Computing (Azure CLI, ACR, ACI e Containers) |
