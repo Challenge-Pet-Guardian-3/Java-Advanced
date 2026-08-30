@@ -94,4 +94,22 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             @Param("pendente") Status pendente,
             @Param("expirada") Status expirada
     );
+
+    // ---- Repetições (grupoRecorrenciaId) ----
+
+    // Traz todas as ocorrências de um grupo (qualquer status), ordenadas por
+    // prazo — usada pra checar permissão (pega o pet de uma ocorrência
+    // qualquer do grupo) e pra listar/contar se precisar no futuro.
+    @Query("select t from Tarefa t where t.grupoRecorrenciaId = :grupoId order by t.prazo asc")
+    List<Tarefa> findByGrupoRecorrenciaId(@Param("grupoId") String grupoId);
+
+    // Apaga só as ocorrências FUTURAS e ainda PENDENTES de um grupo — dias já
+    // concluídos, expirados ou o prazo de hoje que já passou não são
+    // tocados. Retorna quantas linhas foram removidas.
+    @Modifying
+    @Transactional
+    @Query("delete from Tarefa t where t.grupoRecorrenciaId = :grupoId " +
+            "and t.status.nome_status = fiap.com.br.petguardian.status.EnumStatus.PENDENTE " +
+            "and t.prazo > :agora")
+    int excluirOcorrenciasFuturasPorGrupo(@Param("grupoId") String grupoId, @Param("agora") LocalDateTime agora);
 }

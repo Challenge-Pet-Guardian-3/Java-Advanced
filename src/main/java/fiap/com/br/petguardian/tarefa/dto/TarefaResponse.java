@@ -14,8 +14,10 @@ public record TarefaResponse(
         LocalDateTime conclusao,
         String status,
         Long usuarioId,
-        Long petId
+        Long petId,
+        String grupoRecorrenciaId
 ) {
+
     public static TarefaResponse fromEntity(Tarefa tarefa) {
         return new TarefaResponse(
                 tarefa.getId(),
@@ -25,9 +27,16 @@ public record TarefaResponse(
                 tarefa.getCriacao(),
                 tarefa.getPrazo(),
                 tarefa.getConclusao(),
-                tarefa.getStatus() != null ? tarefa.getStatus().getNome_status().name() : null,
-                tarefa.getUsuario() != null ? tarefa.getUsuario().getId() : null,
-                tarefa.getPet() != null ? tarefa.getPet().getId() : null
+                tarefa.getStatus() != null
+                        ? tarefa.getStatus().getNome_status().name()
+                        : null,
+                tarefa.getUsuario() != null
+                        ? tarefa.getUsuario().getId()
+                        : null,
+                tarefa.getPet() != null
+                        ? tarefa.getPet().getId()
+                        : null,
+                tarefa.getGrupoRecorrenciaId()
         );
     }
 }

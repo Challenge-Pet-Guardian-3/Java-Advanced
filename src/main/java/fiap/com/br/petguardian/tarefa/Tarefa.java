@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Tarefa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tarefa")
@@ -38,6 +39,12 @@ public class Tarefa {
 
     @Column(name = "conclusao")
     private LocalDateTime conclusao;
+
+    // Identifica o grupo de tarefas geradas pela mesma recorrência.
+    // Todas as ocorrências da mesma recorrência possuem o mesmo UUID.
+    // Tarefas avulsas possuem este campo como null.
+    @Column(name = "grupo_recorrencia_id", length = 36)
+    private String grupoRecorrenciaId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id_status", nullable = false)
