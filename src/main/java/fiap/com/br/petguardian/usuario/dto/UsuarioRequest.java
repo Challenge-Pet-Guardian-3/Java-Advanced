@@ -3,6 +3,7 @@ package fiap.com.br.petguardian.usuario.dto;
 import fiap.com.br.petguardian.usuario.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UsuarioRequest(
@@ -17,7 +18,13 @@ public record UsuarioRequest(
         @Size(min = 6)
         String senha,
 
-        String telefone
+        @NotBlank(message = "Telefone e obrigatorio")
+        @Pattern(regexp = "\\d{10,11}", message = "Telefone deve conter 10 ou 11 digitos, somente numeros")
+        String telefone,
+
+        @NotBlank(message = "CEP e obrigatorio")
+        @Pattern(regexp = "\\d{8}", message = "CEP deve conter 8 digitos, somente numeros")
+        String cep
 ) {
     public Usuario toEntity() {
         return Usuario.builder()

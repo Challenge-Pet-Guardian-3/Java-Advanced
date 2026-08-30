@@ -32,12 +32,32 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Liberação de CORS (Pre-flight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 2. Liberação total do Swagger, OpenAPI e WebJars
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+
+                        // 3. Liberação do console do H2
+                        .requestMatchers("/h2-console/**").permitAll()
+
+                        // 4. Endpoints públicos (Login e Cadastro de Usuário)
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
+
+                        // 5. Controle de Acesso baseado no Perfil (ROLE_DONO_FAMILIA)
                         .requestMatchers(HttpMethod.DELETE, "/familia/membros/**").hasRole("DONO_FAMILIA")
                         .requestMatchers(HttpMethod.PUT, "/familia").hasRole("DONO_FAMILIA")
+
+                        // 6. Todas as demais rotas exigem autenticação
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))

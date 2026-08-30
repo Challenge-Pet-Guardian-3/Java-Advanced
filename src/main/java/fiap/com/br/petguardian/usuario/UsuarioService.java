@@ -1,5 +1,6 @@
 package fiap.com.br.petguardian.usuario;
 
+import fiap.com.br.petguardian.endereco.Endereco;
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import fiap.com.br.petguardian.tarefa.TarefaRepository;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
@@ -7,6 +8,8 @@ import fiap.com.br.petguardian.usuario.dto.UsuarioRequest;
 import fiap.com.br.petguardian.usuario.dto.UsuarioUpdateRequest;
 import fiap.com.br.petguardian.usuariopet.UsuarioPet;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetRepository;
+import fiap.com.br.petguardian.viacep.ViaCepClient;
+import fiap.com.br.petguardian.viacep.dto.ViaCepResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,7 @@ public class UsuarioService {
     private final UsuarioPetRepository usuarioPetRepository;
     private final TarefaRepository tarefaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ViaCepClient viaCepClient;
 
     public Page<Usuario> findAll(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
@@ -42,7 +46,21 @@ public class UsuarioService {
     public Usuario create(UsuarioRequest usuarioRequest) {
         Usuario usuario = usuarioRequest.toEntity();
         usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
-        return usuarioRepository.save(usuario);
+
+        ViaCepResponse viaCep = viaCepClient.buscar(usuarioRequest.cep());
+
+        Endereco endereco = Endereco.builder()
+                .logradouro(viaCep.logradouro())
+                .bairro(viaCep.bairro())
+                .cidade(viaCep.localidade())
+                .estado(viaCep.uf())
+                .cep(usuarioRequest.cep())
+                .usuario(usuario)
+                .build();
+
+        usuario.setEndereco(endereco);
+
+        return usuarioRepository.save(usuario); // cascade ALL propaga o Endereco
     }
 
     @Transactional
