@@ -14,9 +14,6 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class FamiliaService {
 
-    private static final int XP_DONO_INICIAL = 30;
-    private static final int XP_MEMBRO_INICIAL = 15;
-
     private final FamiliaRepository familiaRepository;
     private final FamiliaMembroRepository membroRepository;
     private final RecadoRepository recadoRepository;
@@ -38,7 +35,6 @@ public class FamiliaService {
                 .familia(familiaSalva)
                 .usuario(dono)
                 .funcao("Dono(a) da Familia")
-                .xp(XP_DONO_INICIAL)
                 .responsavelPrincipal(true)
                 .dataEntrada(LocalDateTime.now())
                 .build();
@@ -59,7 +55,6 @@ public class FamiliaService {
                 .familia(familia)
                 .usuario(usuario)
                 .funcao(funcao != null && !funcao.isBlank() ? funcao.trim() : "Co-cuidador")
-                .xp(XP_MEMBRO_INICIAL)
                 .responsavelPrincipal(false)
                 .dataEntrada(LocalDateTime.now())
                 .build();

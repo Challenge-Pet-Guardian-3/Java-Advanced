@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -60,6 +61,8 @@ public class PetService {
     }
 
     public Pet create(PetRequest petRequest) {
+        validarHistoricoClinico(petRequest);
+
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
         Pet pet = petRequest.toEntity(raca);
@@ -73,6 +76,8 @@ public class PetService {
     }
 
     public Pet update(Long id, PetRequest petRequest) {
+        validarHistoricoClinico(petRequest);
+
         Pet pet = findPetById(id);
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
@@ -153,6 +158,37 @@ public class PetService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario com email " + emailConvidado + " nao encontrado."));
 
         vincularCuidadorPorResponsavelPrincipal(petId, responsavelPrincipalId, usuarioConvidado.getId());
+    }
+
+    private void validarHistoricoClinico(PetRequest req) {
+        if (req.idade() == null) return;
+
+        LocalDate hoje = LocalDate.now();
+        LocalDate dataEstimadaNascimento = hoje.minusYears(req.idade());
+
+        if (req.ultimaConsulta() != null) {
+            if (req.ultimaConsulta().isAfter(hoje)) {
+                throw new IllegalArgumentException("A data da última consulta não pode ser futura.");
+            }
+            if (req.ultimaConsulta().isBefore(dataEstimadaNascimento)) {
+                throw new IllegalArgumentException(
+                        "A data da última consulta (" + req.ultimaConsulta().getYear() +
+                                ") não pode ser anterior ao nascimento estimado do pet (" + dataEstimadaNascimento.getYear() + ")."
+                );
+            }
+        }
+
+        if (req.ultimaVacina() != null) {
+            if (req.ultimaVacina().isAfter(hoje)) {
+                throw new IllegalArgumentException("A data da última vacina não pode ser futura.");
+            }
+            if (req.ultimaVacina().isBefore(dataEstimadaNascimento)) {
+                throw new IllegalArgumentException(
+                        "A data da última vacina (" + req.ultimaVacina().getYear() +
+                                ") não pode ser anterior ao nascimento estimado do pet (" + dataEstimadaNascimento.getYear() + ")."
+                );
+            }
+        }
     }
 
     private Pet findPetById(Long id) {
