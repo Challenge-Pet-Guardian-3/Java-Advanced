@@ -1,26 +1,11 @@
-# PetGuardian API
+# 🐾 PetGuardian
 
-> **Challenge FIAP - Java Advanced (Spring Boot)**
->
-> Plataforma corporativa para gestão da saúde e rotina de cuidados do pet em família sob a **Arquitetura Pet-Centric**.
-
-<p>
-  <img src="https://img.shields.io/badge/Java-17-007396?logo=openjdk&logoColor=white" alt="Java 17" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot 4.0.6" />
-  <img src="https://img.shields.io/badge/Build-Maven-C71A36?logo=apachemaven&logoColor=white" alt="Maven" />
-  <img src="https://img.shields.io/badge/Database-H2-0B5394" alt="H2" />
-  <img src="https://img.shields.io/badge/API-REST-2B2B2B" alt="REST API" />
-</p>
-
-| Link rápido | URL                                                     |
-|---|---------------------------------------------------------|
-| Repositório GitHub | https://github.com/Challenge-Pet-Guardian-3/Java-Advanced |
-| Arquivo Insomnia | [/docs/Insomnia_2026-05-21.yaml](/docs/Insomnia_2026-05-21.yaml)      |
-| Swagger UI (local) | http://localhost:8080/swagger-ui/index.html             |
+> Aplicação colaborativa de cuidado de pets com gamificação, integrando duas entregas acadêmicas FIAP (2TDSPG):
+> **Java Advanced** (aplicação Spring Boot completa) e **Disruptive Architectures: IoT, IoB & Generative IA** (módulo de IA — Challenge Clyvo Vet).
 
 ---
 
-## Integrantes
+## 👥 Integrantes
 
 | Nome | RM | Turma | GitHub | LinkedIn |
 | :--- | :---: | :---: | :--- | :--- |
@@ -29,282 +14,160 @@
 | **Lucas Barros Gouveia** | **566422** | 2TDSPG | [LuzBGouveia](https://github.com/LuzBGouveia) | [Lucas Barros Gouveia](https://www.linkedin.com/in/lucas-barros-gouveia-09b147355/) |
 | **Luna de Carvalho Guimarães** | **562290** | 2TDSPG | [lunaguima](https://github.com/lunaguima) | [Luna Guimarães](https://www.linkedin.com/in/luna-guimar%C3%A3es-b0ba82309/) |
 | **Milton Marcelino** | **564836** | 2TDSPG | [MiltonMarcelino](https://github.com/MiltonMarcelino) | [Milton Marcelino](http://linkedin.com/in/milton-marcelino-250298142) |
----
-
-## Sobre o Projeto
-
-O **PetGuardian** é uma API REST corporativa em Spring Boot desenvolvida sob a **Arquitetura Pet-Centric** (diretriz da Mentoria Clyvo para o Challenge 2026), focada na saúde contínua, governança de cuidados e gamificação centrada no animal.
-
-### 🌟 Pilares da Arquitetura Pet-Centric
-- **Ecossistema Centrado no Pet:** O animal é a entidade nuclear (`pet`), possuindo sua própria evolução de bem-estar, peso e prontuário.
-- **Gamificação Pet-Centric:** O score de bem-estar (`score_bem_estar` / `pontos_bem_estar`) acumula **diretamente no Pet** conforme as rotinas de cuidado e módulos de treinamento são concluídos pela família.
-- **Rotina Familiar Colaborativa:** Cuidadores e tutores gerenciam as tarefas diárias do pet (alimentação, remédios, passeios, higiene) com sincronização em tempo real entre co-cuidadores, sem necessidade de prescrição veterinária para tarefas domésticas.
-- **Acompanhamento Clínico & Emergência 24h:** Prontuário clínico estruturado (`atendimento`) com histórico de consultas, vacinas e busca especializada de clínicas veterinárias 24h / pronto-socorro.
 
 ---
 
-### Gamificação: Score e Bem-Estar no Pet
+## 🔗 Repositório & Vídeos
 
-O sistema incentiva o cuidado preventivo e a consistência da rotina:
-- Cada tarefa de rotina e módulo de adestramento concluído gera **pontos de bem-estar** para o Pet.
-- O Pet evolui de nível de saúde e bem-estar na plataforma (`PetScoreBar`).
-- O histórico de cuidados e o score alimentam a Assistente de IA para sugestões personalizadas de saúde preventiva.
-
-### Rede de Cuidado Familiar (Care Circle)
-
-A rede de cuidado organiza os vínculos de tutores em torno de cada animal:
-- Vínculos colaborativos entre usuários e pets em `usuario_pet`;
-- Visão agregada por usuário em `/usuarios/{id}/rede-cuidado`;
-- Histórico compartilhado entre todos os membros da família.
-
-### Rotina e Tarefas
-
-As tarefas representam cuidados diários da rotina familiar (alimentar, medicar, passear, higienizar, adestrar):
-- Criadas diretamente pelos tutores da família vinculados ao Pet;
-- Conclusão reativa que credita pontos imediatamente ao Score do Pet;
-- Status controlado por ciclo de vida (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
+* **Repositório GitHub:** [https://github.com/Challenge-Pet-Guardian-3/Disruptive-Architectures-IoT-IoB-IA](https://github.com/Challenge-Pet-Guardian-3/Disruptive-Architectures-IoT-IoB-IA)
+* **Vídeo demonstração — Java Advanced (máx. 10 min):** *(adicionar link após a gravação)*
+* **Vídeo pitch — Disruptive Architectures (máx. 5 min):** *(adicionar link após a gravação)*
 
 ---
 
-### Atendimentos Veterinários
+## 💡 Visão Geral do Projeto
 
-Cada atendimento está vinculado a:
-- um pet,
-- um veterinário,
-- um tipo de atendimento,
-- um status.
+O PetGuardian é um aplicativo colaborativo de cuidado de pets: famílias inteiras (múltiplos cuidadores) gerenciam tarefas, vacinas, trilhas de aprendizado e agora contam com um assistente de orientação inteligente. O backend é uma aplicação **Spring Boot** completa, com frontend em **React Native**, banco versionado via **Flyway**, autenticação via **Spring Security + JWT**, e um módulo de **IA baseada em motor de regras** para orientações preventivas.
 
 ---
 
-## Modelagem Lógica e Relacional do Banco de Dados
+## 🛠️ Tecnologias Utilizadas
 
-### Modelo Lógico 
-![Modelo Lógico](docs/Logical.png)
-
-### Modelo Relacional
-
-![Modelo Relacional](docs/Relational.png)
-
----
-
-## Arquitetura
-
-```
-src/main/java/fiap/com/br/petguardian/
-├── config/              # Configuracoes (Swagger, seed, cache)
-├── exception/           # Tratamento centralizado de erros
-├── validation/          # Validacoes customizadas (CEP, DDD, Enum)
-│
-├── usuario/             # Usuario (CRUD + paginação)
-├── usuariopet/          # Relacao N:N Usuario x Pet
-├── pet/                 # Pet (CRUD + paginacao + historico)
-│   └── raca/            # Raca do pet
-│
-├── tarefa/              # Tarefa gamificada (prescricao/conclusao/pontos)
-├── status/              # Status de dominio
-├── atendimento/         # Atendimento veterinario
-│   └── tipoatendimento/ # Tipo de atendimento
-│
-├── clinica/             # Clinica veterinaria
-├── veterinario/         # Veterinario
-├── endereco/            # Endereco
-│   ├── bairro/
-│   ├── cidade/
-│   └── estado/
-│
-└── telefone/            # Telefone
-```
+- **Backend:** Java 21, Spring Boot, Spring Data JPA, Spring Security, JWT
+- **Banco de Dados:** H2 (file-based), Flyway para versionamento de schema
+- **Documentação de API:** Swagger / OpenAPI
+- **Frontend:** React Native + Expo, TypeScript, TanStack Query
+- **Módulo de IA:** motor de regras em Java (sem dependências externas)
 
 ---
 
-## Tecnologias Utilizadas
+## 🔐 Perfis de Usuário e Controle de Acesso (Spring Security)
 
-| Tecnologia | Finalidade |
-|---|---|
-| Java 17 | Linguagem principal |
-| Spring Boot 4.0.6 | Framework principal |
-| Spring Data JPA | Persistencia e ORM |
-| Spring Validation | Bean Validation |
-| Spring Cache | Cache de consultas |
-| SpringDoc OpenAPI | Documentacao Swagger |
-| H2 Database | Banco em memoria |
-| Lombok | Reducao de boilerplate |
-| Maven | Build e dependencias |
+A aplicação implementa **dois perfis de usuário** com permissões diferentes, controlados via `SecurityConfig`:
 
----
+| Perfil | Permissões |
+| :--- | :--- |
+| **`ROLE_DONO_FAMILIA`** (Responsável Principal) | Além das permissões de um cuidador comum, pode remover membros da família (`DELETE /familia/membros/**`) e renomear a família (`PUT /familia`) |
+| **Cuidador comum (usuário autenticado)** | Acesso às demais rotas da aplicação (pets, tarefas, trilhas, IA, recados), mas sem permissão para gerenciar a estrutura da família |
 
-## Endpoints da API
+**Rotas públicas (sem autenticação):** login, cadastro de usuário (`POST /usuarios`), listagem de clínicas veterinárias (`GET /clinicas`), Swagger e console H2.
 
-Todos os endpoints usam DTOs, Bean Validation e documentação Swagger.
+**Rotas protegidas:** todas as demais exigem token JWT válido; as rotas de IA (`/ia/chat`, `/ia/insights/*`, `/ia/historico/*`) exigem usuário autenticado.
 
-### Usuarios (`/usuarios`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/usuarios` | Listar todos os usuários (paginado) |
-| `GET` | `/usuarios/by-nome` | Buscar usuários por nome (paginado, `?nome=`) |
-| `GET` | `/usuarios/by-email` | Buscar usuário por e-mail (`?email=`) |
-| `GET` | `/usuarios/{id}` | Buscar usuário por ID |
-| `GET` | `/usuarios/{id}/rede-cuidado` | Visao agregada da rede de cuidado (Care Circle) |
-| `POST` | `/usuarios` | Criar usuário |
-| `PUT` | `/usuarios/{id}` | Atualizar usuário |
-| `DELETE` | `/usuarios/{id}` | Deletar usuário |
-
-### Pets (`/pets`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/pets` | Listar todos os pets (paginado) |
-| `GET` | `/pets/by-nome` | Buscar pets por nome (paginado, `?nome=`) |
-| `GET` | `/pets/{id}` | Buscar pet por ID |
-| `GET` | `/pets/{id}/historico` | Historico consolidado (atendimentos + tarefas concluidas) |
-| `POST` | `/pets` | Criar pet |
-| `PUT` | `/pets/{id}` | Atualizar pet |
-| `DELETE` | `/pets/{id}` | Deletar pet |
-| `POST` | `/pets/{id}/usuarios/{usuarioId}` | Vincular usuario ao pet (`?principal=true/false`) |
-| `DELETE` | `/pets/{id}/usuarios/{usuarioId}` | Desvincular usuario do pet |
-| `POST` | `/pets/{id}/convidar` | Convidar co-cuidador por ID (`?responsavelPrincipalId=&usuarioConvidadoId=`) |
-| `POST` | `/pets/{id}/convidar-email` | Convidar co-cuidador por e-mail (`?responsavelPrincipalId=&email=`) |
-
-### Tarefas (`/tarefas`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/tarefas` | Listar todas as tarefas (paginado) |
-| `GET` | `/tarefas/by-usuario` | Listar tarefas pendentes por usuario (paginado, `?usuarioId=`) |
-| `GET` | `/tarefas/{id}` | Buscar tarefa por ID |
-| `GET` | `/tarefas/by-usuario/{usuarioId}/{id}` | Buscar tarefa por usuario e ID |
-| `POST` | `/tarefas` | Criar tarefa |
-| `PUT` | `/tarefas/{id}` | Atualizar tarefa |
-| `PATCH` | `/tarefas/{id}/concluir` | Concluir tarefa (enviar `concluinteId` no body) |
-| `GET` | `/tarefas/by-usuario/pontos` | Pontos totais do cuidador (`?usuarioId=`) |
-| `DELETE` | `/tarefas/{id}` | Deletar tarefa |
-
-### Atendimentos (`/atendimentos`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/atendimentos` | Listar todos os atendimentos (paginado) |
-| `GET` | `/atendimentos/by-usuario` | Listar atendimentos por usuario (paginado, `?usuarioId=`) |
-| `GET` | `/atendimentos/{id}` | Buscar atendimento por ID |
-| `POST` | `/atendimentos` | Criar atendimento |
-| `PUT` | `/atendimentos/{id}` | Atualizar atendimento |
-| `DELETE` | `/atendimentos/{id}` | Deletar atendimento |
-
-### Clinicas (`/clinicas`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/clinicas` | Listar todas as clinicas (paginado) |
-| `GET` | `/clinicas/by-nome` | Buscar clinicas por nome (paginado, `?nome=`) |
-| `GET` | `/clinicas/{id}` | Buscar clinica por ID |
-| `POST` | `/clinicas` | Criar clinica |
-| `PUT` | `/clinicas/{id}` | Atualizar clinica |
-| `DELETE` | `/clinicas/{id}` | Deletar clinica |
-
-### Veterinarios (`/veterinarios`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/veterinarios` | Listar todos os veterinarios (paginado) |
-| `GET` | `/veterinarios/by-nome` | Buscar veterinarios por nome (paginado, `?nome=`) |
-| `GET` | `/veterinarios/by-email` | Buscar veterinario por e-mail (`?email=`) |
-| `GET` | `/veterinarios/{id}` | Buscar veterinario por ID |
-| `POST` | `/veterinarios` | Criar veterinario |
-| `PUT` | `/veterinarios/{id}` | Atualizar veterinario |
-| `DELETE` | `/veterinarios/{id}` | Deletar veterinario |
-
-### Enderecos (`/enderecos`)
-
-| Metodo | Endpoint | Descricao |
-|---|---|---|
-| `GET` | `/enderecos` | Listar todos os enderecos (paginado) |
-| `GET` | `/enderecos/{id}` | Buscar endereco por ID |
-| `POST` | `/enderecos` | Criar endereco |
-| `PUT` | `/enderecos/{id}` | Atualizar endereco |
-| `DELETE` | `/enderecos/{id}` | Deletar endereco |
+**Proteção por dono do recurso:** além do controle por perfil, ações sensíveis (editar/excluir o próprio cadastro, editar/excluir um pet, concluir/reabrir/excluir uma tarefa) validam que o solicitante é o usuário autenticado dono do recurso — nunca um ID informado livremente na requisição. Isso é resolvido a partir do token JWT (`Authentication`), não de parâmetros do cliente.
 
 ---
 
-## Como Executar
+## ⚙️ Funcionalidades Completas Implementadas
 
-### Pre-requisitos
+Além de operações de CRUD simples, dois fluxos completos de negócio foram implementados ponta a ponta:
 
-- Java 17+
-- Maven (ou Maven Wrapper)
+1. **Família:** criação de uma família com geração de código de convite único, entrada de novos cuidadores via código, e gestão de membros (com controle de acesso por perfil).
+2. **Tarefas:** criação de tarefas vinculadas a um pet e conclusão pelo cuidador autenticado (identificado via token, sem depender de ID enviado pelo cliente), com pontuação de XP creditada automaticamente ao membro da família.
 
-### Passos
+---
 
-Linux/Mac:
+## 🚀 Como Executar Localmente
+
+### Pré-requisitos:
+* Java 21+
+* Maven
+
 ```bash
+# 1. Clonar o repositório
+git clone https://github.com/Challenge-Pet-Guardian-3/Disruptive-Architectures-IoT-IoB-IA.git
+cd Disruptive-Architectures-IoT-IoB-IA
+
+# 2. Rodar a aplicação
 ./mvnw spring-boot:run
 ```
 
-Windows:
-```bat
-mvnw.cmd spring-boot:run
-```
+* **Documentação Interativa (Swagger):** `http://localhost:8080/swagger-ui.html`
+* **Banco H2 (dev):** `jdbc:h2:file:./data/petguardian`
 
-### Acessos
-
-| Recurso | URL |
-|---|---|
-| API | `http://localhost:8080` |
-| Swagger UI | `http://localhost:8080/swagger-ui/index.html` |
-| H2 Console | `http://localhost:8080/h2-console` |
-| Actuator | `http://localhost:8080/actuator` |
-
-Configuracao H2:
-- JDBC URL: `jdbc:h2:mem:petguardian`
-- User: `sa`
-- Password: vazio
+O banco é criado e populado automaticamente pelo Flyway na primeira execução (migrations em `src/main/resources/db/migration`).
 
 ---
 
-## Tratamento de Erros
+## 🤖 Módulo de IA — Assistente Clyvo (Disruptive Architectures: IoT, IoB & Generative IA)
 
-A API usa handler global e respostas padronizadas.
+### Visão Geral
 
-Formato:
+O módulo **Clyvo AI** é um assistente inteligente de orientação preventiva, integrado diretamente ao backend Java já existente. Ele resolve dúvidas frequentes do tutor sobre cuidados básicos (alimentação, vacinação, higiene, comportamento e riscos de intoxicação) que não justificam uma consulta veterinária imediata, mas exigem resposta rápida e confiável.
+
+### Abordagem de IA Escolhida e Justificativa Técnica
+
+**Abordagem:** Motor de Regras Inteligente (Rule-Based System) — uma das abordagens de IA previstas no enunciado da disciplina.
+
+**Por que motor de regras em vez de LLM/RAG generativo:**
+
+- **Confiabilidade em contexto de saúde animal:** orientações sobre alimentação, vacinação e intoxicação exigem respostas consistentes, sem risco de alucinação.
+- **Previsibilidade e auditabilidade:** cada resposta é rastreável a uma regra específica no código.
+- **Aderência ao stack já existente:** roda dentro do mesmo backend Spring Boot, sem exigir infraestrutura adicional (servidor Python, banco vetorial, chave de API de LLM).
+- **Caminho de evolução natural:** a arquitetura atual (mensagem → regra → resposta → histórico persistido) já deixa a base pronta para, futuramente, substituir a lógica de `gerarResposta()` por uma chamada a um LLM, mantendo o restante do fluxo inalterado.
+
+### Dados Utilizados pela IA
+
+| Dado | Origem | Uso |
+| :--- | :--- | :--- |
+| Pergunta do tutor (texto livre) | Input do usuário via app | Normalizada e comparada às palavras-chave das regras |
+| Perfil do Pet (`Pet`) | Banco de dados (tabela `pet`) | Personaliza recomendações com o nome do pet em `gerarInsights()` |
+| Histórico de mensagens (`IaMensagem`) | Banco de dados (tabela `ia_mensagem`) | Registra pergunta, resposta e data/hora por usuário e por pet |
+
+### Arquitetura do Módulo de IA
+
+```text
+📱 App Mobile (React Native)
+        │
+        ▼
+[HTTP POST /ia/chat]
+┌───────────────────────────────────────────┐
+│         ☕ Backend Spring Boot (Java)       │
+│                                             │
+│  1. IaController recebe a pergunta         │
+│  2. IaService normaliza o texto            │
+│  3. Motor de regras identifica o tema      │
+│     (ração, vacina, ansiedade, banho,      │
+│      toxicidade, higiene bucal)            │
+│  4. Resposta é gerada e retornada          │
+│  5. Pergunta + resposta são persistidas    │
+│     em IaMensagem                          │
+└───────────────────────────────────────────┘
+        │                         │
+        ▼                         ▼
+🗄️ Banco de Dados            📋 Histórico de conversas
+(Pet, Usuario)                (ia_mensagem)
+```
+
+### Endpoints REST da IA
+
+**`POST /ia/chat`** — envia a pergunta e recebe a orientação.
 ```json
 {
-  "timestamp": "2026-05-20T22:00:00Z",
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Mensagem de erro",
-  "path": "/endpoint"
+  "usuarioId": 1,
+  "petId": 1,
+  "pergunta": "Meu cachorro pode comer chocolate?"
+}
+```
+Resposta:
+```json
+{
+  "resposta": "Chocolate, cebola, alho, uvas/passas, cafeína e adoçantes com xilitol são tóxicos para cães e gatos. Em caso de ingestão, procure atendimento veterinário imediatamente."
 }
 ```
 
-Tipos tratados:
-- validacao de campos (`400`)
-- regra de negocio (`400`)
-- JSON invalido (`400`)
-- integridade de dados (`400`)
-- recurso nao encontrado (`404`)
-- erro inesperado (`500`)
+**`GET /ia/insights/{petId}`** — recomendações contextuais para o pet.
+
+**`GET /ia/historico/{usuarioId}`** — histórico de perguntas e respostas do usuário.
 
 ---
 
-## Cronograma de Desenvolvimento
+## 📌 Resultados Parciais
 
-Abaixo consta o resumo das principais entregas e marcos do desenvolvimento técnico da API, centralizado no desenvolvedor principal, **Enzo Okuizumi**:
-
-| Data / Período | Atividade Realizada | Responsável | Status |
-|---|---|---|---|
-| **01/05/2026** a **02/05/2026** | Inicialização, Setup e Estrutura de Configuração Base | Enzo Okuizumi | Concluído |
-| **05/05/2026** a **10/05/2026** | Modelagem JPA Completa e Mapeamento de Entidades | Enzo Okuizumi | Concluído |
-| **12/05/2026** a **14/05/2026** | Lógica de DTOs, Services e CEP | Enzo Okuizumi | Concluído |
-| **18/05/2026** a **20/05/2026** | Refatorações Complexas, Tratamento Global de Erros e Validations | Enzo Okuizumi | Concluído |
-| **21/05/2026** a **22/05/2026** | Paginação Geral (Swagger), Ordenação e Restauração de @PageableDefault | Enzo Okuizumi | Concluído |
-
-
-## Print Trello (Tirado em 22/05/2026)
-
-![Print Trello](/docs/cronograma-trello.png)
-
-## Print Trello Java
-
-![Print Trello Java](/docs/cronograma-java.png)
-
----
+- ✅ Backend Spring Boot completo com Flyway e Spring Security (2 perfis de usuário)
+- ✅ Fluxos completos de Família e Tarefas implementados
+- ✅ Motor de regras da IA funcional para 6 categorias de perguntas frequentes
+- ✅ Persistência de histórico de conversas e geração de insights por pet
+- ✅ Endpoints documentados e testáveis via Swagger
+- ⏳ Diagrama arquitetural em alta resolução (em elaboração)
+- ⏳ Vídeos de demonstração e pitch (em gravação)
