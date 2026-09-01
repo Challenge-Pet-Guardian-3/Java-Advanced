@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -67,6 +68,15 @@ public class FamiliaService {
         return membroRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario nao pertence a nenhuma familia."))
                 .getFamilia();
+    }
+
+    // Versao "silenciosa" de getFamiliaDoUsuario: usada pela consulta GET /familia,
+    // onde "usuario ainda nao tem familia" e um estado normal (usuario novo), nao um
+    // erro. Retornar Optional.empty() em vez de lancar excecao evita que o front-end
+    // precise tratar 404 como caso de sucesso, e tira o log vermelho falso do console.
+    public Optional<Familia> buscarFamiliaOpcional(Long usuarioId) {
+        return membroRepository.findByUsuarioId(usuarioId)
+                .map(FamiliaMembro::getFamilia);
     }
 
     public void sairFamilia(Long usuarioId) {

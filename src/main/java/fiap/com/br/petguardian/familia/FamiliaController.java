@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,12 @@ public class FamiliaController {
     private final FamiliaService familiaService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Obter a familia do usuario autenticado")
-    public FamiliaResponse getMinhaFamilia(Authentication authentication) {
+    @Operation(summary = "Obter a familia do usuario autenticado (200 vazio se ele ainda nao tiver uma)")
+    public ResponseEntity<FamiliaResponse> getMinhaFamilia(Authentication authentication) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
-        return FamiliaResponse.fromEntity(familiaService.getFamiliaDoUsuario(usuario.getId()));
+        return familiaService.buscarFamiliaOpcional(usuario.getId())
+                .map(familia -> ResponseEntity.ok(FamiliaResponse.fromEntity(familia)))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping

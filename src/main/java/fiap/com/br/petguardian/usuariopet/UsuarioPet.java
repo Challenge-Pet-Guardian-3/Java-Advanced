@@ -45,7 +45,7 @@ public class UsuarioPet {
     private Pet pet;
 
     @Builder.Default
-    @Column(name = "respon_princ")
+    @Column(name = "responsavel_principal")
     private Boolean responsavelPrincipal = Boolean.FALSE;
 
     public static UsuarioPet of(Usuario usuario, Pet pet, boolean responsavelPrincipal) {

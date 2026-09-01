@@ -53,11 +53,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
 
-                        // 5. Controle de Acesso baseado no Perfil (ROLE_DONO_FAMILIA)
+                        // 5. Clínicas Veterinárias: listagem pública (não exige login)
+                        .requestMatchers(HttpMethod.GET, "/clinicas").permitAll()
+
+                        // 6. Assistente de IA: exige usuário autenticado
+                        .requestMatchers(HttpMethod.POST, "/ia/chat").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/ia/insights/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/ia/historico/*").authenticated()
+
+                        // 7. Controle de Acesso baseado no Perfil (ROLE_DONO_FAMILIA)
                         .requestMatchers(HttpMethod.DELETE, "/familia/membros/**").hasRole("DONO_FAMILIA")
                         .requestMatchers(HttpMethod.PUT, "/familia").hasRole("DONO_FAMILIA")
 
-                        // 6. Todas as demais rotas exigem autenticação
+                        // 8. Todas as demais rotas exigem autenticação
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))

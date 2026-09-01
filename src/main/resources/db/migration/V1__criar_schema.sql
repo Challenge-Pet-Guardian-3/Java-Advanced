@@ -48,7 +48,7 @@ CREATE TABLE pet (
 CREATE TABLE usuario_pet (
                              usuario_id_usuario BIGINT NOT NULL,
                              pet_id_pet BIGINT NOT NULL,
-                             respon_princ BOOLEAN NOT NULL DEFAULT FALSE,
+                             responsavel_principal BOOLEAN NOT NULL DEFAULT FALSE,
                              PRIMARY KEY (usuario_id_usuario, pet_id_pet),
                              CONSTRAINT fk_up_usuario FOREIGN KEY (usuario_id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
                              CONSTRAINT fk_up_pet FOREIGN KEY (pet_id_pet) REFERENCES pet(id_pet) ON DELETE CASCADE
@@ -73,6 +73,7 @@ CREATE TABLE tarefa (
                         status_id_status BIGINT NOT NULL,
                         pet_id_pet BIGINT NOT NULL,
                         usuario_id_usuario BIGINT,
+                        grupo_recorrencia_id VARCHAR(36),
                         CONSTRAINT fk_tarefa_status FOREIGN KEY (status_id_status) REFERENCES status(id_status),
                         CONSTRAINT fk_tarefa_pet FOREIGN KEY (pet_id_pet) REFERENCES pet(id_pet) ON DELETE CASCADE,
                         CONSTRAINT fk_tarefa_usuario FOREIGN KEY (usuario_id_usuario) REFERENCES usuario(id_usuario) ON DELETE SET NULL
@@ -110,4 +111,15 @@ CREATE TABLE familia_recado (
                                 editado BOOLEAN NOT NULL DEFAULT FALSE,
                                 CONSTRAINT fk_recado_familia FOREIGN KEY (familia_id_familia) REFERENCES familia(id_familia) ON DELETE CASCADE,
                                 CONSTRAINT fk_recado_autor FOREIGN KEY (autor_id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+CREATE TABLE trilha_etapa_concluida (
+                                        id_trilha_etapa BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                        usuario_id_usuario BIGINT NOT NULL,
+                                        etapa_id VARCHAR(20) NOT NULL,
+                                        tipo VARCHAR(20) NOT NULL,
+                                        xp_ganho INT NOT NULL,
+                                        data_conclusao TIMESTAMP NOT NULL,
+                                        CONSTRAINT fk_trilha_usuario FOREIGN KEY (usuario_id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+                                        CONSTRAINT uq_trilha_usuario_etapa UNIQUE (usuario_id_usuario, etapa_id)
 );

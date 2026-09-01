@@ -50,18 +50,18 @@ public record PetRequest(
 
         Integer avatarId
 ) {
-    public Pet toEntity(Raca racaObj) {
-        return Pet.builder()
-                .nome(nome)
-                .idade(idade)
-                .raca(racaObj)
-                .porte(PetPorte.valueOf(porte.toUpperCase()))
-                .sexo(sexo)
-                .castrado(castrado)
-                .peso(peso)
-                .ultimaVacina(ultimaVacina)
-                .ultimaConsulta(ultimaConsulta)
-                .avatarId(avatarId)
-                .build();
-    }
+        public Pet toEntity(Raca racaObj) {
+                return Pet.builder()
+                        .nome(nome)
+                        .idade(idade)
+                        .raca(racaObj)
+                        .porte(PetPorte.valueOf(porte.toUpperCase()))
+                        .sexo(sexo)
+                        .castrado(castrado)
+                        .peso(peso)
+                        .ultimaVacina(ultimaVacina)
+                        .ultimaConsulta(ultimaConsulta)
+                        .avatarId(avatarId)
+                        .build();
+        }
 }
