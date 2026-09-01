@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,6 +26,10 @@ public class GlobalExceptionHandler {
         public ValidationErrorDetail(FieldError error) {
             this(error.getField(), error.getDefaultMessage());
         }
+
+        public ValidationErrorDetail(ObjectError error) {
+            this(error instanceof FieldError fieldError ? fieldError.getField() : error.getObjectName(), error.getDefaultMessage());
+        }
     }
 
     public record ApiErrorResponse(
@@ -38,12 +43,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, List<ValidationErrorDetail>>> handleValidation(
             MethodArgumentNotValidException exception) {
-        log.warn("Falha de validacao de entrada detectada: {} erro(s)", exception.getFieldErrorCount());
+        log.warn("Falha de validacao de entrada detectada: {} erro(s)", exception.getErrorCount());
 
-        List<ValidationErrorDetail> errors = exception.getFieldErrors().stream()
+        List<ValidationErrorDetail> errors = exception.getAllErrors().stream()
                 .map(ValidationErrorDetail::new)
                 .toList();
 
+        return ResponseEntity.badRequest().body(Map.of("erros", errors));
+    }
+
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<Map<String, List<ValidationErrorDetail>>> handleConstraintViolation(
+            jakarta.validation.ConstraintViolationException exception) {
+        log.warn("Falha de validacao de constraint: {}", exception.getMessage());
+        List<ValidationErrorDetail> errors = exception.getConstraintViolations().stream()
+                .map(cv -> new ValidationErrorDetail(
+                        cv.getPropertyPath() != null ? cv.getPropertyPath().toString() : "parametro",
+                        cv.getMessage()
+                ))
+                .toList();
         return ResponseEntity.badRequest().body(Map.of("erros", errors));
     }
 

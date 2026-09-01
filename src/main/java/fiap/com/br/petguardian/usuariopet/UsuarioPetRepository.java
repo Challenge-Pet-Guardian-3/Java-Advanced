@@ -29,9 +29,6 @@ public interface UsuarioPetRepository extends JpaRepository<UsuarioPet, UsuarioP
     @Query("select up from UsuarioPet up join fetch up.pet p join fetch up.usuario u where up.pet.id in :petIds")
     List<UsuarioPet> findAllByPetIdIn(@Param("petIds") List<Long> petIds);
 
-    @Query("select up from UsuarioPet up join fetch up.usuario u where up.pet.id = :petId and up.responsavelPrincipal = true")
-    Optional<UsuarioPet> findResponsavelPrincipalByPetId(@Param("petId") Long petId);
-
     @Modifying
     @Transactional
     @Query("update UsuarioPet up set up.responsavelPrincipal = false where up.pet.id = :petId")

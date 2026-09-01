@@ -53,7 +53,7 @@ public class UsuarioService {
         Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
         usuarioRequest.aplicarEm(usuario, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
         usuario.getEnderecos().add(endereco);
-        return usuario;
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional

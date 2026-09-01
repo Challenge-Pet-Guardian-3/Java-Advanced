@@ -94,7 +94,7 @@ public class TarefaService {
         tarefa.setUsuario(usuario);
         tarefa.setStatus(statusService.findStatusByNome(EnumStatus.CONCLUIDO.name()));
         tarefa.setConclusao(LocalDateTime.now());
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 
     @Transactional(readOnly = true)

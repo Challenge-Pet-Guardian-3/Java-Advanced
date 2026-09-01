@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,8 +51,4 @@ public class Pet {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<UsuarioPet> usuarioPets = new HashSet<>();
-
-    public Integer getIdade() {
-        return Period.between(dataNasc, LocalDate.now()).getYears();
-    }
 }
