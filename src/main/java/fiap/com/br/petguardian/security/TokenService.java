@@ -3,6 +3,7 @@ package fiap.com.br.petguardian.security;
 import fiap.com.br.petguardian.usuario.Usuario;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -13,9 +14,11 @@ import java.util.Date;
 @Service
 public class TokenService {
 
-    private final SecretKey chave = Keys.hmacShaKeyFor(
-            "petguardian-chave-secreta-usada-para-assinar-o-jwt-32bytes".getBytes()
-    );
+    private final SecretKey chave;
+
+    public TokenService(@Value("${jwt.secret}") String segredo) {
+        this.chave = Keys.hmacShaKeyFor(segredo.getBytes());
+    }
 
     public String gerarToken(Usuario usuario) {
         Instant agora = Instant.now();
