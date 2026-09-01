@@ -62,49 +62,56 @@ public class PetController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar pet")
-    public PetResponse create(@Valid @RequestBody PetRequest petRequest) {
-        return PetResponse.fromEntity(petService.create(petRequest));
+    public PetResponse create(Authentication authentication, @Valid @RequestBody PetRequest petRequest) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        return PetResponse.fromEntity(petService.create(petRequest, usuarioLogado.getId()));
     }
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Atualizar pet")
-    public PetResponse update(@PathVariable Long id, @Valid @RequestBody PetRequest petRequest) {
-        return PetResponse.fromEntity(petService.update(id, petRequest));
+    public PetResponse update(Authentication authentication, @PathVariable Long id, @Valid @RequestBody PetRequest petRequest) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        return PetResponse.fromEntity(petService.update(id, petRequest, usuarioLogado.getId()));
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar pet")
-    public void delete(@PathVariable Long id) {
-        petService.delete(id);
+    public void delete(Authentication authentication, @PathVariable Long id) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        petService.delete(id, usuarioLogado.getId());
     }
 
     @PostMapping("{id}/usuarios/{usuarioId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Vincular um usuario a um pet")
-    public void vincularUsuario(@PathVariable Long id, @PathVariable Long usuarioId, @RequestParam(defaultValue = "false") boolean principal) {
-        petService.vincularUsuario(id, usuarioId, principal);
+    @Operation(summary = "Vincular um usuario a um pet (somente responsavel principal)")
+    public void vincularUsuario(Authentication authentication, @PathVariable Long id, @PathVariable Long usuarioId, @RequestParam(defaultValue = "false") boolean principal) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        petService.vincularUsuario(id, usuarioId, principal, usuarioLogado.getId());
     }
 
     @DeleteMapping("{id}/usuarios/{usuarioId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Desvincular um usuario de um pet")
-    public void desvincularUsuario(@PathVariable Long id, @PathVariable Long usuarioId) {
-        petService.desvincularUsuario(id, usuarioId);
+    @Operation(summary = "Desvincular um usuario de um pet (o proprio usuario ou o responsavel principal)")
+    public void desvincularUsuario(Authentication authentication, @PathVariable Long id, @PathVariable Long usuarioId) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        petService.desvincularUsuario(id, usuarioId, usuarioLogado.getId());
     }
 
     @PostMapping("{id}/convidar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Convidar co-cuidador por ID (somente responsavel principal)")
-    public void convidarCuidadorPorId(@PathVariable Long id, @RequestParam Long responsavelPrincipalId, @RequestParam Long usuarioConvidadoId) {
-        petService.vincularCuidadorPorResponsavelPrincipal(id, responsavelPrincipalId, usuarioConvidadoId);
+    public void convidarCuidadorPorId(Authentication authentication, @PathVariable Long id, @RequestParam Long usuarioConvidadoId) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        petService.vincularCuidadorPorResponsavelPrincipal(id, usuarioLogado.getId(), usuarioConvidadoId);
     }
 
     @PostMapping("{id}/convidar-email")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Convidar co-cuidador por e-mail (somente responsavel principal)")
-    public void convidarCuidadorPorEmail(@PathVariable Long id, @RequestParam Long responsavelPrincipalId, @RequestParam String email) {
-        petService.vincularCuidadorPorEmail(id, responsavelPrincipalId, email);
+    public void convidarCuidadorPorEmail(Authentication authentication, @PathVariable Long id, @RequestParam String email) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        petService.vincularCuidadorPorEmail(id, usuarioLogado.getId(), email);
     }
 }

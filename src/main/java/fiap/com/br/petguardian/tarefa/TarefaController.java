@@ -1,9 +1,9 @@
 package fiap.com.br.petguardian.tarefa;
 
-import fiap.com.br.petguardian.tarefa.dto.TarefaConclusaoRequest;
 import fiap.com.br.petguardian.tarefa.dto.TarefaRecorrenteRequest;
 import fiap.com.br.petguardian.tarefa.dto.TarefaRequest;
 import fiap.com.br.petguardian.tarefa.dto.TarefaResponse;
+import fiap.com.br.petguardian.usuario.Usuario;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/tarefas")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TarefaController {
 
     private final TarefaService tarefaService;
@@ -97,10 +97,11 @@ public class TarefaController {
 
     @PatchMapping("/{id}/concluir")
     public ResponseEntity<TarefaResponse> concluir(
-            @PathVariable Long id,
-            @RequestBody @Valid TarefaConclusaoRequest request) {
+            Authentication authentication,
+            @PathVariable Long id) {
 
-        Tarefa tarefa = tarefaService.concluir(id, request);
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        Tarefa tarefa = tarefaService.concluir(id, usuarioLogado.getId());
 
         return ResponseEntity.ok(
                 TarefaResponse.fromEntity(tarefa)
@@ -109,10 +110,11 @@ public class TarefaController {
 
     @PatchMapping("/{id}/reabrir")
     public ResponseEntity<TarefaResponse> reabrir(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long solicitanteId) {
+            Authentication authentication,
+            @PathVariable Long id) {
 
-        Tarefa tarefa = tarefaService.reabrir(id, solicitanteId);
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        Tarefa tarefa = tarefaService.reabrir(id, usuarioLogado.getId());
 
         return ResponseEntity.ok(
                 TarefaResponse.fromEntity(tarefa)
@@ -122,13 +124,11 @@ public class TarefaController {
     // PARA TODA A RECORRÊNCIA
     @DeleteMapping("/recorrencia/{grupoRecorrenciaId}")
     public ResponseEntity<Void> pararRecorrencia(
-            @PathVariable String grupoRecorrenciaId,
-            @RequestParam(required = false) Long solicitanteId) {
+            Authentication authentication,
+            @PathVariable String grupoRecorrenciaId) {
 
-        tarefaService.pararRecorrencia(
-                grupoRecorrenciaId,
-                solicitanteId
-        );
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        tarefaService.pararRecorrencia(grupoRecorrenciaId, usuarioLogado.getId());
 
         return ResponseEntity.noContent().build();
     }
@@ -136,10 +136,11 @@ public class TarefaController {
     // DELETA UMA ÚNICA TAREFA
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(
-            @PathVariable Long id,
-            @RequestParam(required = false) Long solicitanteId) {
+            Authentication authentication,
+            @PathVariable Long id) {
 
-        tarefaService.delete(id, solicitanteId);
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        tarefaService.delete(id, usuarioLogado.getId());
 
         return ResponseEntity.noContent().build();
     }

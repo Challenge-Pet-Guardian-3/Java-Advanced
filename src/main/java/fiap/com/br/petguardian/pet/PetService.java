@@ -12,6 +12,7 @@ import fiap.com.br.petguardian.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -60,8 +61,9 @@ public class PetService {
         return findPetById(id);
     }
 
-    public Pet create(PetRequest petRequest) {
+    public Pet create(PetRequest petRequest, Long autenticadoId) {
         validarHistoricoClinico(petRequest);
+        validarPodeGerenciarPetDoUsuario(autenticadoId, petRequest.usuarioId());
 
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
         Raca raca = findOrCreateRaca(petRequest.raca());
@@ -75,8 +77,13 @@ public class PetService {
         return petSalvo;
     }
 
-    public Pet update(Long id, PetRequest petRequest) {
+    public Pet update(Long id, PetRequest petRequest, Long autenticadoId) {
         validarHistoricoClinico(petRequest);
+
+        if (!usuarioPetRepository.existsByUsuarioIdAndPetId(autenticadoId, id)) {
+            throw new AccessDeniedException("Você não é cuidador deste pet, portanto não pode editá-lo.");
+        }
+        validarPodeGerenciarPetDoUsuario(autenticadoId, petRequest.usuarioId());
 
         Pet pet = findPetById(id);
         Usuario usuario = findUsuarioById(petRequest.usuarioId());
@@ -107,14 +114,24 @@ public class PetService {
         return petSalvo;
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, Long autenticadoId) {
         findPetById(id);
+
+        if (!usuarioPetRepository.isResponsavelPrincipal(autenticadoId, id)) {
+            throw new AccessDeniedException("Somente o responsável principal pode excluir este pet.");
+        }
+
         usuarioPetRepository.deleteByPetId(id);
         petRepository.deleteById(id);
     }
 
-    public void vincularUsuario(Long petId, Long usuarioId, boolean principal) {
+    public void vincularUsuario(Long petId, Long usuarioId, boolean principal, Long autenticadoId) {
         Pet pet = findPetById(petId);
+
+        if (!usuarioPetRepository.isResponsavelPrincipal(autenticadoId, petId)) {
+            throw new AccessDeniedException("Somente o responsável principal pode vincular novos cuidadores.");
+        }
+
         Usuario usuario = findUsuarioById(usuarioId);
 
         if (principal) {
@@ -128,7 +145,14 @@ public class PetService {
         usuarioPetRepository.save(usuarioPet);
     }
 
-    public void desvincularUsuario(Long petId, Long usuarioId) {
+    public void desvincularUsuario(Long petId, Long usuarioId, Long autenticadoId) {
+        boolean ehOProprio = autenticadoId.equals(usuarioId);
+        boolean ehResponsavelPrincipal = usuarioPetRepository.isResponsavelPrincipal(autenticadoId, petId);
+
+        if (!ehOProprio && !ehResponsavelPrincipal) {
+            throw new AccessDeniedException("Você só pode desvincular a si mesmo, a menos que seja o responsável principal.");
+        }
+
         UsuarioPet usuarioPet = usuarioPetRepository.findByUsuarioIdAndPetId(usuarioId, petId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vinculo nao encontrado entre o usuario e o pet informados."));
 
@@ -158,6 +182,24 @@ public class PetService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario com email " + emailConvidado + " nao encontrado."));
 
         vincularCuidadorPorResponsavelPrincipal(petId, responsavelPrincipalId, usuarioConvidado.getId());
+    }
+
+    private void validarPodeGerenciarPetDoUsuario(Long autenticadoId, Long usuarioAlvoId) {
+        if (autenticadoId.equals(usuarioAlvoId)) {
+            return;
+        }
+
+        var membroLogado = familiaMembroRepository.findByUsuarioId(autenticadoId);
+        if (membroLogado.isPresent()) {
+            Long familiaId = membroLogado.get().getFamilia().getId();
+            boolean mesmaFamilia = familiaMembroRepository.findByFamiliaId(familiaId).stream()
+                    .anyMatch(m -> m.getUsuario().getId().equals(usuarioAlvoId));
+            if (mesmaFamilia) {
+                return;
+            }
+        }
+
+        throw new AccessDeniedException("Você só pode cadastrar/editar pets em nome de membros da sua própria família.");
     }
 
     private void validarHistoricoClinico(PetRequest req) {

@@ -1,13 +1,13 @@
 package fiap.com.br.petguardian.tarefa;
 
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
-import fiap.com.br.petguardian.familia.FamiliaMembro;
 import fiap.com.br.petguardian.familia.FamiliaMembroRepository;
+import fiap.com.br.petguardian.familia.XpService;
 import fiap.com.br.petguardian.pet.Pet;
+import fiap.com.br.petguardian.pet.PetPermissaoService;
 import fiap.com.br.petguardian.pet.PetRepository;
 import fiap.com.br.petguardian.status.Status;
 import fiap.com.br.petguardian.status.StatusService;
-import fiap.com.br.petguardian.tarefa.dto.TarefaConclusaoRequest;
 import fiap.com.br.petguardian.tarefa.dto.TarefaRecorrenteRequest;
 import fiap.com.br.petguardian.tarefa.dto.TarefaRequest;
 import fiap.com.br.petguardian.usuario.Usuario;
@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -36,6 +35,8 @@ public class TarefaService {
     private final UsuarioPetRepository usuarioPetRepository;
     private final FamiliaMembroRepository familiaMembroRepository;
     private final StatusService statusService;
+    private final XpService xpService;
+    private final PetPermissaoService petPermissaoService;
 
     public Page<Tarefa> findAll(Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
@@ -118,9 +119,6 @@ public class TarefaService {
         Status pendente = statusService.findStatusByNome("PENDENTE");
         LocalDateTime agora = LocalDateTime.now();
 
-        // Um único id de grupo pra todas as ocorrências geradas nessa chamada —
-        // é o que permite "parar" a recorrência inteira depois, sem depender
-        // de título nem de uma lista de ids vinda do front.
         String grupoRecorrenciaId = UUID.randomUUID().toString();
 
         List<Tarefa> ocorrencias = new ArrayList<>();
@@ -159,7 +157,7 @@ public class TarefaService {
         Usuario usuario = null;
         if (request.usuarioId() != null) {
             usuario = findUsuarioById(request.usuarioId());
-            validarPermissaoCuidador(usuario.getId(), pet.getId());
+            petPermissaoService.validarCuidadorDoPet(usuario.getId(), pet.getId());
         }
 
         Tarefa tarefa = request.toEntity(usuario, pet);
@@ -183,7 +181,7 @@ public class TarefaService {
     }
 
     @Transactional
-    public Tarefa concluir(Long id, TarefaConclusaoRequest request) {
+    public Tarefa concluir(Long id, Long concluinteId) {
         expirarTarefasPendentesAtrasadas();
 
         Tarefa tarefa = findTarefaById(id);
@@ -191,19 +189,15 @@ public class TarefaService {
             throw new IllegalArgumentException("Apenas tarefas pendentes podem ser concluídas.");
         }
 
-        Usuario usuario = findUsuarioById(request.concluinteId());
-        validarPermissaoCuidador(usuario.getId(), tarefa.getPet().getId());
+        Usuario usuario = findUsuarioById(concluinteId);
+        petPermissaoService.validarCuidadorDoPet(usuario.getId(), tarefa.getPet().getId());
 
         tarefa.setUsuario(usuario);
         tarefa.setStatus(statusService.findStatusByNome("CONCLUIDO"));
         tarefa.setConclusao(LocalDateTime.now());
 
         int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
-        familiaMembroRepository.findByUsuarioId(usuario.getId()).ifPresent(membro -> {
-            int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
-            membro.setXp(xpAtual + pontos);
-            familiaMembroRepository.save(membro);
-        });
+        xpService.adicionar(usuario.getId(), pontos);
 
         return tarefaRepository.save(tarefa);
     }
@@ -216,7 +210,7 @@ public class TarefaService {
             throw new IllegalArgumentException("Apenas tarefas concluídas podem ser reabertas.");
         }
 
-        if (tarefa.getUsuario() != null && solicitanteId != null) {
+        if (tarefa.getUsuario() != null) {
             boolean ehProprioUsuario = tarefa.getUsuario().getId().equals(solicitanteId);
             boolean ehDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
                     .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
@@ -230,12 +224,7 @@ public class TarefaService {
         if (tarefa.getUsuario() != null) {
             Long usuarioConclusaoId = tarefa.getUsuario().getId();
             int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
-
-            familiaMembroRepository.findByUsuarioId(usuarioConclusaoId).ifPresent(membro -> {
-                int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
-                membro.setXp(Math.max(0, xpAtual - pontos));
-                familiaMembroRepository.save(membro);
-            });
+            xpService.remover(usuarioConclusaoId, pontos);
         }
 
         tarefa.setStatus(statusService.findStatusByNome("PENDENTE"));
@@ -254,39 +243,27 @@ public class TarefaService {
     public void delete(Long id, Long solicitanteId) {
         Tarefa tarefa = findTarefaById(id);
 
-        if (solicitanteId != null) {
-            findUsuarioById(solicitanteId);
+        findUsuarioById(solicitanteId);
 
-            boolean isDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
-                    .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
-                    .orElse(false);
+        boolean isDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
+                .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
+                .orElse(false);
 
-            boolean isDonoPet = usuarioPetRepository.findAllByUsuarioId(solicitanteId).stream()
-                    .anyMatch(up -> up.getPet().getId().equals(tarefa.getPet().getId()) && Boolean.TRUE.equals(up.getResponsavelPrincipal()));
+        boolean isDonoPet = usuarioPetRepository.findAllByUsuarioId(solicitanteId).stream()
+                .anyMatch(up -> up.getPet().getId().equals(tarefa.getPet().getId()) && Boolean.TRUE.equals(up.getResponsavelPrincipal()));
 
-            if (!isDonoFamilia && !isDonoPet) {
-                throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para excluir tarefas.");
-            }
+        if (!isDonoFamilia && !isDonoPet) {
+            throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para excluir tarefas.");
         }
 
         if ("CONCLUIDO".equalsIgnoreCase(tarefa.getStatus().getNome_status().name()) && tarefa.getUsuario() != null) {
             int pontos = tarefa.getPontosTarefa() != null ? tarefa.getPontosTarefa() : 15;
-            familiaMembroRepository.findByUsuarioId(tarefa.getUsuario().getId()).ifPresent(membro -> {
-                int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
-                membro.setXp(Math.max(0, xpAtual - pontos));
-                familiaMembroRepository.save(membro);
-            });
+            xpService.remover(tarefa.getUsuario().getId(), pontos);
         }
 
         tarefaRepository.delete(tarefa);
     }
 
-    /**
-     * Para uma recorrência de vez: apaga todas as ocorrências futuras e ainda
-     * pendentes daquele grupo. Dias já concluídos, expirados, ou o prazo de
-     * hoje já vencido, não são tocados. Não mexe em XP porque tarefas
-     * pendentes nunca deram XP ainda.
-     */
     @Transactional
     public int pararRecorrencia(String grupoRecorrenciaId, Long solicitanteId) {
         List<Tarefa> ocorrencias = tarefaRepository.findByGrupoRecorrenciaId(grupoRecorrenciaId);
@@ -294,46 +271,21 @@ public class TarefaService {
             throw new ResourceNotFoundException("Nenhuma ocorrência encontrada para essa recorrência.");
         }
 
-        if (solicitanteId != null) {
-            findUsuarioById(solicitanteId);
+        findUsuarioById(solicitanteId);
 
-            Tarefa referencia = ocorrencias.get(0);
-            boolean isDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
-                    .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
-                    .orElse(false);
+        Tarefa referencia = ocorrencias.get(0);
+        boolean isDonoFamilia = familiaMembroRepository.findByUsuarioId(solicitanteId)
+                .map(m -> Boolean.TRUE.equals(m.getResponsavelPrincipal()))
+                .orElse(false);
 
-            boolean isDonoPet = usuarioPetRepository.findAllByUsuarioId(solicitanteId).stream()
-                    .anyMatch(up -> up.getPet().getId().equals(referencia.getPet().getId()) && Boolean.TRUE.equals(up.getResponsavelPrincipal()));
+        boolean isDonoPet = usuarioPetRepository.findAllByUsuarioId(solicitanteId).stream()
+                .anyMatch(up -> up.getPet().getId().equals(referencia.getPet().getId()) && Boolean.TRUE.equals(up.getResponsavelPrincipal()));
 
-            if (!isDonoFamilia && !isDonoPet) {
-                throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para parar essa recorrência.");
-            }
+        if (!isDonoFamilia && !isDonoPet) {
+            throw new IllegalArgumentException("Apenas o responsável pela família ou o dono do pet tem permissão para parar essa recorrência.");
         }
 
         return tarefaRepository.excluirOcorrenciasFuturasPorGrupo(grupoRecorrenciaId, LocalDateTime.now());
-    }
-
-    private void validarPermissaoCuidador(Long usuarioId, Long petId) {
-        if (usuarioPetRepository.existsByUsuarioIdAndPetId(usuarioId, petId)) {
-            return;
-        }
-
-        Optional<FamiliaMembro> membroLogado = familiaMembroRepository.findByUsuarioId(usuarioId);
-        if (membroLogado.isPresent() && membroLogado.get().getFamilia() != null) {
-            Long familiaId = membroLogado.get().getFamilia().getId();
-            List<FamiliaMembro> todosMembros = familiaMembroRepository.findByFamiliaId(familiaId);
-
-            boolean membroCuidaDoPet = todosMembros.stream()
-                    .filter(m -> m.getUsuario() != null)
-                    .map(m -> m.getUsuario().getId())
-                    .anyMatch(idMembro -> usuarioPetRepository.existsByUsuarioIdAndPetId(idMembro, petId));
-
-            if (membroCuidaDoPet) {
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("Você não possui permissão para gerenciar as tarefas deste pet.");
     }
 
     private Tarefa findTarefaById(Long id) {

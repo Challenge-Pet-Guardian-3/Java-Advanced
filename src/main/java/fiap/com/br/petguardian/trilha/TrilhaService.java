@@ -1,7 +1,7 @@
 package fiap.com.br.petguardian.trilha;
 
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
-import fiap.com.br.petguardian.familia.FamiliaMembroRepository;
+import fiap.com.br.petguardian.familia.XpService;
 import fiap.com.br.petguardian.trilha.dto.TrilhaConclusaoRequest;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
@@ -18,7 +18,7 @@ public class TrilhaService {
 
     private final TrilhaEtapaConcluidaRepository trilhaEtapaConcluidaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final FamiliaMembroRepository familiaMembroRepository;
+    private final XpService xpService;
 
     public List<TrilhaEtapaConcluida> listarConcluidas(Long usuarioId) {
         findUsuarioById(usuarioId);
@@ -28,8 +28,8 @@ public class TrilhaService {
     // Idempotente: se a etapa já foi concluída antes, retorna o registro existente
     // sem conceder XP de novo (trava anti-farm — mesma regra que já existia no front).
     @Transactional
-    public TrilhaEtapaConcluida concluirEtapa(TrilhaConclusaoRequest request) {
-        Usuario usuario = findUsuarioById(request.usuarioId());
+    public TrilhaEtapaConcluida concluirEtapa(Long usuarioId, TrilhaConclusaoRequest request) {
+        Usuario usuario = findUsuarioById(usuarioId);
 
         var existente = trilhaEtapaConcluidaRepository.findByUsuarioIdAndEtapaId(usuario.getId(), request.etapaId());
         if (existente.isPresent()) {
@@ -48,13 +48,7 @@ public class TrilhaService {
 
         TrilhaEtapaConcluida salva = trilhaEtapaConcluidaRepository.save(etapa);
 
-        // Mesmo mecanismo que o TarefaService.concluir() usa — assim Home e Perfil
-        // enxergam o XP de trilha automaticamente, sem lógica duplicada em outro lugar.
-        familiaMembroRepository.findByUsuarioId(usuario.getId()).ifPresent(membro -> {
-            int xpAtual = membro.getXp() != null ? membro.getXp() : 0;
-            membro.setXp(xpAtual + xp);
-            familiaMembroRepository.save(membro);
-        });
+        xpService.adicionar(usuario.getId(), xp);
 
         return salva;
     }

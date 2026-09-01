@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -52,13 +54,16 @@ public class UsuarioController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Buscar usuário por ID")
     public UsuarioResponse findById(@PathVariable Long id) {
+        // Mantido acessível a qualquer usuário autenticado: é usado para
+        // exibir dados de outros membros da família (nome, telefone etc).
         return UsuarioResponse.fromEntity(usuarioService.findById(id));
     }
 
     @GetMapping("{id}/rede-cuidado")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Visualizar rede de cuidado do usuário (pets, co-cuidadores, tarefas e atendimentos agrupados)")
-    public RedeCuidadoResponse getRedeCuidado(@PathVariable Long id) {
+    public RedeCuidadoResponse getRedeCuidado(Authentication authentication, @PathVariable Long id) {
+        validarProprioUsuario(authentication, id);
         return usuarioService.getRedeCuidado(id);
     }
 
@@ -73,7 +78,8 @@ public class UsuarioController {
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Atualizar usuário (senha opcional — se omitida, mantém a atual)")
-    public UsuarioResponse update(@PathVariable Long id, @Valid @RequestBody UsuarioUpdateRequest usuarioUpdateRequest) {
+    public UsuarioResponse update(Authentication authentication, @PathVariable Long id, @Valid @RequestBody UsuarioUpdateRequest usuarioUpdateRequest) {
+        validarProprioUsuario(authentication, id);
         Usuario usuario = usuarioService.update(id, usuarioUpdateRequest);
         String novoToken = tokenService.gerarToken(usuario);
         return UsuarioResponse.fromEntity(usuario, novoToken);
@@ -82,7 +88,17 @@ public class UsuarioController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar usuário")
-    public void delete(@PathVariable Long id) {
+    public void delete(Authentication authentication, @PathVariable Long id) {
+        validarProprioUsuario(authentication, id);
         usuarioService.delete(id);
+    }
+
+    // Garante que o usuário autenticado só pode alterar/apagar/ver a própria
+    // rede de cuidado — nunca a de outra pessoa, mesmo sabendo o ID dela.
+    private void validarProprioUsuario(Authentication authentication, Long idAlvo) {
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+        if (!usuarioLogado.getId().equals(idAlvo)) {
+            throw new AccessDeniedException("Você não tem permissão para acessar ou alterar dados de outro usuário.");
+        }
     }
 }
