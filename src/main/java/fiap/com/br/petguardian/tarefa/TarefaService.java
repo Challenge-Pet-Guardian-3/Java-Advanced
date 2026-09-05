@@ -33,9 +33,31 @@ public class TarefaService {
         return tarefaRepository.findAll(pageable);
     }
 
-    public Page<Tarefa> findAll(Long usuarioId, Pageable pageable) {
+    public Page<Tarefa> findAll(Long usuarioId, String statusFiltro, Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
+        if (statusFiltro != null && !statusFiltro.isBlank()) {
+            String normalizado = statusFiltro.trim().toUpperCase();
+            if ("ALL".equals(normalizado) || "TODAS".equals(normalizado)) {
+                return tarefaRepository.findAllDoCuidador(usuarioId, pageable);
+            }
+            try {
+                EnumStatus enumStatus = EnumStatus.valueOf(normalizado);
+                return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, enumStatus, pageable);
+            } catch (IllegalArgumentException ignored) {
+                // Fallback para PENDENTE se valor for invalido
+            }
+        }
         return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, EnumStatus.PENDENTE, pageable);
+    }
+
+    public Page<Tarefa> findAll(Long usuarioId, Pageable pageable) {
+        return findAll(usuarioId, null, pageable);
+    }
+
+    public Page<Tarefa> findAllByPetId(Long petId, Pageable pageable) {
+        expirarTarefasPendentesAtrasadas();
+        findPetById(petId);
+        return tarefaRepository.findAllByPetId(petId, pageable);
     }
 
     public Tarefa findById(Long id) {
@@ -94,6 +116,20 @@ public class TarefaService {
         tarefa.setUsuario(usuario);
         tarefa.setStatus(statusService.findStatusByNome(EnumStatus.CONCLUIDO.name()));
         tarefa.setConclusao(LocalDateTime.now());
+        return tarefaRepository.save(tarefa);
+    }
+
+    @Transactional
+    public Tarefa desmarcar(Long id, Long usuarioId) {
+        expirarTarefasPendentesAtrasadas();
+
+        Tarefa tarefa = findTarefaById(id);
+        Usuario usuario = findUsuarioById(usuarioId);
+        tarefaValidator.validarCuidadorDoPet(usuario.getId(), tarefa.getPet().getId());
+        tarefaValidator.validarConcluidaParaDesmarcar(tarefa);
+
+        tarefa.setStatus(statusService.findStatusByNome(EnumStatus.PENDENTE.name()));
+        tarefa.setConclusao(null);
         return tarefaRepository.save(tarefa);
     }
 

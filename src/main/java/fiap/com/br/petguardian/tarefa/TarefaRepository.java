@@ -32,6 +32,20 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             @Param("status") EnumStatus status,
             Pageable pageable);
 
+    @Query("select t from Tarefa t " +
+            "join t.pet p " +
+            "join p.usuarioPets up " +
+            "where up.usuario.id = :usuarioId")
+    Page<Tarefa> findAllDoCuidador(
+            @Param("usuarioId") Long usuarioId,
+            Pageable pageable);
+
+    @Query("select t from Tarefa t " +
+            "where t.pet.id = :petId")
+    Page<Tarefa> findAllByPetId(
+            @Param("petId") Long petId,
+            Pageable pageable);
+
     @Query("select coalesce(sum(t.pontosTarefa), 0) from Tarefa t " +
             "where t.usuario.id = :usuarioId " +
             "and t.status.nomeStatus = :status")

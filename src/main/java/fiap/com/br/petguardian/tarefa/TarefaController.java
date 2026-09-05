@@ -31,9 +31,22 @@ public class TarefaController {
 
     @GetMapping("/by-usuario")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Listar tarefas pendentes por usuarioId com paginação e ordenação")
-    public Page<TarefaResponse> findAllByUsuario(@RequestParam Long usuarioId, @PageableDefault(size = 10, page = 0, sort = "prazo", direction = Sort.Direction.ASC) Pageable pageable) {
-        return tarefaService.findAll(usuarioId, pageable)
+    @Operation(summary = "Listar tarefas por usuarioId com filtro opcional de status e paginação")
+    public Page<TarefaResponse> findAllByUsuario(
+            @RequestParam Long usuarioId,
+            @RequestParam(required = false) String status,
+            @PageableDefault(size = 10, page = 0, sort = "prazo", direction = Sort.Direction.ASC) Pageable pageable) {
+        return tarefaService.findAll(usuarioId, status, pageable)
+            .map(TarefaResponse::fromEntity);
+    }
+
+    @GetMapping("/by-pet/{petId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Listar todas as tarefas de um pet específico com paginação")
+    public Page<TarefaResponse> findAllByPet(
+            @PathVariable Long petId,
+            @PageableDefault(size = 10, page = 0, sort = "prazo", direction = Sort.Direction.ASC) Pageable pageable) {
+        return tarefaService.findAllByPetId(petId, pageable)
             .map(TarefaResponse::fromEntity);
     }
 
@@ -70,6 +83,13 @@ public class TarefaController {
     @Operation(summary = "Concluir tarefa")
     public TarefaResponse concluir(@PathVariable Long id, @Valid @RequestBody TarefaConclusaoRequest tarefaConclusaoRequest) {
         return TarefaResponse.fromEntity(tarefaService.concluir(id, tarefaConclusaoRequest));
+    }
+
+    @PatchMapping("/{id}/desmarcar")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Desmarcar tarefa concluída retornando ao status PENDENTE")
+    public TarefaResponse desmarcar(@PathVariable Long id, @RequestParam Long usuarioId) {
+        return TarefaResponse.fromEntity(tarefaService.desmarcar(id, usuarioId));
     }
 
     @GetMapping("/by-usuario/pontos")

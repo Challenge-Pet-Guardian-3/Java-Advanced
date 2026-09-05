@@ -65,4 +65,30 @@ class TarefaValidatorTest {
 
         assertThrows(IllegalArgumentException.class, () -> validator.validarPendenteParaConclusao(tarefaExpirada));
     }
+
+    @Test
+    @DisplayName("Deve permitir desmarcar tarefa com status CONCLUIDO")
+    void devePermitirDesmarcarStatusConcluido() {
+        Tarefa tarefaConcluida = Tarefa.builder()
+                .status(Status.builder().nomeStatus(EnumStatus.CONCLUIDO).build())
+                .build();
+
+        assertDoesNotThrow(() -> validator.validarConcluidaParaDesmarcar(tarefaConcluida));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao tentar desmarcar tarefa que não esteja CONCLUIDA")
+    void deveLancarExcecaoAoDesmarcarTarefaNaoConcluida() {
+        Tarefa tarefaPendente = Tarefa.builder()
+                .status(Status.builder().nomeStatus(EnumStatus.PENDENTE).build())
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> validator.validarConcluidaParaDesmarcar(tarefaPendente));
+
+        Tarefa tarefaExpirada = Tarefa.builder()
+                .status(Status.builder().nomeStatus(EnumStatus.EXPIRADO).build())
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> validator.validarConcluidaParaDesmarcar(tarefaExpirada));
+    }
 }

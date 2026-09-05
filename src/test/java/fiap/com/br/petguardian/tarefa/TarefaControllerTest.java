@@ -122,6 +122,19 @@ class TarefaControllerTest {
 
     @Test
     @WithMockUser
+    @DisplayName("PATCH /tarefas/{id}/desmarcar - Deve desmarcar tarefa")
+    void deveDesmarcarTarefa() throws Exception {
+        Tarefa tarefa = criarTarefaMock();
+
+        when(tarefaService.desmarcar(100L, 1L)).thenReturn(tarefa);
+
+        mockMvc.perform(patch("/tarefas/100/desmarcar").param("usuarioId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PENDENTE"));
+    }
+
+    @Test
+    @WithMockUser
     @DisplayName("GET /tarefas/by-usuario/pontos - Deve consultar total de pontos do usuario")
     void deveConsultarPontosUsuario() throws Exception {
         when(tarefaService.calcularPontosTotaisUsuario(1L)).thenReturn(85);

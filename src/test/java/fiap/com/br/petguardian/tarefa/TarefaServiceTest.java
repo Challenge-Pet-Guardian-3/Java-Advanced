@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -142,6 +143,39 @@ class TarefaServiceTest {
         assertNotNull(resultado.getConclusao());
         verify(tarefaValidator).validarPendenteParaConclusao(tarefa);
         verify(tarefaValidator).validarCuidadorDoPet(2L, 10L);
+    }
+
+    @Test
+    @DisplayName("Deve desmarcar tarefa concluida voltando para PENDENTE e limpando conclusao")
+    void deveDesmarcarTarefa() {
+        Usuario cuidador = Usuario.builder().id(2L).build();
+        Pet pet = Pet.builder().id(10L).build();
+        Status statusPendente = Status.builder().id(1L).nomeStatus(EnumStatus.PENDENTE).build();
+        Status statusConcluido = Status.builder().id(2L).nomeStatus(EnumStatus.CONCLUIDO).build();
+
+        Tarefa tarefa = Tarefa.builder()
+                .id(100L)
+                .titulo("Passeio")
+                .pontosTarefa(20)
+                .descricao("Passeio no parque")
+                .status(statusConcluido)
+                .conclusao(LocalDateTime.now())
+                .usuario(cuidador)
+                .pet(pet)
+                .build();
+
+        when(statusService.findStatusByNome(EnumStatus.PENDENTE.name())).thenReturn(statusPendente);
+        when(tarefaRepository.findById(100L)).thenReturn(Optional.of(tarefa));
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(cuidador));
+        when(tarefaRepository.save(any(Tarefa.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Tarefa resultado = tarefaService.desmarcar(100L, 2L);
+
+        assertNotNull(resultado);
+        assertEquals(EnumStatus.PENDENTE, resultado.getStatus().getNomeStatus());
+        assertNull(resultado.getConclusao());
+        verify(tarefaValidator).validarCuidadorDoPet(2L, 10L);
+        verify(tarefaValidator).validarConcluidaParaDesmarcar(tarefa);
     }
 
     @Test

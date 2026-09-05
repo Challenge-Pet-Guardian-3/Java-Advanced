@@ -1,6 +1,8 @@
 package fiap.com.br.petguardian.exception;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -52,9 +54,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("erros", errors));
     }
 
-    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, List<ValidationErrorDetail>>> handleConstraintViolation(
-            jakarta.validation.ConstraintViolationException exception) {
+            ConstraintViolationException exception) {
         log.warn("Falha de validacao de constraint: {}", exception.getMessage());
         List<ValidationErrorDetail> errors = exception.getConstraintViolations().stream()
                 .map(cv -> new ValidationErrorDetail(
@@ -97,8 +99,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(
             HttpMessageNotReadableException exception, HttpServletRequest request) {
         log.warn("JSON com formato ou tipos incorretos: {}", exception.getMessage());
-        return error(HttpStatus.BAD_REQUEST,
-                "Erro na leitura dos dados. Verifique os tipos enviados no JSON.", request);
+        String mensagem = "Erro na leitura dos dados. Verifique os tipos enviados no JSON.";
+
+        Throwable cause = exception.getCause();
+        if (cause instanceof JsonMappingException jme) {
+            String field = jme.getPath().isEmpty() ? "campo" : jme.getPath().get(0).getFieldName();
+            String fullMessage = exception.getMessage() != null ? exception.getMessage() : "";
+            if (fullMessage.contains("DateTimeParseException") || fullMessage.contains("LocalDate") || fullMessage.contains("LocalDateTime")) {
+                mensagem = String.format("Data inválida no campo '%s'. Informe uma data de calendário real no formato AAAA-MM-DD.", field);
+            } else {
+                mensagem = String.format("Valor inválido para o campo '%s'. Verifique o tipo ou formato informado.", field);
+            }
+        } else if (exception.getMessage() != null && exception.getMessage().contains("DateTimeParseException")) {
+            mensagem = "Data informada possui formato ou valor de calendário inválido (dia ou mês inexistente).";
+        }
+
+        return error(HttpStatus.BAD_REQUEST, mensagem, request);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

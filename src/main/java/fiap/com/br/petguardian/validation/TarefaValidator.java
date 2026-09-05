@@ -23,4 +23,10 @@ public class TarefaValidator {
             throw new IllegalArgumentException("Apenas tarefas pendentes podem ser concluidas.");
         }
     }
+
+    public void validarConcluidaParaDesmarcar(Tarefa tarefa) {
+        if (tarefa.getStatus().getNomeStatus() != EnumStatus.CONCLUIDO) {
+            throw new IllegalArgumentException("Apenas tarefas concluidas podem ser desmarcadas.");
+        }
+    }
 }
