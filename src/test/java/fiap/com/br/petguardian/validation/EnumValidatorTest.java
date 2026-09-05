@@ -37,7 +37,8 @@ class EnumValidatorTest {
 
         assertTrue(validator.isValid("COMUM", null));
         assertTrue(validator.isValid("PREMIUM", null));
-        assertFalse(validator.isValid("ADMIN", null));
+        assertTrue(validator.isValid("ADMIN", null));
+        assertFalse(validator.isValid("INVALIDO", null));
     }
 
     @Test
