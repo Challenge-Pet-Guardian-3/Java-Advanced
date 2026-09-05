@@ -50,8 +50,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/h2-console/**", "/actuator/health", "/actuator/info", "/error").permitAll()
-                        .requestMatchers("/trilhas/**", "/modulos/**", "/aulas/**").hasRole("PREMIUM")
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/actuator/health", "/actuator/info", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/trilhas/**", "/modulos/**", "/aulas/**").hasAnyRole("PREMIUM", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/aulas/*/concluir").hasAnyRole("PREMIUM", "ADMIN")
+                        .requestMatchers("/trilhas/**", "/modulos/**", "/aulas/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))

@@ -37,6 +37,9 @@ class EnderecoServiceTest {
     @Mock
     private BairroRepository bairroRepository;
 
+    @Mock
+    private ViaCepService viaCepService;
+
     @InjectMocks
     private EnderecoService enderecoService;
 

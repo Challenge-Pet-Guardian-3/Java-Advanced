@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,6 +61,19 @@ class AulaServiceTest {
 
         assertEquals(1, resultado.size());
         assertEquals("Comando Senta!", resultado.get(0).getNome());
+    }
+
+    @Test
+    @DisplayName("Deve concluir aula marcando concluida como true")
+    void deveConcluirAula() {
+        Aula aula = Aula.builder().id(100L).concluida(false).build();
+        when(aulaRepository.findById(100L)).thenReturn(Optional.of(aula));
+        when(aulaRepository.save(any(Aula.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Aula resultado = aulaService.concluir(100L);
+
+        assertTrue(resultado.isConcluida());
+        verify(aulaRepository).save(aula);
     }
 
     @Test

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/aulas")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('PREMIUM')")
-@Tag(name = "Aulas", description = "Gerenciamento de aulas e conteudos educativos das trilhas (Exclusivo Premium)")
+@Tag(name = "Aulas", description = "Gerenciamento de aulas e conteudos educativos das trilhas")
 public class AulaController {
 
     private final AulaService aulaService;
@@ -50,6 +48,13 @@ public class AulaController {
     @Operation(summary = "Atualizar aula")
     public AulaResponse update(@PathVariable Long id, @Valid @RequestBody AulaRequest request) {
         return AulaResponse.fromEntity(aulaService.update(id, request));
+    }
+
+    @PatchMapping("/{id}/concluir")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Concluir aula")
+    public AulaResponse concluir(@PathVariable Long id) {
+        return AulaResponse.fromEntity(aulaService.concluir(id));
     }
 
     @DeleteMapping("/{id}")

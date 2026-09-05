@@ -6,7 +6,7 @@ import fiap.com.br.petguardian.trilha.dto.TrilhaRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -51,8 +51,8 @@ class TrilhaControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "PREMIUM")
-    @DisplayName("POST /trilhas - Deve criar trilha para usuario PREMIUM")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("POST /trilhas - Deve criar trilha para usuario ADMIN")
     void deveCriarTrilha() throws Exception {
         var request = new TrilhaRequest("Obediência", "Comandos básicos", 10L);
         Pet pet = Pet.builder().id(10L).nome("Thor").build();
@@ -68,8 +68,8 @@ class TrilhaControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "PREMIUM")
-    @DisplayName("DELETE /trilhas/{id} - Deve deletar trilha")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("DELETE /trilhas/{id} - Deve deletar trilha para usuario ADMIN")
     void deveDeletarTrilha() throws Exception {
         mockMvc.perform(delete("/trilhas/1"))
                 .andExpect(status().isNoContent());

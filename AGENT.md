@@ -7,10 +7,12 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, perf
 ## 🏛️ 1. Visão Geral da Arquitetura & Stack
 
 - **Java Version:** Java 17 LTS
-- **Framework:** Spring Boot 3.4.3
+- **Framework:** Spring Boot 4.1.1
+- **HTTP Clients:** HTTP Service Interfaces declarativas (`@HttpExchange`, `@GetExchange`) registradas via `@ImportHttpServices`.
 - **Persistência & ORM:** Spring Data JPA + Hibernate (com `ddl-auto=validate`)
 - **Migrações de Banco:** Flyway (`org.flywaydb:flyway-core`) com scripts em `src/main/resources/db/migration/`
 - **Segurança:** Spring Security + OAuth2 Resource Server com tokens JWT assinados via par de chaves assimétricas RSA (PKCS#8).
+- **Testes:** JUnit 5, Mockito e Spring Boot 4 Modular Testing (`spring-boot-starter-webmvc-test` com `org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`).
 - **Cache:** Spring Starter Cache (cache em memória para lookups de Status).
 - **Documentação de API:** SpringDoc OpenAPI 3 (`/swagger-ui.html` e `/v3/api-docs`).
 - **Banco de Dados:** H2 Database (em memória para desenvolvimento/testes rápidos) e Oracle Database 21c (produção/DER oficial).
@@ -19,20 +21,21 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, perf
 
 ## 👥 2. Perfis de Usuário & Controle de Acesso (RBAC)
 
-O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
+O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 
 | Perfil (`UsuarioRole`) | Escopo de Acesso | Recursos Bloqueados |
 | :--- | :--- | :--- |
 | **`COMUM`** (Tutor Gratuito) | Pets, Care Circle (Rede de Cuidado), Tarefas Diárias, Histórico Clínico, Endereço e Perfil | Trilhas, Módulos, Aulas e Assistente IA |
-| **`PREMIUM`** (Tutor Assinante) | Acesso total irrestrito a todos os módulos e gamificação educativa | Nenhum |
+| **`PREMIUM`** (Tutor Assinante) | Pets, Care Circle, Tarefas, Histórico, e **estudo de Trilhas, Módulos e Aulas** (`GET` e `PATCH /aulas/{id}/concluir`) | Gestão/edição de conteúdo educacional (`POST`, `PUT`, `DELETE` em Trilhas/Módulos/Aulas) |
+| **`ADMIN`** (Administrador) | Acesso administrativo total: criação, edição e exclusão de Trilhas, Módulos e Aulas via backoffice/Insomnia, além de visualização geral | Nenhum |
 
-### 🔒 Proteção de Rotas:
-- **Rotas Exclusivas Premium (`ROLE_PREMIUM`):**
-  - `/trilhas/**` (Gestão de Trilhas de Aprendizado)
-  - `/modulos/**` (Módulos Educativos)
-  - `/aulas/**` (Aulas e Conteúdos Instrutivos)
-  - *Assistente IA*
-- **Bloqueio Automático:** Requisições de usuários `COMUM` para essas rotas são barradas pelo Spring Security com **`403 Forbidden`** (`AccessDeniedException`).
+### 🔒 Proteção de Rotas & Regras de Acesso:
+- **Rotas Educativas para Alunos (`GET /trilhas/**`, `GET /modulos/**`, `GET /aulas/**`, `PATCH /aulas/{id}/concluir`):**
+  - Exclusivas para **`ROLE_PREMIUM`** e **`ROLE_ADMIN`**.
+  - Usuários `COMUM` recebem **`403 Forbidden`**.
+- **Rotas de Gestão Educativa (`POST`, `PUT`, `DELETE` em `/trilhas/**`, `/modulos/**`, `/aulas/**`):**
+  - Exclusivas para **`ROLE_ADMIN`** (executadas via API/Insomnia por curadores/administradores).
+  - Usuários `COMUM` e `PREMIUM` recebem **`403 Forbidden`**.
 
 ---
 
@@ -150,36 +153,37 @@ O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
 
 ---
 
-### 🎓 Trilhas de Aprendizado (`/trilhas`) - ⭐ EXCLUSIVO PREMIUM
-| Método | Endpoint | Parâmetros / Body | Response | Descrição |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/trilhas/pet/{petId}` | `@PathVariable Long petId` | `List<TrilhaResponse>` | Lista trilhas cadastradas para o pet. |
-| `GET` | `/trilhas/{id}` | `@PathVariable Long id` | `TrilhaResponse` | Busca trilha por ID. |
-| `POST` | `/trilhas` | `TrilhaRequest` | `TrilhaResponse` (201 Created) | Cria nova trilha para o pet. |
-| `PUT` | `/trilhas/{id}` | `TrilhaRequest` | `TrilhaResponse` (200 OK) | Atualiza trilha existente. |
-| `DELETE`| `/trilhas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma trilha e seus módulos/aulas em cascata. |
+### 🎓 Trilhas de Aprendizado (`/trilhas`) - ⭐ LEITURA: PREMIUM & ADMIN | ESCRITA: ADMIN
+| Método | Endpoint | Parâmetros / Body | Response | Descrição | Permissão |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/trilhas/pet/{petId}` | `@PathVariable Long petId` | `List<TrilhaResponse>` | Lista trilhas cadastradas para o pet. | `PREMIUM`, `ADMIN` |
+| `GET` | `/trilhas/{id}` | `@PathVariable Long id` | `TrilhaResponse` | Busca trilha por ID. | `PREMIUM`, `ADMIN` |
+| `POST` | `/trilhas` | `TrilhaRequest` | `TrilhaResponse` (201 Created) | Cria nova trilha para o pet. | `ADMIN` |
+| `PUT` | `/trilhas/{id}` | `TrilhaRequest` | `TrilhaResponse` (200 OK) | Atualiza trilha existente. | `ADMIN` |
+| `DELETE`| `/trilhas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma trilha e seus módulos/aulas em cascata. | `ADMIN` |
 
 ---
 
-### 📦 Módulos das Trilhas (`/modulos`) - ⭐ EXCLUSIVO PREMIUM
-| Método | Endpoint | Parâmetros / Body | Response | Descrição |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/modulos/trilha/{trilhaId}` | `@PathVariable Long trilhaId` | `List<ModuloResponse>` | Lista módulos pertencentes a uma trilha. |
-| `GET` | `/modulos/{id}` | `@PathVariable Long id` | `ModuloResponse` | Busca módulo por ID. |
-| `POST` | `/modulos` | `ModuloRequest` | `ModuloResponse` (201 Created) | Cria novo módulo associado a uma trilha. |
-| `PUT` | `/modulos/{id}` | `ModuloRequest` | `ModuloResponse` (200 OK) | Atualiza módulo existente. |
-| `DELETE`| `/modulos/{id}` | `@PathVariable Long id` | 204 No Content | Deleta módulo e suas aulas em cascata. |
+### 📦 Módulos das Trilhas (`/modulos`) - ⭐ LEITURA: PREMIUM & ADMIN | ESCRITA: ADMIN
+| Método | Endpoint | Parâmetros / Body | Response | Descrição | Permissão |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/modulos/trilha/{trilhaId}` | `@PathVariable Long trilhaId` | `List<ModuloResponse>` | Lista módulos pertencentes a uma trilha. | `PREMIUM`, `ADMIN` |
+| `GET` | `/modulos/{id}` | `@PathVariable Long id` | `ModuloResponse` | Busca módulo por ID. | `PREMIUM`, `ADMIN` |
+| `POST` | `/modulos` | `ModuloRequest` | `ModuloResponse` (201 Created) | Cria novo módulo associado a uma trilha. | `ADMIN` |
+| `PUT` | `/modulos/{id}` | `ModuloRequest` | `ModuloResponse` (200 OK) | Atualiza módulo existente. | `ADMIN` |
+| `DELETE`| `/modulos/{id}` | `@PathVariable Long id` | 204 No Content | Deleta módulo e suas aulas em cascata. | `ADMIN` |
 
 ---
 
-### 📝 Aulas e Conteúdos Educativos (`/aulas`) - ⭐ EXCLUSIVO PREMIUM
-| Método | Endpoint | Parâmetros / Body | Response | Descrição |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/aulas/modulo/{moduloId}` | `@PathVariable Long moduloId` | `List<AulaResponse>` | Lista aulas pertencentes a um módulo. |
-| `GET` | `/aulas/{id}` | `@PathVariable Long id` | `AulaResponse` | Busca aula por ID. |
-| `POST` | `/aulas` | `AulaRequest` | `AulaResponse` (201 Created) | Cria nova aula (com pontuação, conteúdo NOT NULL até 1000 caracteres e concluida = false). |
-| `PUT` | `/aulas/{id}` | `AulaRequest` | `AulaResponse` (200 OK) | Atualiza aula existente (ex: marcar `concluida = true`). |
-| `DELETE`| `/aulas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma aula. |
+### 📝 Aulas e Conteúdos Educativos (`/aulas`) - ⭐ LEITURA: PREMIUM & ADMIN | ESCRITA: ADMIN
+| Método | Endpoint | Parâmetros / Body | Response | Descrição | Permissão |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/aulas/modulo/{moduloId}` | `@PathVariable Long moduloId` | `List<AulaResponse>` | Lista aulas pertencentes a um módulo. | `PREMIUM`, `ADMIN` |
+| `GET` | `/aulas/{id}` | `@PathVariable Long id` | `AulaResponse` | Busca aula por ID. | `PREMIUM`, `ADMIN` |
+| `POST` | `/aulas` | `AulaRequest` | `AulaResponse` (201 Created) | Cria nova aula (pontuação, conteúdo até 1000 caracteres, concluida = false). | `ADMIN` |
+| `PUT` | `/aulas/{id}` | `AulaRequest` | `AulaResponse` (200 OK) | Atualiza aula existente. | `ADMIN` |
+| `PATCH`| `/aulas/{id}/concluir` | `@PathVariable Long id` | `AulaResponse` (200 OK) | Marca aula como concluída (`concluida = true`), gerando pontos para o pet. | `PREMIUM`, `ADMIN` |
+| `DELETE`| `/aulas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma aula. | `ADMIN` |
 
 ---
 
@@ -188,7 +192,7 @@ O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/enderecos` | `Pageable` | `Page<EnderecoResponse>` | Lista endereços cadastrados. |
 | `GET` | `/enderecos/{id}` | `@PathVariable Long id` | `EnderecoResponse` | Busca endereço por ID. |
-| `POST` | `/enderecos` | `EnderecoRequest` | `EnderecoResponse` (201 Created) | Resolve endereço via ViaCEP e persiste hierarquia geográfica. |
+| `POST` | `/enderecos` | `EnderecoRequest` | `EnderecoResponse` (201 Created) | Resolve endereço via cliente declarativo `ViaCepService` (@HttpExchange) e persiste hierarquia geográfica. |
 | `PUT` | `/enderecos/{id}` | `EnderecoRequest` | `EnderecoResponse` (200 OK) | Atualiza endereço por ID. |
 | `DELETE`| `/enderecos/{id}` | `@PathVariable Long id` | 204 No Content | Deleta endereço. |
 
@@ -227,4 +231,7 @@ O sistema opera com dois perfis de acesso formalizados no Enum `UsuarioRole`:
 2. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
 3. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
 4. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
-5. **Sem Verificações Redundantes de Null:** Não incluir checagens manuais de `null` ou ternários defensivos em atributos que já possuem valor padrão na entidade (como `role = UsuarioRole.PREMIUM`) ou que são obrigatórios via `@NotNull`/`@NotBlank`.
+5. **Sem Verificações Redundantes de Null (Proibido Null-Checks Paranoicos):** DTOs com Bean Validation (`@NotNull`, `@NotBlank`, `@CepValidation`, etc.) e entidades com `@Builder.Default` garantem a integridade dos dados na entrada. É terminantemente proibido poluir services e controllers com checagens de `!= null` e verificações defensivas em cascata desnecessárias.
+6. **Sem Over-Engineering / Métodos Auxiliares Desnecessários (KISS):** Não criar métodos auxiliares, records intermediários descartáveis (como `ResolvedAddress`) ou validações encapsuladas isoladas (como `isValido()`) que só são utilizadas em um único ponto e podem ser resolvidas de forma simples e direta em uma única linha.
+7. **Imports no Topo (Proibido FQCN inline):** NUNCA declarar pacotes inteiros inline no meio do código (ex: `org.springframework...`, `java.time...`). SEMPRE importar a classe no topo do arquivo com `import` e usar apenas o nome da classe no corpo do código.
+8. **Integrações Externas Declarativas (@HttpExchange):** Consumo de APIs externas (ex: ViaCEP) deve utilizar interfaces HTTP declarativas com `@HttpExchange` e `@GetExchange` registradas via `@ImportHttpServices`.

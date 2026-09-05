@@ -6,7 +6,7 @@ import fiap.com.br.petguardian.trilha.modulo.Modulo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -52,8 +52,8 @@ class AulaControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "PREMIUM")
-    @DisplayName("POST /aulas - Deve criar aula para modulo")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("POST /aulas - Deve criar aula para modulo como ADMIN")
     void deveCriarAula() throws Exception {
         var request = new AulaRequest("Comando Senta!", "Desc", 25, "FACIL", "Passo a passo", false, 10L);
         Modulo modulo = Modulo.builder().id(10L).nome("Módulo 1").build();
@@ -70,7 +70,21 @@ class AulaControllerTest {
 
     @Test
     @WithMockUser(roles = "PREMIUM")
-    @DisplayName("DELETE /aulas/{id} - Deve deletar aula")
+    @DisplayName("PATCH /aulas/{id}/concluir - Deve concluir aula como PREMIUM")
+    void deveConcluirAulaPremium() throws Exception {
+        Modulo modulo = Modulo.builder().id(10L).nome("Módulo 1").build();
+        Aula aula = Aula.builder().id(100L).nome("Comando Senta!").descricao("Desc").pontosAula(25).dificuldade("FACIL").conteudo("Passo a passo").concluida(true).modulo(modulo).build();
+
+        when(aulaService.concluir(100L)).thenReturn(aula);
+
+        mockMvc.perform(patch("/aulas/100/concluir"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.concluida").value(true));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("DELETE /aulas/{id} - Deve deletar aula como ADMIN")
     void deveDeletarAula() throws Exception {
         mockMvc.perform(delete("/aulas/100"))
                 .andExpect(status().isNoContent());

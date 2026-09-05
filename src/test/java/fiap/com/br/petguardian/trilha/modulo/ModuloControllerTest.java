@@ -6,7 +6,7 @@ import fiap.com.br.petguardian.trilha.modulo.dto.ModuloRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -51,8 +51,8 @@ class ModuloControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "PREMIUM")
-    @DisplayName("POST /modulos - Deve criar modulo para trilha")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("POST /modulos - Deve criar modulo para trilha como ADMIN")
     void deveCriarModulo() throws Exception {
         var request = new ModuloRequest("Primeiros Comandos", "5", "Desc", 1L);
         Trilha trilha = Trilha.builder().id(1L).nome("Obediência").build();
@@ -68,8 +68,8 @@ class ModuloControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "PREMIUM")
-    @DisplayName("DELETE /modulos/{id} - Deve deletar modulo")
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("DELETE /modulos/{id} - Deve deletar modulo como ADMIN")
     void deveDeletarModulo() throws Exception {
         mockMvc.perform(delete("/modulos/10"))
                 .andExpect(status().isNoContent());

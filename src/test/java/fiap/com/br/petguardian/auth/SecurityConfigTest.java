@@ -3,12 +3,14 @@ package fiap.com.br.petguardian.auth;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -61,5 +63,45 @@ class SecurityConfigTest {
     void usuarioPremiumPodeAcessarTrilhas() throws Exception {
         mockMvc.perform(get("/trilhas/pet/1"))
                 .andExpect(status().isNotFound()); // Passou da camada de segurança (não é 403)
+    }
+
+    @Test
+    @WithMockUser(username = "tutor_premium@fiap.com.br", roles = {"PREMIUM"})
+    @DisplayName("Usuário com ROLE_PREMIUM deve receber 403 Forbidden em POST /trilhas")
+    void usuarioPremiumBloqueadoEmCriarTrilhas() throws Exception {
+        mockMvc.perform(post("/trilhas"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin@fiap.com.br", roles = {"ADMIN"})
+    @DisplayName("Usuário com ROLE_ADMIN deve ter autorização para POST /trilhas")
+    void adminPodeAcessarCriarTrilhas() throws Exception {
+        mockMvc.perform(post("/trilhas"))
+                .andExpect(status().isBadRequest()); // Passou da segurança (não é 403)
+    }
+
+    @Test
+    @WithMockUser(username = "admin@fiap.com.br", roles = {"ADMIN"})
+    @DisplayName("Usuário com ROLE_ADMIN deve ter autorização para GET /trilhas/pet/1")
+    void adminPodeAcessarTrilhas() throws Exception {
+        mockMvc.perform(get("/trilhas/pet/1"))
+                .andExpect(status().isNotFound()); // Passou da segurança (não é 403)
+    }
+
+    @Test
+    @WithMockUser(username = "tutor_comum@fiap.com.br", roles = {"COMUM"})
+    @DisplayName("Usuário com ROLE_COMUM deve receber 403 Forbidden em PATCH /aulas/1/concluir")
+    void usuarioComumBloqueadoEmConcluirAula() throws Exception {
+        mockMvc.perform(patch("/aulas/1/concluir"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "tutor_premium@fiap.com.br", roles = {"PREMIUM"})
+    @DisplayName("Usuário com ROLE_PREMIUM deve ter autorização para PATCH /aulas/1/concluir")
+    void usuarioPremiumPodeConcluirAula() throws Exception {
+        mockMvc.perform(patch("/aulas/1/concluir"))
+                .andExpect(status().isNotFound()); // Passou da segurança (não é 403)
     }
 }
