@@ -34,10 +34,9 @@ public class TrilhaService {
 
     @Transactional
     public Trilha update(Long id, TrilhaRequest request) {
-        findTrilhaById(id);
+        Trilha trilha = findTrilhaById(id);
         Pet pet = findPetById(request.petId());
-        Trilha trilha = request.toEntity(pet);
-        trilha.setId(id);
+        request.aplicarEm(trilha, pet);
         return trilhaRepository.save(trilha);
     }
 

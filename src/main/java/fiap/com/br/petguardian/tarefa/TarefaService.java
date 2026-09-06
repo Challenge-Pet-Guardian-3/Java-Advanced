@@ -71,16 +71,14 @@ public class TarefaService {
 
     @Transactional
     public Tarefa update(Long id, TarefaRequest request) {
-        Tarefa tarefaAtual = findTarefaById(id);
+        Tarefa tarefa = findTarefaById(id);
         Pet pet = findPetById(request.petId());
         Usuario usuario = findUsuarioById(request.usuarioId());
         tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
         EnumStatus status = EnumStatus.valueOf(request.status());
 
-        Tarefa tarefa = request.toEntity(usuario, pet, tarefaAtual.getCriacao());
-        tarefa.setId(id);
-        tarefa.setStatus(statusService.findStatus(status));
-        tarefa.setConclusao(definirConclusao(tarefaAtual, status, request.conclusao(), LocalDateTime.now()));
+        LocalDateTime conclusao = definirConclusao(tarefa, status, request.conclusao(), LocalDateTime.now());
+        request.aplicarEm(tarefa, usuario, pet, statusService.findStatus(status), conclusao);
         return tarefaRepository.save(tarefa);
     }
 

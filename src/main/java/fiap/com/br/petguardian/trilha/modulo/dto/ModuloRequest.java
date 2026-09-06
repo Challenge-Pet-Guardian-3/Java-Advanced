@@ -30,4 +30,12 @@ public record ModuloRequest(
                 .trilha(trilha)
                 .build();
     }
+
+    public Modulo aplicarEm(Modulo modulo, Trilha trilha) {
+        modulo.setNome(nome);
+        modulo.setTempoConclusao(tempoConclusao);
+        modulo.setDescricao(descricao);
+        modulo.setTrilha(trilha);
+        return modulo;
+    }
 }

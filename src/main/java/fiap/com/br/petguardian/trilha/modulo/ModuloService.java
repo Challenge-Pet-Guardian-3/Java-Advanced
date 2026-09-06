@@ -34,10 +34,9 @@ public class ModuloService {
 
     @Transactional
     public Modulo update(Long id, ModuloRequest request) {
-        findModuloById(id);
+        Modulo modulo = findModuloById(id);
         Trilha trilha = findTrilhaById(request.trilhaId());
-        Modulo modulo = request.toEntity(trilha);
-        modulo.setId(id);
+        request.aplicarEm(modulo, trilha);
         return moduloRepository.save(modulo);
     }
 

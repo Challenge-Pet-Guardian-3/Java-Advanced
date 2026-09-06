@@ -3,6 +3,7 @@ package fiap.com.br.petguardian.tarefa.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.tarefa.status.EnumStatus;
+import fiap.com.br.petguardian.tarefa.status.Status;
 import fiap.com.br.petguardian.tarefa.Tarefa;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.validation.EnumValidation;
@@ -52,5 +53,17 @@ public record TarefaRequest(
                 .usuario(usuario)
                 .pet(pet)
                 .build();
+    }
+
+    public Tarefa aplicarEm(Tarefa tarefa, Usuario usuario, Pet pet, Status statusObj, LocalDateTime conclusaoCalculada) {
+        tarefa.setTitulo(titulo);
+        tarefa.setPontosTarefa(pontosTarefa);
+        tarefa.setDescricao(descricao);
+        tarefa.setPrazo(prazo);
+        tarefa.setUsuario(usuario);
+        tarefa.setPet(pet);
+        tarefa.setStatus(statusObj);
+        tarefa.setConclusao(conclusaoCalculada);
+        return tarefa;
     }
 }

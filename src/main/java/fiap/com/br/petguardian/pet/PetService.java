@@ -61,13 +61,12 @@ public class PetService {
 
     @Transactional
     public Pet update(Long id, PetRequest petRequest) {
-        findPetById(id);
+        Pet pet = findPetById(id);
         findUsuarioById(petRequest.usuarioId());
         usuarioPetValidator.validarResponsavelPrincipal(petRequest.usuarioId(), id);
 
         Raca raca = findOrCreateRaca(petRequest.raca());
-        Pet pet = petRequest.toEntity(raca);
-        pet.setId(id);
+        petRequest.aplicarEm(pet, raca);
         return petRepository.save(pet);
     }
 

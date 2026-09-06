@@ -44,4 +44,14 @@ public record PetRequest(
                 .castrado(castrado)
                 .build();
     }
+
+    public Pet aplicarEm(Pet pet, Raca racaObj) {
+        pet.setNome(nome);
+        pet.setDataNasc(dataNasc);
+        pet.setRaca(racaObj);
+        pet.setPorte(PetPorte.valueOf(porte));
+        pet.setSexo(sexo);
+        pet.setCastrado(castrado);
+        return pet;
+    }
 }

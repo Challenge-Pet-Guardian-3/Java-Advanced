@@ -164,7 +164,7 @@ class PetServiceTest {
     }
 
     @Test
-    @DisplayName("Deve atualizar pet validando responsavel principal")
+    @DisplayName("Deve atualizar pet validando responsavel principal e preservando usuarioPets e tarefas")
     void deveAtualizarPetValidandoResponsavel() {
         var request = new PetRequest("Thor Atualizado", LocalDate.now().minusYears(2), "Golden Retriever", "GRANDE", 'M', true, 1L);
         Usuario usuario = Usuario.builder().id(1L).nome("Enzo").build();
@@ -180,6 +180,8 @@ class PetServiceTest {
 
         assertNotNull(resultado);
         assertEquals("Thor Atualizado", resultado.getNome());
+        assertEquals(petExistente.getUsuarioPets(), resultado.getUsuarioPets());
+        assertEquals(petExistente.getTarefas(), resultado.getTarefas());
         verify(usuarioPetValidator).validarResponsavelPrincipal(1L, 10L);
     }
 

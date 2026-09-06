@@ -73,4 +73,22 @@ class TrilhaServiceTest {
 
         verify(trilhaRepository).deleteById(1L);
     }
+
+    @Test
+    @DisplayName("Deve atualizar trilha preservando modulos existentes")
+    void deveAtualizarTrilhaPreservandoModulos() {
+        Pet pet = Pet.builder().id(10L).build();
+        Trilha trilhaExistente = Trilha.builder().id(1L).nome("Trilha Antiga").descricao("Desc").pet(pet).build();
+        var request = new TrilhaRequest("Trilha Nova", "Nova Desc", 10L);
+
+        when(trilhaRepository.findById(1L)).thenReturn(Optional.of(trilhaExistente));
+        when(petRepository.findById(10L)).thenReturn(Optional.of(pet));
+        when(trilhaRepository.save(any(Trilha.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Trilha resultado = trilhaService.update(1L, request);
+
+        assertNotNull(resultado);
+        assertEquals("Trilha Nova", resultado.getNome());
+        assertEquals(trilhaExistente.getModulos(), resultado.getModulos());
+    }
 }

@@ -34,10 +34,9 @@ public class HistoricoService {
 
     @Transactional
     public Historico update(Long id, HistoricoRequest request) {
-        findHistoricoById(id);
+        Historico historico = findHistoricoById(id);
         Pet pet = findPetById(request.petId());
-        Historico historico = request.toEntity(pet);
-        historico.setId(id);
+        request.aplicarEm(historico, pet);
         return historicoRepository.save(historico);
     }
 

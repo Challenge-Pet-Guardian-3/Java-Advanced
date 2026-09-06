@@ -2,6 +2,8 @@ package fiap.com.br.petguardian.endereco;
 
 import fiap.com.br.petguardian.endereco.bairro.BairroRepository;
 import fiap.com.br.petguardian.endereco.cidade.CidadeRepository;
+import fiap.com.br.petguardian.endereco.dto.EnderecoRequest;
+import fiap.com.br.petguardian.endereco.dto.ViaCepResponse;
 import fiap.com.br.petguardian.endereco.estado.EstadoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,5 +81,31 @@ class EnderecoServiceTest {
         enderecoService.delete(1L);
 
         verify(enderecoRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar endereco existente preservando colecao de usuarios")
+    void deveAtualizarEnderecoPreservandoUsuarios() {
+        Endereco enderecoExistente = Endereco.builder().id(1L).cep("01310100").numero("100").rua("Rua Antiga").build();
+        var request = new EnderecoRequest("01310200", "200");
+        var viaCep = new ViaCepResponse("Av Nova", "Bela Vista", "São Paulo", "SP", false);
+
+        when(enderecoRepository.findById(1L)).thenReturn(Optional.of(enderecoExistente));
+        when(viaCepService.getEnderecoPorCep("01310200")).thenReturn(viaCep);
+        when(estadoRepository.findByNomeIgnoreCase("SP")).thenReturn(Optional.empty());
+        when(estadoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(cidadeRepository.findByNomeIgnoreCaseAndEstadoId(any(), any())).thenReturn(Optional.empty());
+        when(cidadeRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(bairroRepository.findByNomeIgnoreCaseAndCidadeId(any(), any())).thenReturn(Optional.empty());
+        when(bairroRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(enderecoRepository.save(any(Endereco.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Endereco resultado = enderecoService.update(1L, request);
+
+        assertNotNull(resultado);
+        assertEquals("01310200", resultado.getCep());
+        assertEquals("200", resultado.getNumero());
+        assertEquals("Av Nova", resultado.getRua());
+        assertEquals(enderecoExistente.getUsuarios(), resultado.getUsuarios());
     }
 }

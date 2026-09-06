@@ -45,4 +45,15 @@ public record AulaRequest(
                 .modulo(modulo)
                 .build();
     }
+
+    public Aula aplicarEm(Aula aula, Modulo modulo) {
+        aula.setNome(nome);
+        aula.setDescricao(descricao);
+        aula.setPontosAula(pontosAula);
+        aula.setDificuldade(dificuldade);
+        aula.setConteudo(conteudo);
+        aula.setConcluida(concluida);
+        aula.setModulo(modulo);
+        return aula;
+    }
 }

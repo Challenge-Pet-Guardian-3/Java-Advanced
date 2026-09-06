@@ -25,4 +25,11 @@ public record TrilhaRequest(
                 .pet(pet)
                 .build();
     }
+
+    public Trilha aplicarEm(Trilha trilha, Pet pet) {
+        trilha.setNome(nome);
+        trilha.setDescricao(descricao);
+        trilha.setPet(pet);
+        return trilha;
+    }
 }

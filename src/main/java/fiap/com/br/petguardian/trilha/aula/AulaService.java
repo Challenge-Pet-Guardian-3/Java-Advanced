@@ -34,10 +34,9 @@ public class AulaService {
 
     @Transactional
     public Aula update(Long id, AulaRequest request) {
-        findAulaById(id);
+        Aula aula = findAulaById(id);
         Modulo modulo = findModuloById(request.moduloId());
-        Aula aula = request.toEntity(modulo);
-        aula.setId(id);
+        request.aplicarEm(aula, modulo);
         return aulaRepository.save(aula);
     }
 

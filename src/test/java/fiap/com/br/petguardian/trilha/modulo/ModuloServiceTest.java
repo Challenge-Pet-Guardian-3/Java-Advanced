@@ -73,4 +73,22 @@ class ModuloServiceTest {
 
         verify(moduloRepository).deleteById(10L);
     }
+
+    @Test
+    @DisplayName("Deve atualizar modulo preservando aulas existentes")
+    void deveAtualizarModuloPreservandoAulas() {
+        Trilha trilha = Trilha.builder().id(1L).build();
+        Modulo moduloExistente = Modulo.builder().id(10L).nome("Modulo Antigo").tempoConclusao("5").descricao("Desc").trilha(trilha).build();
+        var request = new ModuloRequest("Modulo Novo", "8", "Nova Desc", 1L);
+
+        when(moduloRepository.findById(10L)).thenReturn(Optional.of(moduloExistente));
+        when(trilhaRepository.findById(1L)).thenReturn(Optional.of(trilha));
+        when(moduloRepository.save(any(Modulo.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Modulo resultado = moduloService.update(10L, request);
+
+        assertNotNull(resultado);
+        assertEquals("Modulo Novo", resultado.getNome());
+        assertEquals(moduloExistente.getAulas(), resultado.getAulas());
+    }
 }

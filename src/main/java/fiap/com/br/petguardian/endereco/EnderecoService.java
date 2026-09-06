@@ -40,9 +40,8 @@ public class EnderecoService {
 
     @Transactional
     public Endereco update(Long id, EnderecoRequest enderecoRequest) {
-        findEnderecoById(id);
-        Endereco endereco = buildEndereco(enderecoRequest);
-        endereco.setId(id);
+        Endereco endereco = findEnderecoById(id);
+        aplicarEndereco(endereco, enderecoRequest);
         return enderecoRepository.save(endereco);
     }
 
@@ -66,21 +65,33 @@ public class EnderecoService {
     }
 
     private Endereco buildEndereco(EnderecoRequest request) {
-        ViaCepResponse dados = viaCepService.getEnderecoPorCep(request.cep().replaceAll("\\D", ""));
+        ViaCepResponse dados = obterDadosCep(request.cep());
+        Bairro bairro = obterOuCriarBairro(dados);
+        return request.toEntity(dados.logradouro(), bairro);
+    }
 
+    private Endereco aplicarEndereco(Endereco endereco, EnderecoRequest request) {
+        ViaCepResponse dados = obterDadosCep(request.cep());
+        Bairro bairro = obterOuCriarBairro(dados);
+        return request.aplicarEm(endereco, dados.logradouro(), bairro);
+    }
+
+    private ViaCepResponse obterDadosCep(String cep) {
+        ViaCepResponse dados = viaCepService.getEnderecoPorCep(cep.replaceAll("\\D", ""));
         if (Boolean.TRUE.equals(dados.erro())) {
-            throw new IllegalArgumentException("CEP " + request.cep() + " não encontrado.");
+            throw new IllegalArgumentException("CEP " + cep + " não encontrado.");
         }
+        return dados;
+    }
 
+    private Bairro obterOuCriarBairro(ViaCepResponse dados) {
         Estado estado = estadoRepository.findByNomeIgnoreCase(dados.estado())
                 .orElseGet(() -> estadoRepository.save(Estado.builder().nome(dados.estado()).build()));
 
         Cidade cidade = cidadeRepository.findByNomeIgnoreCaseAndEstadoId(dados.localidade(), estado.getId())
                 .orElseGet(() -> cidadeRepository.save(Cidade.builder().nome(dados.localidade()).estado(estado).build()));
 
-        Bairro bairro = bairroRepository.findByNomeIgnoreCaseAndCidadeId(dados.bairro(), cidade.getId())
+        return bairroRepository.findByNomeIgnoreCaseAndCidadeId(dados.bairro(), cidade.getId())
                 .orElseGet(() -> bairroRepository.save(Bairro.builder().nome(dados.bairro()).cidade(cidade).build()));
-
-        return request.toEntity(dados.logradouro(), bairro);
     }
 }

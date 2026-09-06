@@ -21,4 +21,12 @@ public record EnderecoRequest(
                 .bairro(bairro)
                 .build();
     }
+
+    public Endereco aplicarEm(Endereco endereco, String rua, Bairro bairro) {
+        endereco.setCep(cep.replaceAll("\\D", ""));
+        endereco.setNumero(numero);
+        endereco.setRua(rua);
+        endereco.setBairro(bairro);
+        return endereco;
+    }
 }
