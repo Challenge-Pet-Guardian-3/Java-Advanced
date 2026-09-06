@@ -78,7 +78,7 @@ class TarefaControllerTest {
     @DisplayName("GET /tarefas/by-usuario - Deve listar tarefas pendentes de um usuario")
     void deveListarTarefasPorUsuario() throws Exception {
         Tarefa tarefa = criarTarefaMock();
-        when(tarefaService.findAll(eq(1L), any())).thenReturn(new PageImpl<>(List.of(tarefa)));
+        when(tarefaService.findAllByUsuario(eq(1L), any(), any())).thenReturn(new PageImpl<>(List.of(tarefa)));
 
         mockMvc.perform(get("/tarefas/by-usuario").param("usuarioId", "1"))
                 .andExpect(status().isOk())
@@ -89,7 +89,7 @@ class TarefaControllerTest {
     @WithMockUser
     @DisplayName("POST /tarefas - Deve criar tarefa")
     void deveCriarTarefa() throws Exception {
-        var request = new TarefaRequest("Ração matinal", 15, "Colocar 200g", LocalDateTime.now().plusHours(4), 1L, 10L, "PENDENTE");
+        var request = new TarefaRequest("Ração matinal", 15, "Colocar 200g", LocalDateTime.now().plusHours(4), 1L, 10L, "PENDENTE", null);
         Tarefa tarefa = criarTarefaMock();
 
         when(tarefaService.create(any(TarefaRequest.class))).thenReturn(tarefa);

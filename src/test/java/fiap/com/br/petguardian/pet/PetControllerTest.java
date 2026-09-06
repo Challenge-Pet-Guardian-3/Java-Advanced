@@ -125,9 +125,9 @@ class PetControllerTest {
     @WithMockUser
     @DisplayName("DELETE /pets/{id} - Deve excluir pet")
     void deveExcluirPet() throws Exception {
-        mockMvc.perform(delete("/pets/1"))
+        mockMvc.perform(delete("/pets/1").param("usuarioId", "1"))
                 .andExpect(status().isNoContent());
 
-        verify(petService).delete(1L);
+        verify(petService).delete(1L, 1L);
     }
 }

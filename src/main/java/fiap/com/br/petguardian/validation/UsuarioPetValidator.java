@@ -34,7 +34,7 @@ public class UsuarioPetValidator {
         Long petId = vinculo.getPet().getId();
 
         boolean isProprioUsuario = Objects.equals(usuarioId, solicitanteId);
-        boolean isResponsavel = solicitanteId != null && usuarioPetRepository.isResponsavelPrincipal(solicitanteId, petId);
+        boolean isResponsavel = usuarioPetRepository.isResponsavelPrincipal(solicitanteId, petId);
 
         if (!isProprioUsuario && !isResponsavel) {
             throw new IllegalArgumentException("Apenas o proprio cuidador ou o responsavel principal podem remover este vinculo.");

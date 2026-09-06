@@ -13,6 +13,7 @@ import fiap.com.br.petguardian.trilha.aula.AulaRepository;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetService;
+import fiap.com.br.petguardian.validation.UsuarioPetValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +47,9 @@ class PetServiceTest {
 
     @Mock
     private UsuarioPetService usuarioPetService;
+
+    @Mock
+    private UsuarioPetValidator usuarioPetValidator;
 
     @Mock
     private RacaRepository racaRepository;
@@ -146,14 +150,53 @@ class PetServiceTest {
         assertEquals(80, response.pontosTotais());
     }
 
+
     @Test
-    @DisplayName("Deve deletar pet existente")
-    void deveDeletarPet() {
+    @DisplayName("Deve deletar pet validando responsavel principal")
+    void deveDeletarPetValidandoResponsavel() {
         Pet pet = Pet.builder().id(10L).build();
         when(petRepository.findById(10L)).thenReturn(Optional.of(pet));
 
-        petService.delete(10L);
+        petService.delete(10L, 1L);
 
+        verify(usuarioPetValidator).validarResponsavelPrincipal(1L, 10L);
         verify(petRepository).deleteById(10L);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar pet validando responsavel principal")
+    void deveAtualizarPetValidandoResponsavel() {
+        var request = new PetRequest("Thor Atualizado", LocalDate.now().minusYears(2), "Golden Retriever", "GRANDE", 'M', true, 1L);
+        Usuario usuario = Usuario.builder().id(1L).nome("Enzo").build();
+        Raca raca = Raca.builder().id(1L).nome("Golden Retriever").build();
+        Pet petExistente = Pet.builder().id(10L).nome("Thor").raca(raca).build();
+
+        when(petRepository.findById(10L)).thenReturn(Optional.of(petExistente));
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(racaRepository.findByNomeIgnoreCase("Golden Retriever")).thenReturn(Optional.of(raca));
+        when(petRepository.save(any(Pet.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Pet resultado = petService.update(10L, request);
+
+        assertNotNull(resultado);
+        assertEquals("Thor Atualizado", resultado.getNome());
+        verify(usuarioPetValidator).validarResponsavelPrincipal(1L, 10L);
+    }
+
+    @Test
+    @DisplayName("Deve listar pets associados a um usuario")
+    void deveListarPetsPorUsuario() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Usuario usuario = Usuario.builder().id(1L).build();
+        Pet pet = Pet.builder().id(10L).nome("Thor").build();
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(petRepository.findByUsuarioId(1L, pageable)).thenReturn(new PageImpl<>(List.of(pet)));
+
+        Page<Pet> resultado = petService.findByUsuario(1L, pageable);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals("Thor", resultado.getContent().get(0).getNome());
     }
 }

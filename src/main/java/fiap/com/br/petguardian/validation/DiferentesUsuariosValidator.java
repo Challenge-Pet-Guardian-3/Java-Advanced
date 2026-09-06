@@ -12,10 +12,6 @@ public class DiferentesUsuariosValidator implements ConstraintValidator<Diferent
 
     @Override
     public boolean isValid(TransferirResponsabilidadeRequest value, ConstraintValidatorContext context) {
-        if (value == null || value.responsavelAtualId() == null || value.novoResponsavelId() == null) {
-            return true; // Deixa validacao de @NotNull tratar campos nulos
-        }
-
-        return !Objects.equals(value.responsavelAtualId(), value.novoResponsavelId());
+        return value == null || !Objects.equals(value.responsavelAtualId(), value.novoResponsavelId());
     }
 }

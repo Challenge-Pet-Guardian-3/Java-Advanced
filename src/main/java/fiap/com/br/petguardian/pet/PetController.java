@@ -25,9 +25,22 @@ public class PetController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Listar todos os pets com paginação e ordenação")
-    public Page<PetResponse> findAll(@PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+    @Operation(summary = "Listar pets com paginação e ordenação")
+    public Page<PetResponse> findAll(
+            @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
         return petService.findAll(pageable)
+                .map(PetResponse::fromEntity);
+    }
+
+    @GetMapping("/by-usuario")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Buscar pets associados a um usuário logado (como tutor principal ou co-cuidador)")
+    public Page<PetResponse> findByUsuario(
+            @RequestParam Long usuarioId,
+            @PageableDefault(size = 20, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return petService.findByUsuario(usuarioId, pageable)
                 .map(PetResponse::fromEntity);
     }
 
@@ -76,8 +89,8 @@ public class PetController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Deletar pet")
-    public void delete(@PathVariable Long id) {
-        petService.delete(id);
+    @Operation(summary = "Deletar pet (somente o responsável principal tem permissão)")
+    public void delete(@PathVariable Long id, @RequestParam Long usuarioId) {
+        petService.delete(id, usuarioId);
     }
 }

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -92,7 +93,7 @@ public class UsuarioPetService {
         Map<Long, List<Long>> tarefasPorPet = carregarMapaTarefasPorPet(petIds);
         List<UsuarioPet> todosVinculosDosPets = usuarioPetRepository.findAllByPetIdIn(petIds);
 
-        int totalPendentes = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.PENDENTE);
+        int totalPendentes = tarefaRepository.countByPetIdInAndStatusAndPrazoFuturo(petIds, EnumStatus.PENDENTE, LocalDateTime.now());
         int totalConcluidas = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.CONCLUIDO);
         int pontosTotais = tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
 
@@ -133,7 +134,7 @@ public class UsuarioPetService {
     }
 
     private Usuario findUsuarioByEmail(String email) {
-        return usuarioRepository.findByEmailIgnoreCase(email.trim())
+        return usuarioRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario com email " + email + " nao encontrado."));
     }
 

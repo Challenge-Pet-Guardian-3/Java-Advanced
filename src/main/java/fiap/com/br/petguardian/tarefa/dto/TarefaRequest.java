@@ -6,7 +6,7 @@ import fiap.com.br.petguardian.tarefa.status.EnumStatus;
 import fiap.com.br.petguardian.tarefa.Tarefa;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.validation.EnumValidation;
-import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,8 +25,8 @@ public record TarefaRequest(
         @NotBlank
         String descricao,
 
-        @NotNull
-        @FutureOrPresent(message = "Prazo não pode estar no passado.")
+        @NotNull(message = "O prazo da tarefa é obrigatório.")
+        @Future(message = "O prazo da tarefa deve ser uma data e hora futura.")
         LocalDateTime prazo,
 
         @NotNull
@@ -37,7 +37,9 @@ public record TarefaRequest(
 
         @NotBlank 
         @EnumValidation(enumClass = EnumStatus.class) 
-        String status
+        String status,
+
+        LocalDateTime conclusao
 ) {
     public Tarefa toEntity(Usuario usuario, Pet pet, LocalDateTime criacao) {
         return Tarefa.builder()
@@ -46,6 +48,7 @@ public record TarefaRequest(
                 .descricao(descricao)
                 .criacao(criacao)
                 .prazo(prazo)
+                .conclusao(conclusao)
                 .usuario(usuario)
                 .pet(pet)
                 .build();

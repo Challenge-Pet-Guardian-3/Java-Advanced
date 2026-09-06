@@ -33,25 +33,12 @@ public class TarefaService {
         return tarefaRepository.findAll(pageable);
     }
 
-    public Page<Tarefa> findAll(Long usuarioId, String statusFiltro, Pageable pageable) {
+    public Page<Tarefa> findAllByUsuario(Long usuarioId, String statusFiltro, Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
-        if (statusFiltro != null && !statusFiltro.isBlank()) {
-            String normalizado = statusFiltro.trim().toUpperCase();
-            if ("ALL".equals(normalizado) || "TODAS".equals(normalizado)) {
-                return tarefaRepository.findAllDoCuidador(usuarioId, pageable);
-            }
-            try {
-                EnumStatus enumStatus = EnumStatus.valueOf(normalizado);
-                return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, enumStatus, pageable);
-            } catch (IllegalArgumentException ignored) {
-                // Fallback para PENDENTE se valor for invalido
-            }
+        if ("ALL".equals(statusFiltro)) {
+            return tarefaRepository.findAllDoCuidador(usuarioId, pageable);
         }
-        return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, EnumStatus.PENDENTE, pageable);
-    }
-
-    public Page<Tarefa> findAll(Long usuarioId, Pageable pageable) {
-        return findAll(usuarioId, null, pageable);
+        return tarefaRepository.findTarefasPendentesDoCuidador(usuarioId, EnumStatus.valueOf(statusFiltro), pageable);
     }
 
     public Page<Tarefa> findAllByPetId(Long petId, Pageable pageable) {
@@ -90,11 +77,11 @@ public class TarefaService {
         Pet pet = findPetById(request.petId());
         Usuario usuario = findUsuarioById(request.usuarioId());
         tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
-        EnumStatus status = EnumStatus.valueOf(request.status().trim().toUpperCase());
+        EnumStatus status = EnumStatus.valueOf(request.status());
         LocalDateTime agora = LocalDateTime.now();
 
         Status novoStatus = statusService.findStatusByNome(status.name());
-        LocalDateTime conclusao = definirConclusao(tarefaAtual, status, agora);
+        LocalDateTime conclusao = definirConclusao(tarefaAtual, status, request.conclusao(), agora);
 
         Tarefa tarefa = request.toEntity(usuario, pet, tarefaAtual.getCriacao());
         tarefa.setId(id);
@@ -145,8 +132,11 @@ public class TarefaService {
         tarefaRepository.deleteById(id);
     }
 
-    private LocalDateTime definirConclusao(Tarefa tarefa, EnumStatus status, LocalDateTime agora) {
+    private LocalDateTime definirConclusao(Tarefa tarefa, EnumStatus status, LocalDateTime conclusaoInformada, LocalDateTime agora) {
         if (status == EnumStatus.CONCLUIDO) {
+            if (conclusaoInformada != null) {
+                return conclusaoInformada;
+            }
             return tarefa.getConclusao() == null ? agora : tarefa.getConclusao();
         }
         return null;

@@ -74,7 +74,7 @@ class TarefaServiceTest {
     @Test
     @DisplayName("Deve criar nova tarefa vinculada a um cuidador do pet com status PENDENTE")
     void deveCriarTarefa() {
-        var request = new TarefaRequest("Remédio", 15, "Dar antibiótico", LocalDateTime.now().plusDays(1), 1L, 10L, "PENDENTE");
+        var request = new TarefaRequest("Remédio", 15, "Dar antibiótico", LocalDateTime.now().plusDays(1), 1L, 10L, "PENDENTE", null);
 
         Pet pet = Pet.builder().id(10L).nome("Thor").build();
         Usuario usuario = Usuario.builder().id(1L).nome("Enzo").build();

@@ -34,9 +34,9 @@ public class TarefaController {
     @Operation(summary = "Listar tarefas por usuarioId com filtro opcional de status e paginação")
     public Page<TarefaResponse> findAllByUsuario(
             @RequestParam Long usuarioId,
-            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "ALL") String status,
             @PageableDefault(size = 10, page = 0, sort = "prazo", direction = Sort.Direction.ASC) Pageable pageable) {
-        return tarefaService.findAll(usuarioId, status, pageable)
+        return tarefaService.findAllByUsuario(usuarioId, status, pageable)
             .map(TarefaResponse::fromEntity);
     }
 

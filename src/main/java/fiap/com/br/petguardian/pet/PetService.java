@@ -13,6 +13,7 @@ import fiap.com.br.petguardian.trilha.aula.AulaRepository;
 import fiap.com.br.petguardian.usuario.Usuario;
 import fiap.com.br.petguardian.usuario.UsuarioRepository;
 import fiap.com.br.petguardian.usuariopet.UsuarioPetService;
+import fiap.com.br.petguardian.validation.UsuarioPetValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +27,18 @@ public class PetService {
     private final PetRepository petRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioPetService usuarioPetService;
+    private final UsuarioPetValidator usuarioPetValidator;
     private final RacaRepository racaRepository;
     private final TarefaRepository tarefaRepository;
     private final AulaRepository aulaRepository;
 
     public Page<Pet> findAll(Pageable pageable) {
         return petRepository.findAll(pageable);
+    }
+
+    public Page<Pet> findByUsuario(Long usuarioId, Pageable pageable) {
+        findUsuarioById(usuarioId);
+        return petRepository.findByUsuarioId(usuarioId, pageable);
     }
 
     public Page<Pet> findByNome(String nome, Pageable pageable) {
@@ -55,20 +62,19 @@ public class PetService {
     @Transactional
     public Pet update(Long id, PetRequest petRequest) {
         findPetById(id);
-        Usuario usuario = findUsuarioById(petRequest.usuarioId());
-        Raca raca = findOrCreateRaca(petRequest.raca());
+        findUsuarioById(petRequest.usuarioId());
+        usuarioPetValidator.validarResponsavelPrincipal(petRequest.usuarioId(), id);
 
+        Raca raca = findOrCreateRaca(petRequest.raca());
         Pet pet = petRequest.toEntity(raca);
         pet.setId(id);
-        Pet petSalvo = petRepository.save(pet);
-
-        usuarioPetService.vincularResponsavelPrincipal(usuario, petSalvo);
-        return petSalvo;
+        return petRepository.save(pet);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, Long usuarioId) {
         findPetById(id);
+        usuarioPetValidator.validarResponsavelPrincipal(usuarioId, id);
         petRepository.deleteById(id);
     }
 
@@ -107,8 +113,7 @@ public class PetService {
     }
 
     private Raca findOrCreateRaca(String nomeRaca) {
-        String nomeNormalizado = nomeRaca.trim();
-        return racaRepository.findByNomeIgnoreCase(nomeNormalizado)
-                .orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeNormalizado).build()));
+        return racaRepository.findByNomeIgnoreCase(nomeRaca)
+                .orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeRaca).build()));
     }
 }

@@ -43,9 +43,9 @@ public class UsuarioPetController {
     public void desvincularCuidador(
             @PathVariable Long petId,
             @PathVariable Long usuarioId,
-            @RequestParam(required = false) Long solicitanteId
+            @RequestParam Long solicitanteId
     ) {
-        usuarioPetService.desvincularCuidador(petId, usuarioId, solicitanteId != null ? solicitanteId : usuarioId);
+        usuarioPetService.desvincularCuidador(petId, usuarioId, solicitanteId);
     }
 
     @PatchMapping("/responsavel-principal")

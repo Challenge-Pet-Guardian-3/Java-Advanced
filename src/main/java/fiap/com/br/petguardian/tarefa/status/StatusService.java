@@ -20,9 +20,10 @@ public class StatusService {
         return findStatusById(id);
     }
 
-    @Cacheable(value = "status", key = "#nome.toUpperCase()")
+    @Cacheable(value = "status", key = "#nome")
     public Status findStatusByNome(String nome) {
-        return statusRepository.findByNomeStatus(EnumStatus.valueOf(nome.toUpperCase())).orElseThrow(() -> new ResourceNotFoundException("Status '" + nome + "' não encontrado."));
+        return statusRepository.findByNomeStatus(EnumStatus.valueOf(nome))
+                .orElseThrow(() -> new ResourceNotFoundException("Status '" + nome + "' não encontrado."));
     }
 
     private Status findStatusById(Long id) {
