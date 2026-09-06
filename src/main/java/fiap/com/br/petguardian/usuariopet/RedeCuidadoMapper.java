@@ -61,37 +61,18 @@ public class RedeCuidadoMapper {
                     boolean responsavelPrincipal = vinculosDoCuidador.stream()
                             .anyMatch(UsuarioPet::isResponsavelPrincipal);
 
-                    List<Long> petIdsDoCuidador = vinculosDoCuidador.stream()
-                            .map(v -> v.getPet().getId())
-                            .toList();
+                    List<Long> petIds = vinculosDoCuidador.stream().map(v -> v.getPet().getId()).toList();
+                    List<String> petNomes = vinculosDoCuidador.stream().map(v -> v.getPet().getNome()).toList();
 
                     return new CuidadorResumo(
                             cuidador.getId(),
                             cuidador.getNome(),
                             cuidador.getEmail(),
                             responsavelPrincipal,
-                            petIdsDoCuidador
+                            petIds,
+                            petNomes
                     );
                 })
                 .toList();
-    }
-
-    public RedeCuidadoResponse toResponse(
-            Usuario usuario,
-            List<PetResumo> petResumos,
-            List<CuidadorResumo> coCuidadores,
-            int totalPendentes,
-            int totalConcluidas,
-            int pontosTotais
-    ) {
-        return new RedeCuidadoResponse(
-                usuario.getId(),
-                usuario.getNome(),
-                petResumos,
-                coCuidadores,
-                totalPendentes,
-                totalConcluidas,
-                pontosTotais
-        );
     }
 }

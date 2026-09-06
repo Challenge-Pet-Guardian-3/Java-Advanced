@@ -15,7 +15,7 @@ Guia completo e documentação técnica da arquitetura, regras de negócio, perf
 - **Testes:** JUnit 5, Mockito e Spring Boot 4 Modular Testing (`spring-boot-starter-webmvc-test` com `org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`).
 - **Cache:** Spring Starter Cache (cache em memória para lookups de Status).
 - **Documentação de API:** SpringDoc OpenAPI 3 (`/swagger-ui.html` e `/v3/api-docs`).
-- **Banco de Dados:** H2 Database (em memória para desenvolvimento/testes rápidos) e Oracle Database 21c (produção/DER oficial).
+- **Banco de Dados:** PostgreSQL 16 (ambiente local via Docker Compose e produção no Railway) com migrações gerenciadas via Flyway e Hibernate com `ddl-auto=validate`.
 
 ---
 
@@ -50,9 +50,8 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 - **Rotas Públicas (`permitAll`):**
   - `POST /login` (autenticação de tutores)
   - `POST /usuarios` (cadastro de novos tutores)
-  - `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`
-  - `/h2-console/**` (com frameOptions `sameOrigin`)
-  - `/actuator/health`, `/actuator/info`
+  - `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`, `/swagger-resources/**`, `/webjars/**`
+  - `/actuator/health`, `/actuator/info`, `/error`
 - **Token JWT:**
   - Emissor: `petguardian-api`
   - Expiração: 1 hora a partir da emissão.
@@ -69,7 +68,7 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 1. **Cadastro & Login:** Tutor cadastra-se em `POST /usuarios` (recebe role `COMUM` por padrão ou `PREMIUM`) e faz login em `POST /login`.
 2. **Cadastro do Pet:** Criação do animal via `POST /pets` (o tutor criador torna-se automaticamente `responsavelPrincipal = true`).
 3. **Formação do Care Circle:** Tutor convida co-cuidadores pelo e-mail via `POST /pets/{petId}/cuidadores`.
-4. **Ciclo de Tarefas:** Cuidadores criam tarefas de rotina (`POST /tarefas` vinculadas obrigatoriamente a um cuidador) e concluem com `PATCH /tarefas/{id}/concluir`.
+4. **Ciclo de Tarefas:** Cuidadores criam tarefas de rotina (`POST /tarefas` vinculadas obrigatoriamente a um cuidador) e concluem com `PATCH /tarefas/{id}/concluir`. Caso necessário, a conclusão pode ser revertida com `PATCH /tarefas/{id}/desmarcar`.
 5. **Score:** Consulta de pontos acumulados do cuidador e visualização consolidada da rede em `GET /usuarios/{id}/rede-cuidado`.
 
 ### 🎓 **Fluxo 2: Gamificação Educativa & Trilhas (Exclusivo PREMIUM)**
@@ -122,7 +121,7 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/pets/{petId}/cuidadores` | `@PathVariable Long petId` | `List<CoCuidadorResponse>` | Lista todos os cuidadores vinculados ao pet. |
 | `POST` | `/pets/{petId}/cuidadores` | `CoCuidadorRequest` (`responsavelPrincipalId`, `email`) | `CoCuidadorResponse` (201 Created) | Convida um co-cuidador por e-mail (autorizado pelo responsável). |
-| `DELETE`| `/pets/{petId}/cuidadores/{usuarioId}` | `petId`, `usuarioId`, `@RequestParam(required = false) solicitanteId` | 204 No Content | Desvincula um co-cuidador (o próprio usuário ou o responsável). |
+| `DELETE`| `/pets/{petId}/cuidadores/{usuarioId}` | `petId`, `usuarioId`, `@RequestParam Long solicitanteId` | 204 No Content | Desvincula um co-cuidador (o próprio usuário ou o responsável). |
 | `PATCH`| `/pets/{petId}/responsavel-principal` | `TransferirResponsabilidadeRequest` | 204 No Content | Transfere a titularidade de responsável principal para outro co-cuidador. |
 
 ---
@@ -131,13 +130,15 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 | Método | Endpoint | Parâmetros / Body | Response | Descrição |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/tarefas` | `Pageable` | `Page<TarefaResponse>` | Lista todas as tarefas (com auto-expiração de prazos). |
-| `GET` | `/tarefas/by-usuario` | `@RequestParam Long usuarioId`, `Pageable` | `Page<TarefaResponse>` | Lista tarefas pendentes do cuidador. |
+| `GET` | `/tarefas/by-usuario` | `@RequestParam Long usuarioId`, `@RequestParam(defaultValue = "ALL") String status`, `Pageable` | `Page<TarefaResponse>` | Lista tarefas do cuidador com filtro opcional de status (`ALL`, `PENDENTE`, `CONCLUIDO`, etc.). |
+| `GET` | `/tarefas/by-pet/{petId}` | `@PathVariable Long petId`, `Pageable` | `Page<TarefaResponse>` | Lista todas as tarefas vinculadas a um pet específico. |
 | `GET` | `/tarefas/{id}` | `@PathVariable Long id` | `TarefaResponse` | Busca tarefa por ID. |
 | `GET` | `/tarefas/by-usuario/{usuarioId}/{id}` | `usuarioId`, `id` | `TarefaResponse` | Busca tarefa específica pertencente ao cuidador. |
 | `GET` | `/tarefas/by-usuario/pontos` | `@RequestParam Long usuarioId` | `Integer` | Consulta total de pontos acumulados pelo cuidador. |
 | `POST` | `/tarefas` | `TarefaRequest` (`usuarioId` NOT NULL) | `TarefaResponse` (201 Created) | Cria nova tarefa vinculada obrigatoriamente a um cuidador do pet com status `PENDENTE`. |
 | `PUT` | `/tarefas/{id}` | `TarefaRequest` | `TarefaResponse` (200 OK) | Atualiza os dados e status da tarefa. |
-| `PATCH`| `/tarefas/{id}/concluir` | `TarefaConclusaoRequest` (`concluinteId`) | `TarefaResponse` (200 OK) | Marca tarefa como `CONCLUIDO`, vincula executor e data de conclusão. |
+| `PATCH`| `/tarefas/{id}/concluir` | `TarefaConclusaoRequest` (`concluinteId`) | `TarefaResponse` (200 OK) | Marca tarefa como `CONCLUIDO`, vincula executor e data de conclusão via `aplicarEm()`. |
+| `PATCH`| `/tarefas/{id}/desmarcar` | `@PathVariable Long id`, `@RequestParam Long usuarioId` | `TarefaResponse` (200 OK) | Desmarca tarefa previamente concluída retornando-a ao status `PENDENTE` e limpando a conclusão. |
 | `DELETE`| `/tarefas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma tarefa. |
 
 ---
@@ -213,7 +214,7 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 - `@DiferentesUsuariosValidation` / `@DiferentesUsuariosValidator`: Garante `responsavelAtualId != novoResponsavelId`.
 
 ### B. Validação de Regras de Negócio (Domain / Service Components)
-- **`TarefaValidator`**: Valida se o criador/executor é cuidador do pet e se a tarefa está apta para conclusão.
+- **`TarefaValidator`**: Valida se o criador/executor é cuidador do pet e se a tarefa está apta para conclusão/desmarcação.
 - **`UsuarioPetValidator`**: Valida titularidade única de responsável principal, vínculo prévio e desvinculação no Care Circle.
 
 ### C. Tratamento Global de Erros (`GlobalExceptionHandler`)
@@ -227,11 +228,22 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 
 ## 📏 7. Convenções de Código do Projeto
 
-1. **Sem `Locale.ROOT`:** Utilizar `.toUpperCase()` ou `.toLowerCase()` padrão.
-2. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
-3. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
-4. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
-5. **Sem Verificações Redundantes de Null (Proibido Null-Checks Paranoicos):** DTOs com Bean Validation (`@NotNull`, `@NotBlank`, `@CepValidation`, etc.) e entidades com `@Builder.Default` garantem a integridade dos dados na entrada. É terminantemente proibido poluir services e controllers com checagens de `!= null` e verificações defensivas em cascata desnecessárias.
-6. **Sem Over-Engineering / Métodos Auxiliares Desnecessários (KISS):** Não criar métodos auxiliares, records intermediários descartáveis (como `ResolvedAddress`) ou validações encapsuladas isoladas (como `isValido()`) que só são utilizadas em um único ponto e podem ser resolvidas de forma simples e direta em uma única linha.
-7. **Imports no Topo (Proibido FQCN inline):** NUNCA declarar pacotes inteiros inline no meio do código (ex: `org.springframework...`, `java.time...`). SEMPRE importar a classe no topo do arquivo com `import` e usar apenas o nome da classe no corpo do código.
-8. **Integrações Externas Declarativas (@HttpExchange):** Consumo de APIs externas (ex: ViaCEP) deve utilizar interfaces HTTP declarativas com `@HttpExchange` e `@GetExchange` registradas via `@ImportHttpServices`.
+1. **Padrão do Professor para Busca por ID:**
+   - Todo service expõe `public <Entity> findById(Long id)` delegando diretamente para um método privado auxiliar `private <Entity> find<Entity>ById(Long id)`.
+   - O método privado é o responsável por consultar o repositório e lançar `ResourceNotFoundException` caso não encontre a entidade.
+   - Demais métodos internos do próprio service (ex: `update`, `delete`, `concluir`) reutilizam o método privado `find<Entity>ById(id)`.
+2. **Exclusão Segura com `deleteById`:**
+   - Métodos `delete(Long id)` validam a existência chamando `find<Entity>ById(id)` e em seguida invocam diretamente `repository.deleteById(id)`.
+3. **Desacoplamento Horizontal entre Services Irmãos:**
+   - Cada service injeta diretamente os **Repositories** das entidades relacionadas de que necessita (`PetRepository`, `UsuarioRepository`, etc.) e mantém seu próprio helper privado `findPetById` / `findUsuarioById`.
+   - **NÃO** injetar Services irmãos (ex: `PetService` dentro de `HistoricoService` ou `UsuarioService` dentro de `UsuarioPetService`) para prevenir horizontal coupling e ciclos de dependência circular.
+4. **Sem `Locale.ROOT`:** Utilizar `.toUpperCase()` ou `.toLowerCase()` padrão.
+5. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
+6. **Encapsulamento de Transição em DTOs/Entidades:** Operações com regras de transição específicas (como `TarefaConclusaoRequest.aplicarEm(...)`) encapsulam suas atribuições de forma coesa sem quebrar contratos do frontend/mobile.
+7. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
+8. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
+9. **Sem Verificações Redundantes de Null (Proibido Null-Checks Paranoicos):** DTOs com Bean Validation (`@NotNull`, `@NotBlank`, `@CepValidation`, etc.) e entidades com `@Builder.Default` garantem a integridade dos dados na entrada. É terminantemente proibido poluir services e controllers com checagens de `!= null` e verificações defensivas em cascata desnecessárias.
+10. **Sem Over-Engineering / Métodos Auxiliares Desnecessários (KISS):** Não criar métodos auxiliares, records intermediários descartáveis (como `ResolvedAddress`) ou validações encapsuladas isoladas que só são utilizadas em um único ponto e podem ser resolvidas de forma simples e direta em uma única linha.
+11. **Imports no Topo (Proibido FQCN inline):** NUNCA declarar pacotes inteiros inline no meio do código (ex: `org.springframework...`, `java.time...`). SEMPRE importar a classe no topo do arquivo com `import` e usar apenas o nome da classe no corpo do código.
+12. **Integrações Externas Declarativas (@HttpExchange):** Consumo de APIs externas (ex: ViaCEP) deve utilizar interfaces HTTP declarativas com `@HttpExchange` e `@GetExchange` registradas via `@ImportHttpServices`.
+

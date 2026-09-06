@@ -30,8 +30,7 @@ public class EnderecoService {
     }
 
     public Endereco findById(Long id) {
-        return enderecoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Endereço com id " + id + " não encontrado."));
+        return findEnderecoById(id);
     }
 
     @Transactional
@@ -41,7 +40,7 @@ public class EnderecoService {
 
     @Transactional
     public Endereco update(Long id, EnderecoRequest enderecoRequest) {
-        findById(id);
+        findEnderecoById(id);
         Endereco endereco = buildEndereco(enderecoRequest);
         endereco.setId(id);
         return enderecoRepository.save(endereco);
@@ -49,8 +48,13 @@ public class EnderecoService {
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        findEnderecoById(id);
         enderecoRepository.deleteById(id);
+    }
+
+    private Endereco findEnderecoById(Long id) {
+        return enderecoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Endereço com id " + id + " não encontrado."));
     }
 
     @Transactional

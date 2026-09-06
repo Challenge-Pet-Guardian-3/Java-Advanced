@@ -29,13 +29,12 @@ public class HistoricoService {
     }
 
     public Historico findById(Long id) {
-        return historicoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Historico com id " + id + " nao encontrado."));
+        return findHistoricoById(id);
     }
 
     @Transactional
     public Historico update(Long id, HistoricoRequest request) {
-        findById(id);
+        findHistoricoById(id);
         Pet pet = findPetById(request.petId());
         Historico historico = request.toEntity(pet);
         historico.setId(id);
@@ -44,8 +43,13 @@ public class HistoricoService {
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        findHistoricoById(id);
         historicoRepository.deleteById(id);
+    }
+
+    private Historico findHistoricoById(Long id) {
+        return historicoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Historico com id " + id + " nao encontrado."));
     }
 
     private Pet findPetById(Long petId) {

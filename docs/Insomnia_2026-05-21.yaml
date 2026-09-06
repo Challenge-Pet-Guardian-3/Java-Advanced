@@ -1,40 +1,40 @@
-type: collection.insomnia.rest/5.0
+﻿type: collection.insomnia.rest/5.0
 schema_version: "5.1"
 name: Pet Guardian
 meta:
   id: wrk_410fbaa91a9945a795604af107d78b97
   created: 1779315088270
   modified: 1779315088270
-  description: ""
+  description: "API REST corporativa PetGuardian - Arquitetura Pet-Centric (Spring Boot 4.1.1 + PostgreSQL 16 + JWT RSA)"
 collection:
-  - name: Pets
+  - name: 00. Auth
     meta:
-      id: fld_ea23100e8f2140ae92c86f9c81d3e840
-      created: 1779323931608
-      modified: 1779405691090
-      sortKey: -1779323927837
-      description: ""
+      id: fld_auth_001
+      created: 1779315088300
+      modified: 1779315088300
+      sortKey: 100
+      description: "Endpoints publicos para autenticacao e cadastro de usuarios"
     children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Pets
+      - url: "{{ _.base_url }}/login"
+        name: Login - Admin
         meta:
-          id: req_9f31333f31db43f6ab8d9ed06d877169
-          created: 1779323931611
-          modified: 1779405775009
+          id: req_auth_login_admin
+          created: 1779315088301
+          modified: 1779315088301
           isPrivate: false
-          description: ""
-          sortKey: -1779323927635
-        method: GET
-        parameters:
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
+          description: "Autentica como ADMIN e retorna token JWT"
+          sortKey: 101
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "admin@petguardian.com",
+              "senha": "password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -43,29 +43,235 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-nome
-        name: Get Pet by Nome
+      - url: "{{ _.base_url }}/login"
+        name: Login - Premium
         meta:
-          id: req_2651ee6eecbc4783a0f1b7066004ae1c
-          created: 1779323931614
-          modified: 1779405785331
+          id: req_auth_login_premium
+          created: 1779315088302
+          modified: 1779315088302
           isPrivate: false
-          description: ""
-          sortKey: -1779323927634
+          description: "Autentica como PREMIUM (acesso a trilhas) e retorna token JWT"
+          sortKey: 102
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "premium@petguardian.com",
+              "senha": "password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/login"
+        name: Login - Comum
+        meta:
+          id: req_auth_login_comum
+          created: 1779315088303
+          modified: 1779315088303
+          isPrivate: false
+          description: "Autentica como COMUM (tutor gratuito) e retorna token JWT"
+          sortKey: 103
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "comum@petguardian.com",
+              "senha": "password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios"
+        name: Cadastro Tutor - COMUM
+        meta:
+          id: req_auth_cad_comum
+          created: 1779315088304
+          modified: 1779315088304
+          isPrivate: false
+          description: "Cadastra novo usuario com perfil COMUM"
+          sortKey: 104
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Carlos Eduardo",
+              "email": "comum@petguardian.com",
+              "senha": "password123",
+              "ddd": "11",
+              "numeroTelefone": "987654321",
+              "role": "COMUM",
+              "endereco": {
+                "cep": "01310100",
+                "numero": "1000",
+                "complemento": "Apto 42"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios"
+        name: Cadastro Tutor - PREMIUM
+        meta:
+          id: req_auth_cad_premium
+          created: 1779315088305
+          modified: 1779315088305
+          isPrivate: false
+          description: "Cadastra novo usuario com perfil PREMIUM"
+          sortKey: 105
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Mariana Silva",
+              "email": "premium@petguardian.com",
+              "senha": "password123",
+              "ddd": "11",
+              "numeroTelefone": "912345678",
+              "role": "PREMIUM",
+              "endereco": {
+                "cep": "04571010",
+                "numero": "500",
+                "complemento": "Bloco B"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios"
+        name: Cadastro Administrador - ADMIN
+        meta:
+          id: req_auth_cad_admin
+          created: 1779315088306
+          modified: 1779315088306
+          isPrivate: false
+          description: "Cadastra novo usuario com perfil ADMIN"
+          sortKey: 106
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Admin Geral",
+              "email": "admin@petguardian.com",
+              "senha": "password123",
+              "ddd": "11",
+              "numeroTelefone": "999998888",
+              "role": "ADMIN",
+              "endereco": {
+                "cep": "01310100",
+                "numero": "1500",
+                "complemento": "Sala 101"
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 01. Usuarios
+    meta:
+      id: fld_usuarios_001
+      created: 1779315088400
+      modified: 1779315088400
+      sortKey: 200
+      description: "Gestao de usuarios, perfil e rede de cuidado"
+    children:
+      - url: "{{ _.base_url }}/usuarios"
+        name: Listar Usuarios (Paginado)
+        meta:
+          id: req_usr_get_all
+          created: 1779315088401
+          modified: 1779315088401
+          isPrivate: false
+          description: "Lista usuarios com paginacao e ordenacao"
+          sortKey: 201
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        parameters:
+          - name: page
+            value: "0"
+          - name: size
+            value: "10"
+          - name: sort
+            value: nome,asc
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/by-nome"
+        name: Buscar Usuario por Nome
+        meta:
+          id: req_usr_by_nome
+          created: 1779315088402
+          modified: 1779315088402
+          isPrivate: false
+          description: "Busca usuarios por trecho do nome"
+          sortKey: 202
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: nome
-            value: Mel
-            disabled: false
+            value: Carlos
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -74,208 +280,25 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Pet by Id
+      - url: "{{ _.base_url }}/usuarios/by-email"
+        name: Buscar Usuario por E-mail
         meta:
-          id: req_1b791ba0a19841afb8622e9dd84bdf02
-          created: 1779323931616
-          modified: 1779405794250
+          id: req_usr_by_email
+          created: 1779315088403
+          modified: 1779315088403
           isPrivate: false
-          description: ""
-          sortKey: -1779323927633
+          description: "Busca usuario por e-mail exato"
+          sortKey: 203
         method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/historico
-        name: Get Pet Historico
-        meta:
-          id: req_31c77f9bbfe84f63a63ac47a1f12d701
-          created: 1779410000001
-          modified: 1779410000001
-          isPrivate: false
-          description: ""
-          sortKey: -17793239276325
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Pet
-        meta:
-          id: req_aafc4cb9e04f46e3885af1c1bc82a4cb
-          created: 1779323931617
-          modified: 1779405407549
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927632
-        method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Bidu",
-                "idade": 3,
-                "raca": "Poodle",
-                "porte": "PEQUENO",
-                "sexo": "M",
-                "castrado": true,
-                "usuarioId": 1
-            }
         headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Pet
-        meta:
-          id: req_6b1eb422d5874047866dc8967ef2ca9a
-          created: 1779323931620
-          modified: 1779405417154
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927631
-        method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Bidu Atualizado",
-                "idade": 4,
-                "raca": "Poodle",
-                "porte": "PEQUENO",
-                "sexo": "M",
-                "castrado": true,
-                "usuarioId": 1
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Pet
-        meta:
-          id: req_7340835e2188453f851f7ea285ed6cf9
-          created: 1779323931622
-          modified: 1779405816096
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927630
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/usuarios/2
-        name: Vincular Usuario ao Pet
-        meta:
-          id: req_08cd1eb83b314f1593db9733f9c2f531
-          created: 1779410000002
-          modified: 1779410000002
-          isPrivate: false
-          description: ""
-          sortKey: -17793239276295
-        method: POST
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
-          - name: principal
-            value: "false"
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/usuarios/2
-        name: Desvincular Usuario do Pet
-        meta:
-          id: req_4de5649cd5924a328d807f01250fe9fb
-          created: 1779410000003
-          modified: 1779410000003
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927629
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/convidar
-        name: Convidar Cuidador por ID
-        meta:
-          id: req_a8a6b9f9f85f4dac8c37b14c8be2eb76
-          created: 1779410000004
-          modified: 1779410000004
-          isPrivate: false
-          description: ""
-          sortKey: -17793239276285
-        method: POST
-        parameters:
-          - name: responsavelPrincipalId
-            value: "1"
-            disabled: false
-          - name: usuarioConvidadoId
-            value: "2"
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/convidar-email
-        name: Convidar Cuidador por Email
-        meta:
-          id: req_4cf9bcf010c946f5badf9e2609df0f65
-          created: 1779410000005
-          modified: 1779410000005
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927628
-        method: POST
-        parameters:
-          - name: responsavelPrincipalId
-            value: "1"
-            disabled: false
           - name: email
-            value: cuidador@email.com
-            disabled: false
+            value: admin@petguardian.com
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -284,36 +307,151 @@ collection:
             send: true
             store: true
           rebuildPath: true
-    environment:
-      path: pets
-  - name: Usuários
-    meta:
-      id: fld_8a3651b26a2b450da343f9395e7c6d19
-      created: 1779323931624
-      modified: 1779405574617
-      sortKey: -1779323927937
-      description: ""
-    children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Usuarios
+      - url: "{{ _.base_url }}/usuarios/1"
+        name: Buscar Usuario por ID
         meta:
-          id: req_944d266be00b476fb9522da4424d9c61
-          created: 1779323931626
-          modified: 1779405722295
+          id: req_usr_by_id
+          created: 1779315088404
+          modified: 1779315088404
           isPrivate: false
-          description: ""
-          sortKey: -1779323927628
+          description: "Busca detalhes de um usuario por ID"
+          sortKey: 204
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/1/rede-cuidado"
+        name: Visualizar Care Circle (Rede de Cuidado)
+        meta:
+          id: req_usr_rede_cuidado
+          created: 1779315088405
+          modified: 1779315088405
+          isPrivate: false
+          description: "Retorna visao consolidada de pets, co-cuidadores e tarefas"
+          sortKey: 205
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/1"
+        name: Atualizar Usuario
+        meta:
+          id: req_usr_update
+          created: 1779315088406
+          modified: 1779315088406
+          isPrivate: false
+          description: "Atualiza dados cadastrais do usuario"
+          sortKey: 206
+        method: PUT
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Carlos Eduardo Modificado",
+              "email": "comum@petguardian.com",
+              "senha": "password123",
+              "ddd": "11",
+              "numeroTelefone": "988887777",
+              "role": "COMUM",
+              "endereco": {
+                "cep": "01310100",
+                "numero": "1050",
+                "complemento": "Apto 42"
+              }
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/usuarios/1"
+        name: Deletar Usuario
+        meta:
+          id: req_usr_delete
+          created: 1779315088407
+          modified: 1779315088407
+          isPrivate: false
+          description: "Remove um usuario por ID"
+          sortKey: 207
+        method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 02. Pets
+    meta:
+      id: fld_pets_001
+      created: 1779315088500
+      modified: 1779315088500
+      sortKey: 300
+      description: "CRUD de animais e pontuacao consolidada"
+    children:
+      - url: "{{ _.base_url }}/pets"
+        name: Listar Todos os Pets (Paginado)
+        meta:
+          id: req_pets_get_all
+          created: 1779315088501
+          modified: 1779315088501
+          isPrivate: false
+          description: "Lista pets com paginacao e ordenacao"
+          sortKey: 301
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
           - name: sort
             value: nome,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -322,29 +460,29 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-nome
-        name: Get Usuario by Nome
+      - url: "{{ _.base_url }}/pets/by-nome"
+        name: Buscar Pets por Nome
         meta:
-          id: req_42a29bfd37f64676adf2a14f7afbaf2a
-          created: 1779323931628
-          modified: 1779405732714
+          id: req_pets_by_nome
+          created: 1779315088502
+          modified: 1779315088502
           isPrivate: false
-          description: ""
-          sortKey: -1779323927627
+          description: "Busca pets por trecho do nome"
+          sortKey: 302
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: nome
-            value: Enzo
-            disabled: false
+            value: Pipoca
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -353,20 +491,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-email
-        name: Get Usuario by Email
+      - url: "{{ _.base_url }}/pets/1"
+        name: Buscar Pet por ID
         meta:
-          id: req_usuario_by_email_new
-          created: 1779410000100
-          modified: 1779410000100
+          id: req_pets_by_id
+          created: 1779315088503
+          modified: 1779315088503
           isPrivate: false
-          description: ""
-          sortKey: -17793239276265
+          description: "Busca detalhes de um animal por ID"
+          sortKey: 303
         method: GET
-        parameters:
-          - name: email
-            value: enzo@email.com
-            disabled: false
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -375,16 +515,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Usuario by Id
+      - url: "{{ _.base_url }}/pets/1/historico"
+        name: Historico de Tarefas Concluidas do Pet
         meta:
-          id: req_7815f9712bd2422c88212077ec0ba72c
-          created: 1779323931630
-          modified: 1779405744486
+          id: req_pets_hist
+          created: 1779315088504
+          modified: 1779315088504
           isPrivate: false
-          description: ""
-          sortKey: -1779323927626
+          description: "Lista historico consolidado de tarefas concluidas do animal"
+          sortKey: 304
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -393,16 +539,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/rede-cuidado
-        name: Get Usuario Rede Cuidado
+      - url: "{{ _.base_url }}/pets/1/pontos"
+        name: Score Total Consolidado do Pet
         meta:
-          id: req_0e532caefceb4b16a3fc83bc4ea9806b
-          created: 1779410000006
-          modified: 1779410000006
+          id: req_pets_pontos
+          created: 1779315088505
+          modified: 1779315088505
           isPrivate: false
-          description: ""
-          sortKey: -17793239276255
+          description: "Soma de pontos de rotina (tarefas) e educacionais (aulas)"
+          sortKey: 305
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -411,33 +563,36 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Usuario
+      - url: "{{ _.base_url }}/pets"
+        name: Criar Pet (Vinculo Titular Automatico)
         meta:
-          id: req_db1fb0d38c3542be8501566588b9ce01
-          created: 1779393918773
-          modified: 1779405756394
+          id: req_pets_post
+          created: 1779315088506
+          modified: 1779315088506
           isPrivate: false
-          description: ""
-          sortKey: -1779323927526
+          description: "Cria pet e torna o usuario responsavelPrincipal = true"
+          sortKey: 306
         method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Enzo Silva",
-                "email": "enzo@email.com",
-                "senha": "123456",
-                "ddd": "11",
-                "numeroTelefone": "912345678",
-                "endereco": {
-                    "cep": "05412000",
-                    "numero": "123"
-                }
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Pipoca",
+              "dataNasc": "2023-05-15",
+              "raca": "Golden Retriever",
+              "porte": "MEDIO",
+              "sexo": "M",
+              "castrado": true,
+              "usuarioId": 1
+            }
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -446,33 +601,36 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Usuario
+      - url: "{{ _.base_url }}/pets/1"
+        name: Atualizar Pet
         meta:
-          id: req_e62105be92e84924ae449a5192502285
-          created: 1779393932127
-          modified: 1779405760412
+          id: req_pets_put
+          created: 1779315088507
+          modified: 1779315088507
           isPrivate: false
-          description: ""
-          sortKey: -1779323927426
+          description: "Atualiza dados cadastrais do animal"
+          sortKey: 307
         method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Enzo Silva Atualizado",
-                "email": "enzo.atualizado@email.com",
-                "senha": "123456",
-                "ddd": "11",
-                "numeroTelefone": "923456789",
-                "endereco": {
-                    "cep": "05412000",
-                    "numero": "456"
-                }
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "nome": "Pipoca Silva",
+              "dataNasc": "2023-05-15",
+              "raca": "Golden Retriever",
+              "porte": "GRANDE",
+              "sexo": "M",
+              "castrado": true,
+              "usuarioId": 1
+            }
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -481,21 +639,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Usuario
+      - url: "{{ _.base_url }}/pets/1"
+        name: Deletar Pet
         meta:
-          id: req_868280a86a1940418c7226cf563add76
-          created: 1779393947719
-          modified: 1779405765618
+          id: req_pets_delete
+          created: 1779315088508
+          modified: 1779315088508
           isPrivate: false
-          description: ""
-          sortKey: -1779323927326
+          description: "Remove um pet do sistema"
+          sortKey: 308
         method: DELETE
         headers:
-          - name: User-Agent
-            value: insomnia/12.5.0
-            description: ""
-            disabled: false
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -504,26 +663,30 @@ collection:
             send: true
             store: true
           rebuildPath: true
-    environment:
-      path: usuarios
-  - name: Tratamento de Erros (Testes)
+  - name: 03. Care Circle (Rede de Cuidados)
     meta:
-      id: fld_ac0222f47a3c448fbfe8ffa9728d68f3
-      created: 1779323931638
-      modified: 1779391314840
-      sortKey: -1779323927737
-      description: ""
+      id: fld_care_001
+      created: 1779315088600
+      modified: 1779315088600
+      sortKey: 400
+      description: "Vinculos colaborativos entre tutores e pets"
     children:
-      - url: http://localhost:8080/pets/9999
-        name: Erro 404 - Pet Não Encontrado
+      - url: "{{ _.base_url }}/pets/1/cuidadores"
+        name: Listar Cuidadores do Pet
         meta:
-          id: req_02194775fe884c0d87281a87bf53cec9
-          created: 1779323931639
-          modified: 1779323931639
+          id: req_care_get_cuidadores
+          created: 1779315088601
+          modified: 1779315088601
           isPrivate: false
-          description: ""
-          sortKey: -1779323927621
+          description: "Lista todos os tutores e co-cuidadores do pet"
+          sortKey: 401
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -532,64 +695,58 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/pets
-        name: Erro 400 - Validação de Entrada (Nome em Branco)
+      - url: "{{ _.base_url }}/pets/1/cuidadores"
+        name: Convidar Co-Cuidador por E-mail
         meta:
-          id: req_b4aa1dbc4a3541b9957d78abbf11b9fd
-          created: 1779323931641
-          modified: 1779323931641
+          id: req_care_convidar
+          created: 1779315088602
+          modified: 1779315088602
           isPrivate: false
-          description: ""
-          sortKey: -1779323927620
+          description: "Vincula novo co-cuidador ao animal (requer permissao do titular)"
+          sortKey: 402
         method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "",
-                "idade": 3,
-                "raca": "Poodle",
-                "porte": "PEQUENO",
-                "sexo": "M",
-                "castrado": true,
-                "usuarioId": 1
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/pets
-        name: Erro 400 - Validação Personalizada (Enum Incorreto)
-        meta:
-          id: req_f4480d5126f0446385800b8a4d190160
-          created: 1779323931643
-          modified: 1779323931643
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927619
-        method: POST
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         body:
-          mimeType: text/plain
+          mimeType: application/json
           text: |-
             {
-                "nome": "Bidu",
-                "idade": 3,
-                "raca": "Poodle",
-                "porte": "GIGANTE_INVALIDO",
-                "sexo": "M",
-                "castrado": true,
-                "usuarioId": 1
+              "responsavelPrincipalId": 1,
+              "email": "premium@petguardian.com"
             }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/pets/1/cuidadores/2"
+        name: Desvincular Co-Cuidador
+        meta:
+          id: req_care_desvincular
+          created: 1779315088603
+          modified: 1779315088603
+          isPrivate: false
+          description: "Remove um co-cuidador (o proprio ou via titular)"
+          sortKey: 403
+        method: DELETE
         headers:
-          - name: Content-Type
-            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        parameters:
+          - name: solicitanteId
+            value: "1"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -598,149 +755,31 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/usuarios/9999
-        name: Erro 404 - Usuario Não Encontrado
+      - url: "{{ _.base_url }}/pets/1/responsavel-principal"
+        name: Transferir Responsavel Principal
         meta:
-          id: req_erro_404_usuario
-          created: 1779410100001
-          modified: 1779410100001
+          id: req_care_transferir
+          created: 1779315088604
+          modified: 1779315088604
           isPrivate: false
-          description: ""
-          sortKey: -1779323927618
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/veterinarios/9999
-        name: Erro 404 - Veterinario Não Encontrado
-        meta:
-          id: req_erro_404_veterinario
-          created: 1779410100002
-          modified: 1779410100002
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927617
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/atendimentos/9999
-        name: Erro 404 - Atendimento Não Encontrado
-        meta:
-          id: req_erro_404_atendimento
-          created: 1779410100003
-          modified: 1779410100003
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927616
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/tarefas/9999
-        name: Erro 404 - Tarefa Não Encontrada
-        meta:
-          id: req_erro_404_tarefa
-          created: 1779410100004
-          modified: 1779410100004
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927615
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/clinicas/9999
-        name: Erro 404 - Clinica Não Encontrada
-        meta:
-          id: req_erro_404_clinica
-          created: 1779410100005
-          modified: 1779410100005
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927614
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/tarefas
-        name: Erro 400 - Criar Tarefa COM Executor (Deve Falhar)
-        meta:
-          id: req_erro_tarefa_com_executor
-          created: 1779410100006
-          modified: 1779410100006
-          isPrivate: false
-          description: "Regra de negócio: tarefa não pode ser criada com usuarioId preenchido"
-          sortKey: -1779323927613
-        method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "titulo": "Passeio diário",
-                "pontosTarefa": 20,
-                "descricao": "Levar o pet para passear por 30 minutos",
-                "prazo": "2026-12-01T18:00:00",
-                "usuarioId": 1,
-                "petId": 1,
-                "status": "PENDENTE",
-                "veterinarioId": 1
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/tarefas/1/concluir
-        name: Erro 403 - Concluir Tarefa por Usuario Não Vinculado
-        meta:
-          id: req_erro_concluir_nao_vinculado
-          created: 1779410100007
-          modified: 1779410100007
-          isPrivate: false
-          description: "Regra de negócio: somente co-cuidador vinculado ao pet pode concluir tarefa"
-          sortKey: -1779323927612
+          description: "Transfere a titularidade do pet para outro co-cuidador ja vinculado"
+          sortKey: 404
         method: PATCH
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "concluinteId": 9999
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "responsavelAtualId": 1,
+              "novoResponsavelId": 2
+            }
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -749,248 +788,37 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/pets/1/convidar
-        name: Erro 403 - Convidar por Não Principal (Deve Falhar)
-        meta:
-          id: req_erro_convite_nao_principal
-          created: 1779410100008
-          modified: 1779410100008
-          isPrivate: false
-          description: "Regra de negócio: somente o responsável principal pode convidar co-cuidadores"
-          sortKey: -1779323927611
-        method: POST
-        parameters:
-          - name: responsavelPrincipalId
-            value: "9999"
-            disabled: false
-          - name: usuarioConvidadoId
-            value: "2"
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/pets/1/usuarios/1
-        name: Erro 400 - Desvincular Responsável Principal (Deve Falhar)
-        meta:
-          id: req_erro_desvincular_principal
-          created: 1779410100009
-          modified: 1779410100009
-          isPrivate: false
-          description: "Regra de negócio: não é possível desvincular o responsável principal do pet"
-          sortKey: -1779323927610
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-  - name: Atendimentos
+  - name: 04. Tarefas
     meta:
-      id: fld_07ca9a06679d453a812306f80a53db7e
-      created: 1779410000010
-      modified: 1779410000010
-      sortKey: -1779323927836
-      description: ""
+      id: fld_tarefas_001
+      created: 1779315088700
+      modified: 1779315088700
+      sortKey: 500
+      description: "Rotinas gamificadas de cuidado diario do animal"
     children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Atendimentos
+      - url: "{{ _.base_url }}/tarefas"
+        name: Listar Todas as Tarefas (Paginado)
         meta:
-          id: req_all_atendimentos_new
-          created: 1779410000101
-          modified: 1779410000101
+          id: req_tar_get_all
+          created: 1779315088701
+          modified: 1779315088701
           isPrivate: false
-          description: ""
-          sortKey: -1779323927636
+          description: "Lista tarefas com verificacao de auto-expiracao"
+          sortKey: 501
         method: GET
-        parameters:
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: data,desc
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-usuario
-        name: Get Atendimentos by Usuario
-        meta:
-          id: req_a5ff5110dbcb453fbe68d8b80f774df1
-          created: 1779410000011
-          modified: 1779410000011
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927635
-        method: GET
-        parameters:
-          - name: usuarioId
-            value: "1"
-            disabled: false
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: data,desc
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Atendimento by Id
-        meta:
-          id: req_8806b0d42e884df1bb8fca383ebf2b87
-          created: 1779410000012
-          modified: 1779410000012
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927634
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Atendimento
-        meta:
-          id: req_97d370ef1fd646f4aa34404f8cb2fcd6
-          created: 1779410000013
-          modified: 1779410000013
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927633
-        method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "tipo": "CONSULTA",
-                "data": "2026-12-01T10:00:00",
-                "anotacoes": "Consulta de rotina",
-                "valor": 150.00,
-                "status": "PENDENTE",
-                "petId": 1,
-                "veterinarioId": 1
-            }
         headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Atendimento
-        meta:
-          id: req_47ce5ac28a30463784d41d72cd5b929a
-          created: 1779410000014
-          modified: 1779410000014
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927632
-        method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "tipo": "CONSULTA",
-                "data": "2026-12-02T15:30:00",
-                "anotacoes": "Consulta remarcada",
-                "valor": 180.00,
-                "status": "CONCLUIDO",
-                "petId": 1,
-                "veterinarioId": 1
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Atendimento
-        meta:
-          id: req_84d7f61c965e4894b8862f8778f522ee
-          created: 1779410000015
-          modified: 1779410000015
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927631
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-    environment:
-      path: atendimentos
-  - name: Tarefas
-    meta:
-      id: fld_c159a86f3416474ca9fb79b8dad8d98d
-      created: 1779410000020
-      modified: 1779410000020
-      sortKey: -1779323927835
-      description: ""
-    children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Tarefas
-        meta:
-          id: req_all_tarefas_new
-          created: 1779410000102
-          modified: 1779410000102
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927636
-        method: GET
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
           - name: sort
             value: prazo,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -999,29 +827,62 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-usuario
-        name: Get Tarefas by Usuario
+      - url: "{{ _.base_url }}/tarefas/by-usuario"
+        name: Listar Tarefas por Cuidador e Status
         meta:
-          id: req_1d01de2d87ab49eb8ca469b4a3a8e9f0
-          created: 1779410000021
-          modified: 1779410000021
+          id: req_tar_by_usr_status
+          created: 1779315088702
+          modified: 1779315088702
           isPrivate: false
-          description: ""
-          sortKey: -1779323927635
+          description: "Lista tarefas do cuidador filtrando por status (ALL, PENDENTE, CONCLUIDO)"
+          sortKey: 502
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: usuarioId
             value: "1"
-            disabled: false
+          - name: status
+            value: ALL
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/tarefas/by-pet/1"
+        name: Listar Tarefas por Pet (Paginado)
+        meta:
+          id: req_tar_by_pet
+          created: 1779315088703
+          modified: 1779315088703
+          isPrivate: false
+          description: "Lista todas as tarefas vinculadas a um pet especifico"
+          sortKey: 503
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        parameters:
+          - name: page
+            value: "0"
+          - name: size
+            value: "10"
           - name: sort
             value: prazo,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1030,16 +891,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Tarefa by Id
+      - url: "{{ _.base_url }}/tarefas/1"
+        name: Buscar Tarefa por ID
         meta:
-          id: req_97527b5cfbd54703a3b89fb6ccfd4462
-          created: 1779410000022
-          modified: 1779410000022
+          id: req_tar_by_id
+          created: 1779315088704
+          modified: 1779315088704
           isPrivate: false
-          description: ""
-          sortKey: -1779323927634
+          description: "Busca detalhes de uma tarefa por ID"
+          sortKey: 504
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1048,50 +915,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-usuario/1/1
-        name: Get Tarefa by Usuario and Id
+      - url: "{{ _.base_url }}/tarefas/by-usuario/1/1"
+        name: Buscar Tarefa por Cuidador e ID
         meta:
-          id: req_0e8e2723ce1a4a2f99c332ecaef7ecae
-          created: 1779410000023
-          modified: 1779410000023
+          id: req_tar_by_usr_tar
+          created: 1779315088705
+          modified: 1779315088705
           isPrivate: false
-          description: ""
-          sortKey: -1779323927633
+          description: "Busca tarefa especifica sob responsabilidade do cuidador"
+          sortKey: 505
         method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Tarefa
-        meta:
-          id: req_4d9096e2bddf49dd9622639a8fd3a7d5
-          created: 1779410000024
-          modified: 1779410000024
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927632
-        method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "titulo": "Passeio diário",
-                "pontosTarefa": 20,
-                "descricao": "Levar o pet para passear por 30 minutos",
-                "prazo": "2026-12-01T18:00:00",
-                "usuarioId": null,
-                "petId": 1,
-                "status": "PENDENTE",
-                "veterinarioId": 1
-            }
         headers:
-          - name: Content-Type
-            value: application/json
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1100,81 +939,25 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Tarefa
+      - url: "{{ _.base_url }}/tarefas/by-usuario/pontos"
+        name: Consultar Pontos Totais do Cuidador
         meta:
-          id: req_31de08bb4f694f5abfbfbc903625fcb4
-          created: 1779410000025
-          modified: 1779410000025
+          id: req_tar_pontos_usr
+          created: 1779315088706
+          modified: 1779315088706
           isPrivate: false
-          description: ""
-          sortKey: -1779323927631
-        method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "titulo": "Passeio diário atualizado",
-                "pontosTarefa": 25,
-                "descricao": "Levar o pet para passear por 45 minutos",
-                "prazo": "2026-12-02T18:00:00",
-                "usuarioId": 1,
-                "petId": 1,
-                "status": "PENDENTE",
-                "veterinarioId": 1
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1/concluir
-        name: Concluir Tarefa
-        meta:
-          id: req_0de8db24fae14579ad67a51b95f06af4
-          created: 1779410000026
-          modified: 1779410000026
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927630
-        method: PATCH
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "concluinteId": 1
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-usuario/pontos
-        name: Get Pontos by Usuario
-        meta:
-          id: req_544c9b2c0fa44685844f649f8f499d69
-          created: 1779410000027
-          modified: 1779410000027
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927629
+          description: "Calcula a pontuacao total obtida em tarefas concluidas"
+          sortKey: 506
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: usuarioId
             value: "1"
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1183,225 +966,828 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Tarefa
+      - url: "{{ _.base_url }}/tarefas"
+        name: Criar Tarefa
         meta:
-          id: req_9863674845b74fd48f65283f9f7fef18
-          created: 1779410000028
-          modified: 1779410000028
+          id: req_tar_post
+          created: 1779315088707
+          modified: 1779315088707
           isPrivate: false
-          description: ""
-          sortKey: -1779323927628
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-    environment:
-      path: tarefas
-  - name: Clinicas
-    meta:
-      id: fld_a184bf8edab04f87a9ff6fe546f147bc
-      created: 1779410000030
-      modified: 1779410000030
-      sortKey: -1779323927834
-      description: ""
-    children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Clinicas
-        meta:
-          id: req_e5ec7964df9546ec9e60254f0f2ff8ab
-          created: 1779410000031
-          modified: 1779410000031
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927635
-        method: GET
-        parameters:
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-nome
-        name: Get Clinica by Nome
-        meta:
-          id: req_clinica_by_nome_new
-          created: 1779410000103
-          modified: 1779410000103
-          isPrivate: false
-          description: ""
-          sortKey: -17793239276345
-        method: GET
-        parameters:
-          - name: nome
-            value: Vida
-            disabled: false
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Clinica by Id
-        meta:
-          id: req_04572e9bc0624ff9aab29ef2ae5f1f8d
-          created: 1779410000032
-          modified: 1779410000032
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927634
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Clinica
-        meta:
-          id: req_b88f66debf8a45f8a9d8f3ac8442bcf4
-          created: 1779410000033
-          modified: 1779410000033
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927633
+          description: "Cria nova tarefa vinculada obrigatoriamente a um cuidador"
+          sortKey: 507
         method: POST
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         body:
-          mimeType: text/plain
+          mimeType: application/json
           text: |-
             {
-                "nome": "Clinica Nova Vida",
-                "ddd": "11",
-                "numeroTelefone": "988776655",
-                "endereco": {
-                    "cep": "05412000",
-                    "numero": "100"
+              "titulo": "Passeio no Parque",
+              "pontosTarefa": 20,
+              "descricao": "Caminhada de 40 minutos",
+              "prazo": "2026-12-31T18:00:00",
+              "usuarioId": 1,
+              "petId": 1,
+              "status": "PENDENTE"
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/tarefas/1"
+        name: Atualizar Tarefa
+        meta:
+          id: req_tar_put
+          created: 1779315088708
+          modified: 1779315088708
+          isPrivate: false
+          description: "Atualiza dados e status da tarefa"
+          sortKey: 508
+        method: PUT
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "titulo": "Passeio no Parque - Atualizado",
+              "pontosTarefa": 25,
+              "descricao": "Caminhada de 50 minutos",
+              "prazo": "2026-12-31T19:00:00",
+              "usuarioId": 1,
+              "petId": 1,
+              "status": "PENDENTE"
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/tarefas/1/concluir"
+        name: Concluir Tarefa (Credita Pontos)
+        meta:
+          id: req_tar_concluir
+          created: 1779315088709
+          modified: 1779315088709
+          isPrivate: false
+          description: "Marca tarefa como CONCLUIDO e credita pontos ao cuidador"
+          sortKey: 509
+        method: PATCH
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "concluinteId": 1
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/tarefas/1/desmarcar"
+        name: Desmarcar Tarefa Concluida
+        meta:
+          id: req_tar_desmarcar
+          created: 1779315088710
+          modified: 1779315088710
+          isPrivate: false
+          description: "Retorna a tarefa concluida ao status PENDENTE e zera data de conclusao"
+          sortKey: 510
+        method: PATCH
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        parameters:
+          - name: usuarioId
+            value: "1"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/tarefas/1"
+        name: Deletar Tarefa
+        meta:
+          id: req_tar_delete
+          created: 1779315088711
+          modified: 1779315088711
+          isPrivate: false
+          description: "Remove uma tarefa por ID"
+          sortKey: 511
+        method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 05. Historico Clinico
+    meta:
+      id: fld_hist_001
+      created: 1779315088800
+      modified: 1779315088800
+      sortKey: 600
+      description: "Prontuario clinico e eventos de saude do animal"
+    children:
+      - url: "{{ _.base_url }}/historicos/pet/1"
+        name: Listar Eventos Clinicos do Pet
+        meta:
+          id: req_hist_by_pet
+          created: 1779315088801
+          modified: 1779315088801
+          isPrivate: false
+          description: "Lista historico ordenado por data decrescente"
+          sortKey: 601
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/historicos/1"
+        name: Buscar Evento Clinico por ID
+        meta:
+          id: req_hist_by_id
+          created: 1779315088802
+          modified: 1779315088802
+          isPrivate: false
+          description: "Busca detalhes de um evento clinico"
+          sortKey: 602
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/historicos"
+        name: Registrar Evento Clinico
+        meta:
+          id: req_hist_post
+          created: 1779315088803
+          modified: 1779315088803
+          isPrivate: false
+          description: "Registra evento de vacina, consulta ou procedimento"
+          sortKey: 603
+        method: POST
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tipoHist": "Vacina Polivalente V10",
+              "dataHist": "2026-05-10T14:30:00",
+              "petId": 1
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/historicos/1"
+        name: Atualizar Evento Clinico
+        meta:
+          id: req_hist_put
+          created: 1779315088804
+          modified: 1779315088804
+          isPrivate: false
+          description: "Atualiza registro de evento clinico"
+          sortKey: 604
+        method: PUT
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "tipoHist": "Vacina Polivalente V10 (Dose Anual)",
+              "dataHist": "2026-05-10T14:30:00",
+              "petId": 1
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/historicos/1"
+        name: Deletar Evento Clinico
+        meta:
+          id: req_hist_delete
+          created: 1779315088805
+          modified: 1779315088805
+          isPrivate: false
+          description: "Remove um registro de historico"
+          sortKey: 605
+        method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 06. Educacao & Trilhas
+    meta:
+      id: fld_edu_001
+      created: 1779315089000
+      modified: 1779315089000
+      sortKey: 700
+      description: "Conteudo gamificado de adestramento e trilhas educativas (PREMIUM / ADMIN)"
+    children:
+      - name: Trilhas
+        meta:
+          id: fld_sub_trilhas
+          created: 1779315089100
+          modified: 1779315089100
+          sortKey: 710
+          description: "Trilhas de desenvolvimento do animal"
+        children:
+          - url: "{{ _.base_url }}/trilhas/pet/1"
+            name: Listar Trilhas do Pet (PREMIUM / ADMIN)
+            meta:
+              id: req_tri_by_pet
+              created: 1779315089101
+              modified: 1779315089101
+              isPrivate: false
+              description: "Acesso para assinantes PREMIUM e administradores"
+              sortKey: 711
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/trilhas/1"
+            name: Buscar Trilha por ID (PREMIUM / ADMIN)
+            meta:
+              id: req_tri_by_id
+              created: 1779315089102
+              modified: 1779315089102
+              isPrivate: false
+              description: "Busca detalhes de uma trilha"
+              sortKey: 712
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/trilhas"
+            name: Criar Trilha (Exclusivo ADMIN)
+            meta:
+              id: req_tri_post
+              created: 1779315089103
+              modified: 1779315089103
+              isPrivate: false
+              description: "Cadastra nova trilha (apenas ADMIN tem permissao)"
+              sortKey: 713
+            method: POST
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Adestramento Basico",
+                  "descricao": "Trilha para comandos fundamentais de convivÃªncia e seguranca",
+                  "petId": 1
                 }
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Clinica
-        meta:
-          id: req_ddd7b6d742f5428a8139a9580b34f2fc
-          created: 1779410000034
-          modified: 1779410000034
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927632
-        method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Clinica Nova Vida Atualizada",
-                "ddd": "11",
-                "numeroTelefone": "977665544",
-                "endereco": {
-                    "cep": "05412000",
-                    "numero": "200"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/trilhas/1"
+            name: Atualizar Trilha (Exclusivo ADMIN)
+            meta:
+              id: req_tri_put
+              created: 1779315089104
+              modified: 1779315089104
+              isPrivate: false
+              description: "Atualiza trilha existente (apenas ADMIN)"
+              sortKey: 714
+            method: PUT
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Adestramento Basico e Avancado",
+                  "descricao": "Comandos essenciais e truques de obediencia",
+                  "petId": 1
                 }
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Clinica
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/trilhas/1"
+            name: Deletar Trilha (Exclusivo ADMIN)
+            meta:
+              id: req_tri_delete
+              created: 1779315089105
+              modified: 1779315089105
+              isPrivate: false
+              description: "Deleta trilha e dependencias em cascata (apenas ADMIN)"
+              sortKey: 715
+            method: DELETE
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Modulos
         meta:
-          id: req_e7d20da4c9954feea8b8d133f0a0b6f4
-          created: 1779410000035
-          modified: 1779410000035
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927631
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-    environment:
-      path: clinicas
-  - name: Veterinarios
+          id: fld_sub_modulos
+          created: 1779315089200
+          modified: 1779315089200
+          sortKey: 720
+          description: "Modulos que compoem as trilhas"
+        children:
+          - url: "{{ _.base_url }}/modulos/trilha/1"
+            name: Listar Modulos da Trilha (PREMIUM / ADMIN)
+            meta:
+              id: req_mod_by_tri
+              created: 1779315089201
+              modified: 1779315089201
+              isPrivate: false
+              description: "Lista modulos pertencentes a uma trilha"
+              sortKey: 721
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modulos/1"
+            name: Buscar Modulo por ID (PREMIUM / ADMIN)
+            meta:
+              id: req_mod_by_id
+              created: 1779315089202
+              modified: 1779315089202
+              isPrivate: false
+              description: "Busca detalhes de um modulo"
+              sortKey: 722
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modulos"
+            name: Criar Modulo (Exclusivo ADMIN)
+            meta:
+              id: req_mod_post
+              created: 1779315089203
+              modified: 1779315089203
+              isPrivate: false
+              description: "Cria novo modulo associado a uma trilha (apenas ADMIN)"
+              sortKey: 723
+            method: POST
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Modulo 1: Comandos de Contencao",
+                  "tempoConclusao": "30 min",
+                  "descricao": "Aprenda a acalmar e posicionar o animal",
+                  "trilhaId": 1
+                }
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modulos/1"
+            name: Atualizar Modulo (Exclusivo ADMIN)
+            meta:
+              id: req_mod_put
+              created: 1779315089204
+              modified: 1779315089204
+              isPrivate: false
+              description: "Atualiza modulo existente (apenas ADMIN)"
+              sortKey: 724
+            method: PUT
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Modulo 1: Comandos de Contencao (Revisado)",
+                  "tempoConclusao": "40 min",
+                  "descricao": "Aprenda comandos de senta e fica com reforco positivo",
+                  "trilhaId": 1
+                }
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/modulos/1"
+            name: Deletar Modulo (Exclusivo ADMIN)
+            meta:
+              id: req_mod_delete
+              created: 1779315089205
+              modified: 1779315089205
+              isPrivate: false
+              description: "Remove modulo e aulas dependentes (apenas ADMIN)"
+              sortKey: 725
+            method: DELETE
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Aulas
+        meta:
+          id: fld_sub_aulas
+          created: 1779315089300
+          modified: 1779315089300
+          sortKey: 730
+          description: "Aulas educativas com pontuacao para o pet"
+        children:
+          - url: "{{ _.base_url }}/aulas/modulo/1"
+            name: Listar Aulas do Modulo (PREMIUM / ADMIN)
+            meta:
+              id: req_aul_by_mod
+              created: 1779315089301
+              modified: 1779315089301
+              isPrivate: false
+              description: "Lista aulas pertencentes ao modulo"
+              sortKey: 731
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas/1"
+            name: Buscar Aula por ID (PREMIUM / ADMIN)
+            meta:
+              id: req_aul_by_id
+              created: 1779315089302
+              modified: 1779315089302
+              isPrivate: false
+              description: "Busca detalhes de uma aula"
+              sortKey: 732
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas"
+            name: Criar Aula (Exclusivo ADMIN)
+            meta:
+              id: req_aul_post
+              created: 1779315089303
+              modified: 1779315089303
+              isPrivate: false
+              description: "Cadastra nova aula com pontuacao e conteudo (apenas ADMIN)"
+              sortKey: 733
+            method: POST
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Aula 1: O Comando Senta",
+                  "descricao": "Instrucoes passo a passo do comando basico",
+                  "pontosAula": 30,
+                  "dificuldade": "FACIL",
+                  "conteudo": "Segure o petisco na altura do focinho do pet e leve-o lentamente para tras...",
+                  "concluida": false,
+                  "moduloId": 1
+                }
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas/1"
+            name: Atualizar Aula (Exclusivo ADMIN)
+            meta:
+              id: req_aul_put
+              created: 1779315089304
+              modified: 1779315089304
+              isPrivate: false
+              description: "Atualiza dados e conteudo da aula (apenas ADMIN)"
+              sortKey: 734
+            method: PUT
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                  "nome": "Aula 1: O Comando Senta - Versao Final",
+                  "descricao": "Guia pratico do comando basico com petiscos",
+                  "pontosAula": 35,
+                  "dificuldade": "FACIL",
+                  "conteudo": "Posicione o petisco na ponta do focinho e recompense o movimento com um clique.",
+                  "concluida": false,
+                  "moduloId": 1
+                }
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas/1/concluir"
+            name: Concluir Aula (PREMIUM / ADMIN)
+            meta:
+              id: req_aul_concluir
+              created: 1779315089305
+              modified: 1779315089305
+              isPrivate: false
+              description: "Marca concluida = true e soma pontos de aprendizado ao score do pet"
+              sortKey: 735
+            method: PATCH
+            headers:
+              - name: Authorization
+            value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas/1"
+            name: Deletar Aula (Exclusivo ADMIN)
+            meta:
+              id: req_aul_delete
+              created: 1779315089306
+              modified: 1779315089306
+              isPrivate: false
+              description: "Remove aula cadastrada (apenas ADMIN)"
+              sortKey: 736
+            method: DELETE
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: 07. Enderecos
     meta:
-      id: fld_b71ee4ba938b446d8dc4f531af5f2a1d
-      created: 1779410000040
-      modified: 1779410000040
-      sortKey: -1779323927833
-      description: ""
+      id: fld_end_001
+      created: 1779315089400
+      modified: 1779315089400
+      sortKey: 800
+      description: "Integracao declarativa com ViaCEP para geolocalizacao"
     children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Veterinarios
+      - url: "{{ _.base_url }}/enderecos"
+        name: Listar Enderecos (Paginado)
         meta:
-          id: req_53fda8f1d48f4ef58a473fd62c857212
-          created: 1779410000041
-          modified: 1779410000041
+          id: req_end_get_all
+          created: 1779315089401
+          modified: 1779315089401
           isPrivate: false
-          description: ""
-          sortKey: -1779323927635
+          description: "Lista enderecos cadastrados no sistema"
+          sortKey: 801
         method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         parameters:
           - name: page
             value: "0"
-            disabled: false
           - name: size
             value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1410,29 +1796,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-nome
-        name: Get Veterinario by Nome
+      - url: "{{ _.base_url }}/enderecos/1"
+        name: Buscar Endereco por ID
         meta:
-          id: req_veterinario_by_nome_new
-          created: 1779410000104
-          modified: 1779410000104
+          id: req_end_by_id
+          created: 1779315089402
+          modified: 1779315089402
           isPrivate: false
-          description: ""
-          sortKey: -17793239276345
+          description: "Busca endereco por ID"
+          sortKey: 802
         method: GET
-        parameters:
-          - name: nome
-            value: Camila
-            disabled: false
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: nome,asc
-            disabled: false
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1441,70 +1820,31 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/by-email
-        name: Get Veterinario by Email
+      - url: "{{ _.base_url }}/enderecos"
+        name: Criar Endereco (Resolvido via ViaCEP)
         meta:
-          id: req_veterinario_by_email_new
-          created: 1779410000105
-          modified: 1779410000105
+          id: req_end_post
+          created: 1779315089403
+          modified: 1779315089403
           isPrivate: false
-          description: ""
-          sortKey: -17793239276342
-        method: GET
-        parameters:
-          - name: email
-            value: camila@clinica.com
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Veterinario by Id
-        meta:
-          id: req_3053640ff58a494e93ecf608981030af
-          created: 1779410000042
-          modified: 1779410000042
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927634
-        method: GET
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Veterinario
-        meta:
-          id: req_08aab58e6b7542cf8a5f748d2fd7f5b2
-          created: 1779410000043
-          modified: 1779410000043
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927633
+          description: "Consulta automaticamente ViaCEP persistindo bairro, cidade e estado"
+          sortKey: 803
         method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Dra. Camila Souza",
-                "email": "camila@clinica.com",
-                "senha": "123456",
-                "ddd": "11",
-                "numeroTelefone": "976543210",
-                "clinicaId": 1
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "cep": "01310100",
+              "numero": "1000"
+            }
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1513,30 +1853,31 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Veterinario
+      - url: "{{ _.base_url }}/enderecos/1"
+        name: Atualizar Endereco
         meta:
-          id: req_9b5f15da89ce48e4ac8aabbe524ca3c4
-          created: 1779410000044
-          modified: 1779410000044
+          id: req_end_put
+          created: 1779315089404
+          modified: 1779315089404
           isPrivate: false
-          description: ""
-          sortKey: -1779323927632
+          description: "Atualiza CEP ou numero resolvendo novos logradouros"
+          sortKey: 804
         method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "nome": "Dr. Carlos Souza",
-                "email": "carlos@clinica.com",
-                "senha": "123456",
-                "ddd": "11",
-                "numeroTelefone": "987654321",
-                "clinicaId": 1
-            }
         headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
           - name: Content-Type
             value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "cep": "04571010",
+              "numero": "250"
+            }
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1545,16 +1886,22 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Veterinario
+      - url: "{{ _.base_url }}/enderecos/1"
+        name: Deletar Endereco
         meta:
-          id: req_3d03d62a26d84b22b687f6ef728ec836
-          created: 1779410000045
-          modified: 1779410000045
+          id: req_end_delete
+          created: 1779315089405
+          modified: 1779315089405
           isPrivate: false
-          description: ""
-          sortKey: -1779323927631
+          description: "Remove um endereco por ID"
+          sortKey: 805
         method: DELETE
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1563,53 +1910,23 @@ collection:
             send: true
             store: true
           rebuildPath: true
-    environment:
-      path: veterinarios
-  - name: Enderecos
+  - name: 08. Actuator & Documentacao
     meta:
-      id: fld_7552503ba3f44e7ea9ccf27d08f435f2
-      created: 1779410000050
-      modified: 1779410000050
-      sortKey: -1779323927832
-      description: ""
+      id: fld_act_001
+      created: 1779315089500
+      modified: 1779315089500
+      sortKey: 900
+      description: "Monitoramento de saude e especificacao OpenAPI 3"
     children:
-      - url: http://localhost:8080/{{ _.path }}
-        name: Get All Enderecos
+      - url: "{{ _.base_url }}/actuator/health"
+        name: Health Check (Publico)
         meta:
-          id: req_22ad5deaf5b84aeca7eff86f1916ad31
-          created: 1779410000051
-          modified: 1779410000051
+          id: req_act_health
+          created: 1779315089501
+          modified: 1779315089501
           isPrivate: false
-          description: ""
-          sortKey: -1779323927635
-        method: GET
-        parameters:
-          - name: page
-            value: "0"
-            disabled: false
-          - name: size
-            value: "10"
-            disabled: false
-          - name: sort
-            value: rua,asc
-            disabled: false
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Get Endereco by Id
-        meta:
-          id: req_969263491bf54a1289e6f6e4de47253a
-          created: 1779410000052
-          modified: 1779410000052
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927634
+          description: "Status de saude da aplicacao e dependencias"
+          sortKey: 901
         method: GET
         settings:
           renderRequestBody: true
@@ -1619,26 +1936,16 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}
-        name: Post Endereco
+      - url: "{{ _.base_url }}/actuator/info"
+        name: Info da Aplicacao (Publico)
         meta:
-          id: req_4962a72ab4a44f2798a7ecfc8077346f
-          created: 1779410000053
-          modified: 1779410000053
+          id: req_act_info
+          created: 1779315089502
+          modified: 1779315089502
           isPrivate: false
-          description: ""
-          sortKey: -1779323927633
-        method: POST
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "cep": "05412000",
-                "numero": "321"
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
+          description: "Informacoes e versao do projeto corporativo"
+          sortKey: 902
+        method: GET
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1647,26 +1954,16 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Update Endereco
+      - url: "{{ _.base_url }}/v3/api-docs"
+        name: OpenAPI 3 JSON Specification (Publico)
         meta:
-          id: req_f3cd9ba4f76043e1a3df16ba41890f4d
-          created: 1779410000054
-          modified: 1779410000054
+          id: req_act_docs
+          created: 1779315089503
+          modified: 1779315089503
           isPrivate: false
-          description: ""
-          sortKey: -1779323927632
-        method: PUT
-        body:
-          mimeType: text/plain
-          text: |-
-            {
-                "cep": "05412000",
-                "numero": "654"
-            }
-        headers:
-          - name: Content-Type
-            value: application/json
+          description: "Especificacao completa OpenAPI 3 em JSON gerada pelo SpringDoc"
+          sortKey: 903
+        method: GET
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -1675,26 +1972,6 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://localhost:8080/{{ _.path }}/1
-        name: Delete Endereco
-        meta:
-          id: req_9bbbf006f7fd476cb3be133715bcf54d
-          created: 1779410000055
-          modified: 1779410000055
-          isPrivate: false
-          description: ""
-          sortKey: -1779323927631
-        method: DELETE
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-    environment:
-      path: enderecos
 cookieJar:
   name: Default Jar
   meta:
@@ -1708,3 +1985,51 @@ environments:
     created: 1779315088275
     modified: 1779315088275
     isPrivate: false
+  data:
+    base_url: http://localhost:8080
+    token: ""
+  subEnvironments:
+    - name: Local - Admin
+      meta:
+        id: env_sub_admin
+        created: 1779315088276
+        modified: 1779315088276
+        isPrivate: false
+      data:
+        base_url: http://localhost:8080
+        email: admin@petguardian.com
+        senha: password123
+        token: ""
+    - name: Local - Premium
+      meta:
+        id: env_sub_premium
+        created: 1779315088277
+        modified: 1779315088277
+        isPrivate: false
+      data:
+        base_url: http://localhost:8080
+        email: premium@petguardian.com
+        senha: password123
+        token: ""
+    - name: Local - Comum
+      meta:
+        id: env_sub_comum
+        created: 1779315088278
+        modified: 1779315088278
+        isPrivate: false
+      data:
+        base_url: http://localhost:8080
+        email: comum@petguardian.com
+        senha: password123
+        token: ""
+    - name: Producao (Railway)
+      meta:
+        id: env_sub_railway
+        created: 1779315088279
+        modified: 1779315088279
+        isPrivate: false
+      data:
+        base_url: https://petguardian-api.up.railway.app
+        email: admin@petguardian.com
+        senha: password123
+        token: ""

@@ -27,7 +27,7 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
             "join p.usuarioPets up " +
             "where up.usuario.id = :usuarioId " +
             "and t.status.nomeStatus = :status")
-    Page<Tarefa> findTarefasPendentesDoCuidador(
+    Page<Tarefa> findAllDoCuidadorByStatus(
             @Param("usuarioId") Long usuarioId,
             @Param("status") EnumStatus status,
             Pageable pageable);

@@ -24,6 +24,7 @@ public record RedeCuidadoResponse(
             String nome,
             String email,
             boolean responsavelPrincipal,
-            List<Long> petIds
+            List<Long> petIds,
+            List<String> petNomes
     ) {}
 }

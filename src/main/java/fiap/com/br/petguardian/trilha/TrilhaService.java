@@ -29,13 +29,12 @@ public class TrilhaService {
     }
 
     public Trilha findById(Long id) {
-        return trilhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Trilha com id " + id + " nao encontrada."));
+        return findTrilhaById(id);
     }
 
     @Transactional
     public Trilha update(Long id, TrilhaRequest request) {
-        findById(id);
+        findTrilhaById(id);
         Pet pet = findPetById(request.petId());
         Trilha trilha = request.toEntity(pet);
         trilha.setId(id);
@@ -44,8 +43,13 @@ public class TrilhaService {
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        findTrilhaById(id);
         trilhaRepository.deleteById(id);
+    }
+
+    private Trilha findTrilhaById(Long id) {
+        return trilhaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Trilha com id " + id + " nao encontrada."));
     }
 
     private Pet findPetById(Long petId) {

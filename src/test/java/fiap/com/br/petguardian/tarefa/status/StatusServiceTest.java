@@ -23,8 +23,20 @@ class StatusServiceTest {
     private StatusService statusService;
 
     @Test
-    @DisplayName("Deve encontrar status por nome EnumStatus")
-    void deveEncontrarStatusPorNome() {
+    @DisplayName("Deve encontrar status por EnumStatus")
+    void deveEncontrarStatusPorEnum() {
+        Status status = Status.builder().id(1L).nomeStatus(EnumStatus.PENDENTE).build();
+        when(statusRepository.findByNomeStatus(EnumStatus.PENDENTE)).thenReturn(Optional.of(status));
+
+        Status resultado = statusService.findStatus(EnumStatus.PENDENTE);
+
+        assertNotNull(resultado);
+        assertEquals(EnumStatus.PENDENTE, resultado.getNomeStatus());
+    }
+
+    @Test
+    @DisplayName("Deve encontrar status por nome String")
+    void deveEncontrarStatusPorNomeString() {
         Status status = Status.builder().id(1L).nomeStatus(EnumStatus.PENDENTE).build();
         when(statusRepository.findByNomeStatus(EnumStatus.PENDENTE)).thenReturn(Optional.of(status));
 
@@ -39,6 +51,6 @@ class StatusServiceTest {
     void deveLancarExcecaoStatusNaoEncontrado() {
         when(statusRepository.findByNomeStatus(EnumStatus.PENDENTE)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> statusService.findStatusByNome("PENDENTE"));
+        assertThrows(ResourceNotFoundException.class, () -> statusService.findStatus(EnumStatus.PENDENTE));
     }
 }

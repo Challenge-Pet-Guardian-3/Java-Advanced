@@ -61,8 +61,8 @@ class TarefaServiceTest {
         Status pendente = Status.builder().id(1L).nomeStatus(EnumStatus.PENDENTE).build();
         Status expirado = Status.builder().id(3L).nomeStatus(EnumStatus.EXPIRADO).build();
 
-        when(statusService.findStatusByNome(EnumStatus.PENDENTE.name())).thenReturn(pendente);
-        when(statusService.findStatusByNome(EnumStatus.EXPIRADO.name())).thenReturn(expirado);
+        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(pendente);
+        when(statusService.findStatus(EnumStatus.EXPIRADO)).thenReturn(expirado);
         when(tarefaRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of()));
 
         Page<Tarefa> resultado = tarefaService.findAll(pageable);
@@ -93,7 +93,7 @@ class TarefaServiceTest {
 
         when(petRepository.findById(10L)).thenReturn(Optional.of(pet));
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(statusService.findStatusByNome(EnumStatus.PENDENTE.name())).thenReturn(statusPendente);
+        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(statusPendente);
         when(tarefaRepository.save(any(Tarefa.class))).thenReturn(tarefaSalva);
 
         Tarefa resultado = tarefaService.create(request);
@@ -127,11 +127,11 @@ class TarefaServiceTest {
                 .pet(pet)
                 .build();
 
-        when(statusService.findStatusByNome(EnumStatus.PENDENTE.name())).thenReturn(statusPendente);
-        when(statusService.findStatusByNome(EnumStatus.EXPIRADO.name())).thenReturn(Status.builder().nomeStatus(EnumStatus.EXPIRADO).build());
+        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(statusPendente);
+        when(statusService.findStatus(EnumStatus.EXPIRADO)).thenReturn(Status.builder().nomeStatus(EnumStatus.EXPIRADO).build());
         when(tarefaRepository.findById(100L)).thenReturn(Optional.of(tarefa));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(concluinte));
-        when(statusService.findStatusByNome(EnumStatus.CONCLUIDO.name())).thenReturn(statusConcluido);
+        when(statusService.findStatus(EnumStatus.CONCLUIDO)).thenReturn(statusConcluido);
         when(tarefaRepository.save(any(Tarefa.class))).thenAnswer(inv -> inv.getArgument(0));
 
         var conclusaoReq = new TarefaConclusaoRequest(2L);
@@ -164,7 +164,7 @@ class TarefaServiceTest {
                 .pet(pet)
                 .build();
 
-        when(statusService.findStatusByNome(EnumStatus.PENDENTE.name())).thenReturn(statusPendente);
+        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(statusPendente);
         when(tarefaRepository.findById(100L)).thenReturn(Optional.of(tarefa));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(cuidador));
         when(tarefaRepository.save(any(Tarefa.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -188,5 +188,33 @@ class TarefaServiceTest {
         Integer pontos = tarefaService.calcularPontosTotaisUsuario(1L);
 
         assertEquals(120, pontos);
+    }
+
+    @Test
+    @DisplayName("Deve deletar tarefa com sucesso chamando deleteById")
+    void deveDeletarTarefa() {
+        Tarefa tarefa = Tarefa.builder().id(50L).build();
+        when(tarefaRepository.findById(50L)).thenReturn(Optional.of(tarefa));
+
+        tarefaService.delete(50L);
+
+        verify(tarefaRepository).deleteById(50L);
+    }
+
+    @Test
+    @DisplayName("Deve listar tarefas do cuidador por status")
+    void deveListarTarefasPorStatus() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Status pendente = Status.builder().id(1L).nomeStatus(EnumStatus.PENDENTE).build();
+        Status expirado = Status.builder().id(3L).nomeStatus(EnumStatus.EXPIRADO).build();
+
+        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(pendente);
+        when(statusService.findStatus(EnumStatus.EXPIRADO)).thenReturn(expirado);
+        when(tarefaRepository.findAllDoCuidadorByStatus(1L, EnumStatus.PENDENTE, pageable)).thenReturn(new PageImpl<>(List.of()));
+
+        Page<Tarefa> resultado = tarefaService.findAllByUsuario(1L, "PENDENTE", pageable);
+
+        assertNotNull(resultado);
+        verify(tarefaRepository).findAllDoCuidadorByStatus(1L, EnumStatus.PENDENTE, pageable);
     }
 }

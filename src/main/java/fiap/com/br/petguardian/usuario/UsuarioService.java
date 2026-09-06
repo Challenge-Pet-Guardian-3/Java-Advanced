@@ -39,20 +39,20 @@ public class UsuarioService {
 
     @Transactional
     public Usuario create(UsuarioRequest usuarioRequest) {
-        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
-        Telefone telefone = telefoneRepository.save(usuarioRequest.toTelefone());
-
-        Usuario usuario = usuarioRequest.toEntity(telefone, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
-        usuario.getEnderecos().add(endereco);
+        Usuario usuario = usuarioRequest.toEntity(
+                telefoneRepository.save(usuarioRequest.toTelefone()),
+                usuarioRequest.email(),
+                passwordEncoder.encode(usuarioRequest.senha())
+        );
+        usuario.getEnderecos().add(enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco()));
         return usuarioRepository.save(usuario);
     }
 
     @Transactional
     public Usuario update(Long id, UsuarioRequest usuarioRequest) {
         Usuario usuario = findUsuarioById(id);
-        Endereco endereco = enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco());
         usuarioRequest.aplicarEm(usuario, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
-        usuario.getEnderecos().add(endereco);
+        usuario.getEnderecos().add(enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco()));
         return usuarioRepository.save(usuario);
     }
 

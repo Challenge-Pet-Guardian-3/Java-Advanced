@@ -80,16 +80,13 @@ public class PetService {
 
     public PetHistoryResponse getConsolidatedHistory(Long petId) {
         Pet pet = findPetById(petId);
-
-        var tarefasConcluidas = tarefaRepository.findConcluidasByPetId(petId, EnumStatus.CONCLUIDO)
-                .stream()
-                .map(TarefaResponse::fromEntity)
-                .toList();
-
         return new PetHistoryResponse(
                 pet.getId(),
                 pet.getNome(),
-                tarefasConcluidas);
+                tarefaRepository.findConcluidasByPetId(petId, EnumStatus.CONCLUIDO)
+                        .stream()
+                        .map(TarefaResponse::fromEntity)
+                        .toList());
     }
 
     @Transactional(readOnly = true)
@@ -97,9 +94,7 @@ public class PetService {
         Pet pet = findPetById(petId);
         int pontosTarefas = tarefaRepository.calcularPontosTarefasPorPet(petId, EnumStatus.CONCLUIDO);
         int pontosAulas = aulaRepository.calcularPontosAulasConcluidasPorPet(petId);
-        int pontosTotais = pontosTarefas + pontosAulas;
-
-        return new PetPontuacaoResponse(pet.getId(), pet.getNome(), pontosTarefas, pontosAulas, pontosTotais);
+        return new PetPontuacaoResponse(pet.getId(), pet.getNome(), pontosTarefas, pontosAulas, pontosTarefas + pontosAulas);
     }
 
     private Pet findPetById(Long id) {

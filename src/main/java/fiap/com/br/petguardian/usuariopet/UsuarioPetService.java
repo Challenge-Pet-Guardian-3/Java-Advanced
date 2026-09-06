@@ -47,8 +47,7 @@ public class UsuarioPetService {
         usuarioPetValidator.validarResponsavelPrincipal(request.responsavelPrincipalId(), petId);
         usuarioPetValidator.validarUsuarioNaoVinculado(convidado.getId(), petId);
 
-        UsuarioPet novoVinculo = usuarioPetRepository.save(request.toEntity(convidado, pet));
-        return CoCuidadorResponse.fromEntity(novoVinculo);
+        return CoCuidadorResponse.fromEntity(usuarioPetRepository.save(request.toEntity(convidado, pet)));
     }
 
     @Transactional
@@ -80,46 +79,28 @@ public class UsuarioPetService {
     @Transactional(readOnly = true)
     public RedeCuidadoResponse montarRedeCuidado(Long usuarioId) {
         Usuario usuario = findUsuarioById(usuarioId);
-        List<UsuarioPet> meusVinculos = usuarioPetRepository.findAllByUsuarioId(usuarioId);
+        List<UsuarioPet> vinculos = usuarioPetRepository.findAllByUsuarioId(usuarioId);
 
-        if (meusVinculos.isEmpty()) {
+        if (vinculos.isEmpty()) {
             return redeCuidadoMapper.toEmptyResponse(usuario);
         }
 
-        List<Long> petIds = meusVinculos.stream()
-                .map(up -> up.getPet().getId())
-                .toList();
+        List<Long> petIds = vinculos.stream().map(up -> up.getPet().getId()).toList();
 
-        Map<Long, List<Long>> tarefasPorPet = carregarMapaTarefasPorPet(petIds);
-        List<UsuarioPet> todosVinculosDosPets = usuarioPetRepository.findAllByPetIdIn(petIds);
+        var pets = redeCuidadoMapper.toPetResumoList(vinculos, carregarMapaTarefasPorPet(petIds));
+        var cuidadores = redeCuidadoMapper.toCuidadorResumoList(usuarioPetRepository.findAllByPetIdIn(petIds), usuarioId);
 
-        int totalPendentes = tarefaRepository.countByPetIdInAndStatusAndPrazoFuturo(petIds, EnumStatus.PENDENTE, LocalDateTime.now());
-        int totalConcluidas = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.CONCLUIDO);
-        int pontosTotais = tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
+        int pendentes = tarefaRepository.countByPetIdInAndStatusAndPrazoFuturo(petIds, EnumStatus.PENDENTE, LocalDateTime.now());
+        int concluidas = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.CONCLUIDO);
+        int pontos = tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
 
-        var petResumos = redeCuidadoMapper.toPetResumoList(meusVinculos, tarefasPorPet);
-        var coCuidadores = redeCuidadoMapper.toCuidadorResumoList(todosVinculosDosPets, usuarioId);
-
-        return redeCuidadoMapper.toResponse(
-                usuario,
-                petResumos,
-                coCuidadores,
-                totalPendentes,
-                totalConcluidas,
-                pontosTotais
-        );
+        return new RedeCuidadoResponse(usuario.getId(), usuario.getNome(), pets, cuidadores, pendentes, concluidas, pontos);
     }
 
     private Map<Long, List<Long>> carregarMapaTarefasPorPet(List<Long> petIds) {
         Map<Long, List<Long>> mapa = new HashMap<>();
         petIds.forEach(id -> mapa.put(id, new ArrayList<>()));
-
-        List<Object[]> registros = tarefaRepository.findTarefaIdsByPetIdIn(petIds);
-        for (Object[] row : registros) {
-            Long petId = (Long) row[0];
-            Long tarefaId = (Long) row[1];
-            mapa.get(petId).add(tarefaId);
-        }
+        tarefaRepository.findTarefaIdsByPetIdIn(petIds).forEach(row -> mapa.get((Long) row[0]).add((Long) row[1]));
         return mapa;
     }
 

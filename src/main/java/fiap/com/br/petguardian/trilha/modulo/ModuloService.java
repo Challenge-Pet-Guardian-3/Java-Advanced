@@ -29,13 +29,12 @@ public class ModuloService {
     }
 
     public Modulo findById(Long id) {
-        return moduloRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Modulo com id " + id + " nao encontrado."));
+        return findModuloById(id);
     }
 
     @Transactional
     public Modulo update(Long id, ModuloRequest request) {
-        findById(id);
+        findModuloById(id);
         Trilha trilha = findTrilhaById(request.trilhaId());
         Modulo modulo = request.toEntity(trilha);
         modulo.setId(id);
@@ -44,8 +43,13 @@ public class ModuloService {
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        findModuloById(id);
         moduloRepository.deleteById(id);
+    }
+
+    private Modulo findModuloById(Long id) {
+        return moduloRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Modulo com id " + id + " nao encontrado."));
     }
 
     private Trilha findTrilhaById(Long trilhaId) {

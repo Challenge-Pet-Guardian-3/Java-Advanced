@@ -29,13 +29,12 @@ public class AulaService {
     }
 
     public Aula findById(Long id) {
-        return aulaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Aula com id " + id + " nao encontrada."));
+        return findAulaById(id);
     }
 
     @Transactional
     public Aula update(Long id, AulaRequest request) {
-        findById(id);
+        findAulaById(id);
         Modulo modulo = findModuloById(request.moduloId());
         Aula aula = request.toEntity(modulo);
         aula.setId(id);
@@ -44,15 +43,20 @@ public class AulaService {
 
     @Transactional
     public Aula concluir(Long id) {
-        Aula aula = findById(id);
+        Aula aula = findAulaById(id);
         aula.setConcluida(true);
         return aulaRepository.save(aula);
     }
 
     @Transactional
     public void delete(Long id) {
-        findById(id);
+        findAulaById(id);
         aulaRepository.deleteById(id);
+    }
+
+    private Aula findAulaById(Long id) {
+        return aulaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Aula com id " + id + " nao encontrada."));
     }
 
     private Modulo findModuloById(Long moduloId) {
