@@ -184,6 +184,7 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 | `POST` | `/aulas` | `AulaRequest` | `AulaResponse` (201 Created) | Cria nova aula (pontuação, conteúdo até 1000 caracteres, concluida = false). | `ADMIN` |
 | `PUT` | `/aulas/{id}` | `AulaRequest` | `AulaResponse` (200 OK) | Atualiza aula existente. | `ADMIN` |
 | `PATCH`| `/aulas/{id}/concluir` | `@PathVariable Long id` | `AulaResponse` (200 OK) | Marca aula como concluída (`concluida = true`), gerando pontos para o pet. | `PREMIUM`, `ADMIN` |
+| `PATCH`| `/aulas/{id}/desmarcar` | `@PathVariable Long id` | `AulaResponse` (200 OK) | Desmarca aula concluída (`concluida = false`), estornando pontos do pet dinamicamente. | `PREMIUM`, `ADMIN` |
 | `DELETE`| `/aulas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma aula. | `ADMIN` |
 
 ---

@@ -233,6 +233,7 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 | `POST` | `/aulas` | Criar nova aula | `ADMIN` |
 | `PUT` | `/aulas/{id}` | Atualizar aula | `ADMIN` |
 | `PATCH` | `/aulas/{id}/concluir` | Concluir aula (`concluida = true`) e somar pontos ao pet | `PREMIUM`, `ADMIN` |
+| `PATCH` | `/aulas/{id}/desmarcar` | Desmarcar aula concluída (`concluida = false`) e estornar pontos | `PREMIUM`, `ADMIN` |
 | `DELETE` | `/aulas/{id}` | Deletar aula | `ADMIN` |
 
 ### Endereços (`/enderecos`)

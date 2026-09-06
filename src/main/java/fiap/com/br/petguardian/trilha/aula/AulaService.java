@@ -49,6 +49,13 @@ public class AulaService {
     }
 
     @Transactional
+    public Aula desmarcar(Long id) {
+        Aula aula = findAulaById(id);
+        aula.setConcluida(false);
+        return aulaRepository.save(aula);
+    }
+
+    @Transactional
     public void delete(Long id) {
         findAulaById(id);
         aulaRepository.deleteById(id);

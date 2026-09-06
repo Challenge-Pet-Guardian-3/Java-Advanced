@@ -1,4 +1,4 @@
-﻿type: collection.insomnia.rest/5.0
+type: collection.insomnia.rest/5.0
 schema_version: "5.1"
 name: Pet Guardian
 meta:
@@ -1723,7 +1723,31 @@ collection:
             method: PATCH
             headers:
               - name: Authorization
-            value: Bearer {{ _.token }}
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.base_url }}/aulas/1/desmarcar"
+            name: Desmarcar Aula (PREMIUM / ADMIN)
+            meta:
+              id: req_aul_desmarcar
+              created: 1779315089307
+              modified: 1779315089307
+              isPrivate: false
+              description: "Marca concluida = false e estorna pontos de aprendizado do pet"
+              sortKey: 735.5
+            method: PATCH
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
             authentication:
               type: bearer
               token: "{{ _.token }}"

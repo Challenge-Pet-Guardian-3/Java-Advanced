@@ -57,6 +57,13 @@ public class AulaController {
         return AulaResponse.fromEntity(aulaService.concluir(id));
     }
 
+    @PatchMapping("/{id}/desmarcar")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Desmarcar aula concluida retornando ao estado nao concluido")
+    public AulaResponse desmarcar(@PathVariable Long id) {
+        return AulaResponse.fromEntity(aulaService.desmarcar(id));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar aula")
