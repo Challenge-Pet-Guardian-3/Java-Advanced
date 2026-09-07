@@ -55,7 +55,7 @@ public class PetService {
         Raca raca = findOrCreateRaca(petRequest.raca());
         Pet petSalvo = petRepository.save(petRequest.toEntity(raca));
 
-        usuarioPetService.vincularResponsavelPrincipal(usuario, petSalvo);
+        usuarioPetService.vincularPrimeiroResponsavelPrincipal(usuario, petSalvo);
         return petSalvo;
     }
 

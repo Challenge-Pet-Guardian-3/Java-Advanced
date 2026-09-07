@@ -1,9 +1,7 @@
 package fiap.com.br.petguardian.usuario;
 
-import fiap.com.br.petguardian.endereco.Endereco;
 import fiap.com.br.petguardian.endereco.EnderecoService;
 import fiap.com.br.petguardian.exception.ResourceNotFoundException;
-import fiap.com.br.petguardian.telefone.Telefone;
 import fiap.com.br.petguardian.telefone.TelefoneRepository;
 import fiap.com.br.petguardian.usuario.dto.RedeCuidadoResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;

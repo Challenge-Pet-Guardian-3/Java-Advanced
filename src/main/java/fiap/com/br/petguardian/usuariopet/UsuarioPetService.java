@@ -31,6 +31,12 @@ public class UsuarioPetService {
     private final RedeCuidadoMapper redeCuidadoMapper;
 
     @Transactional
+    public UsuarioPet vincularPrimeiroResponsavelPrincipal(Usuario usuario, Pet pet) {
+        UsuarioPet vinculo = new UsuarioPet(new UsuarioPetId(usuario.getId(), pet.getId()), usuario, pet, true);
+        return usuarioPetRepository.save(vinculo);
+    }
+
+    @Transactional
     public UsuarioPet vincularResponsavelPrincipal(Usuario usuario, Pet pet) {
         usuarioPetRepository.limparResponsavelPrincipalPorPet(pet.getId());
         UsuarioPet vinculo = usuarioPetRepository.findByUsuarioIdAndPetId(usuario.getId(), pet.getId())
