@@ -49,6 +49,14 @@ public class RedeCuidadoMapper {
             List<UsuarioPet> todosVinculosDosPets,
             Long usuarioLogadoId
     ) {
+        return toCuidadorResumoList(todosVinculosDosPets, usuarioLogadoId, List.of());
+    }
+
+    public List<CuidadorResumo> toCuidadorResumoList(
+            List<UsuarioPet> todosVinculosDosPets,
+            Long usuarioLogadoId,
+            List<Long> petsOndeUsuarioEPrincipal
+    ) {
         Map<Usuario, List<UsuarioPet>> vinculosPorCuidador = todosVinculosDosPets.stream()
                 .filter(vinculo -> !Objects.equals(vinculo.getUsuario().getId(), usuarioLogadoId))
                 .collect(Collectors.groupingBy(UsuarioPet::getUsuario));
@@ -58,7 +66,10 @@ public class RedeCuidadoMapper {
                     Usuario cuidador = entry.getKey();
                     List<UsuarioPet> vinculosDoCuidador = entry.getValue();
 
-                    boolean responsavelPrincipal = vinculosDoCuidador.stream()
+                    boolean auxiliaEmPetsDoUsuario = vinculosDoCuidador.stream()
+                            .anyMatch(v -> petsOndeUsuarioEPrincipal.contains(v.getPet().getId()));
+
+                    boolean responsavelPrincipal = !auxiliaEmPetsDoUsuario && vinculosDoCuidador.stream()
                             .anyMatch(UsuarioPet::isResponsavelPrincipal);
 
                     List<Long> petIds = vinculosDoCuidador.stream().map(v -> v.getPet().getId()).toList();

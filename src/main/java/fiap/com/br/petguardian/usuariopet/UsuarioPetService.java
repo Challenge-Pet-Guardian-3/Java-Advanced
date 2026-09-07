@@ -92,9 +92,17 @@ public class UsuarioPetService {
         }
 
         List<Long> petIds = vinculos.stream().map(up -> up.getPet().getId()).toList();
+        List<Long> petsOndeUsuarioEPrincipal = vinculos.stream()
+                .filter(UsuarioPet::isResponsavelPrincipal)
+                .map(up -> up.getPet().getId())
+                .toList();
 
         var pets = redeCuidadoMapper.toPetResumoList(vinculos, carregarMapaTarefasPorPet(petIds));
-        var cuidadores = redeCuidadoMapper.toCuidadorResumoList(usuarioPetRepository.findAllByPetIdIn(petIds), usuarioId);
+        var cuidadores = redeCuidadoMapper.toCuidadorResumoList(
+                usuarioPetRepository.findAllByPetIdIn(petIds),
+                usuarioId,
+                petsOndeUsuarioEPrincipal
+        );
 
         int pendentes = tarefaRepository.countByPetIdInAndStatusAndPrazoFuturo(petIds, EnumStatus.PENDENTE, LocalDateTime.now());
         int concluidas = tarefaRepository.countByPetIdInAndStatus(petIds, EnumStatus.CONCLUIDO);
