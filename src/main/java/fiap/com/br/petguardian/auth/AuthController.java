@@ -41,14 +41,13 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Autenticar usuario e retornar token Bearer JWT com dados do perfil")
     public LoginResponse login(@RequestBody @Valid LoginRequest request) {
-        String normalizedEmail = request.email().trim().toLowerCase();
 
         var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(normalizedEmail, request.senha())
+                new UsernamePasswordAuthenticationToken(request.email(), request.senha())
         );
 
         String token = tokenService.generateToken(auth.getName());
-        Usuario usuario = usuarioService.findUsuarioByEmail(normalizedEmail);
+        Usuario usuario = usuarioService.findUsuarioByEmail(request.email());
 
         return new LoginResponse(token, UsuarioResponse.fromEntity(usuario));
     }
