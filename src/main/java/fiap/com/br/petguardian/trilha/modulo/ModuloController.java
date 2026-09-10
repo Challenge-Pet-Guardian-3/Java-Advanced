@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,16 @@ import java.util.List;
 public class ModuloController {
 
     private final ModuloService moduloService;
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Listar todos os módulos com paginação e ordenação")
+    public Page<ModuloResponse> findAll(
+            @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return moduloService.findAll(pageable)
+                .map(ModuloResponse::fromEntity);
+    }
 
     @GetMapping("/trilha/{trilhaId}")
     @ResponseStatus(HttpStatus.OK)

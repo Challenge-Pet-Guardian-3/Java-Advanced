@@ -5,6 +5,8 @@ import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetRepository;
 import fiap.com.br.petguardian.trilha.dto.TrilhaRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,8 @@ public class TrilhaService {
     private final TrilhaRepository trilhaRepository;
     private final PetRepository petRepository;
 
-    @Transactional
-    public Trilha create(TrilhaRequest request) {
-        Pet pet = findPetById(request.petId());
-        return trilhaRepository.save(request.toEntity(pet));
+    public Page<Trilha> findAll(Pageable pageable) {
+        return trilhaRepository.findAll(pageable);
     }
 
     public List<Trilha> findAllByPetId(Long petId) {
@@ -30,6 +30,12 @@ public class TrilhaService {
 
     public Trilha findById(Long id) {
         return findTrilhaById(id);
+    }
+
+    @Transactional
+    public Trilha create(TrilhaRequest request) {
+        Pet pet = findPetById(request.petId());
+        return trilhaRepository.save(request.toEntity(pet));
     }
 
     @Transactional

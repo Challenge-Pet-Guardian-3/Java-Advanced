@@ -30,6 +30,15 @@ public class UsuarioPetService {
     private final UsuarioPetValidator usuarioPetValidator;
     private final RedeCuidadoMapper redeCuidadoMapper;
 
+    @Transactional(readOnly = true)
+    public List<CoCuidadorResponse> listarCuidadoresDoPet(Long petId) {
+        findPetById(petId);
+        return usuarioPetRepository.findAllByPetId(petId)
+                .stream()
+                .map(CoCuidadorResponse::fromEntity)
+                .toList();
+    }
+
     @Transactional
     public UsuarioPet vincularPrimeiroResponsavelPrincipal(Usuario usuario, Pet pet) {
         UsuarioPet vinculo = new UsuarioPet(new UsuarioPetId(usuario.getId(), pet.getId()), usuario, pet, true);
@@ -57,13 +66,6 @@ public class UsuarioPetService {
     }
 
     @Transactional
-    public void desvincularCuidador(Long petId, Long usuarioId, Long solicitanteId) {
-        UsuarioPet vinculo = findVinculo(usuarioId, petId);
-        usuarioPetValidator.validarPermissaoDesvinculacao(vinculo, solicitanteId);
-        usuarioPetRepository.delete(vinculo);
-    }
-
-    @Transactional
     public void transferirResponsabilidadePrincipal(Long petId, TransferirResponsabilidadeRequest request) {
         usuarioPetValidator.validarResponsavelPrincipal(request.responsavelAtualId(), petId);
 
@@ -73,13 +75,11 @@ public class UsuarioPetService {
         usuarioPetRepository.save(novoResponsavel);
     }
 
-    @Transactional(readOnly = true)
-    public List<CoCuidadorResponse> listarCuidadoresDoPet(Long petId) {
-        findPetById(petId);
-        return usuarioPetRepository.findAllByPetId(petId)
-                .stream()
-                .map(CoCuidadorResponse::fromEntity)
-                .toList();
+    @Transactional
+    public void desvincularCuidador(Long petId, Long usuarioId, Long solicitanteId) {
+        UsuarioPet vinculo = findVinculo(usuarioId, petId);
+        usuarioPetValidator.validarPermissaoDesvinculacao(vinculo, solicitanteId);
+        usuarioPetRepository.delete(vinculo);
     }
 
     @Transactional(readOnly = true)

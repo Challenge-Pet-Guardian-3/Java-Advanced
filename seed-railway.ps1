@@ -444,6 +444,10 @@ $historicoConsolidadoThor = Invoke-Api -Uri "$BaseUrl/pets/$($pet1.id)/historico
 Log-Success "GET /pets/$($pet1.id)/historico -> $($historicoConsolidadoThor.tarefasConcluidas.Count) tarefa(s) concluida(s)"
 
 # 9.3 Históricos Clínicos
+$historicosGeral = Invoke-Api -Uri "$BaseUrl/historicos" -Headers $headersAdmin
+$historicosGeralCount = if ($historicosGeral.content) { $historicosGeral.content.Count } else { $historicosGeral.Count }
+Log-Success "GET /historicos -> $historicosGeralCount registro(s) no total do sistema"
+
 $historicosThor = Invoke-Api -Uri "$BaseUrl/historicos/pet/$($pet1.id)" -Headers $headersAdmin
 Log-Success "GET /historicos/pet/$($pet1.id) -> $($historicosThor.Count) registro(s) de saude"
 
@@ -456,11 +460,23 @@ $pontosUser1 = Invoke-Api -Uri "$BaseUrl/tarefas/by-usuario/pontos?usuarioId=$us
 Log-Success "GET /tarefas/by-usuario/pontos?usuarioId=$user1Id -> $pontosUser1 pontos acumulados pelo cuidador"
 
 # 9.5 Trilhas, Módulos e Aulas
+$trilhasGeral = Invoke-Api -Uri "$BaseUrl/trilhas" -Headers $headersAdmin
+$trilhasGeralCount = if ($trilhasGeral.content) { $trilhasGeral.content.Count } else { $trilhasGeral.Count }
+Log-Success "GET /trilhas -> $trilhasGeralCount trilha(s) no total do sistema"
+
 $trilhasThor = Invoke-Api -Uri "$BaseUrl/trilhas/pet/$($pet1.id)" -Headers $headersAdmin
 Log-Success "GET /trilhas/pet/$($pet1.id) -> $($trilhasThor.Count) trilha(s)"
 
+$modulosGeral = Invoke-Api -Uri "$BaseUrl/modulos" -Headers $headersAdmin
+$modulosGeralCount = if ($modulosGeral.content) { $modulosGeral.content.Count } else { $modulosGeral.Count }
+Log-Success "GET /modulos -> $modulosGeralCount modulo(s) no total do sistema"
+
 $modulosTrilha1 = Invoke-Api -Uri "$BaseUrl/modulos/trilha/$($trilha1.id)" -Headers $headersAdmin
 Log-Success "GET /modulos/trilha/$($trilha1.id) -> $($modulosTrilha1.Count) modulo(s)"
+
+$aulasGeral = Invoke-Api -Uri "$BaseUrl/aulas" -Headers $headersAdmin
+$aulasGeralCount = if ($aulasGeral.content) { $aulasGeral.content.Count } else { $aulasGeral.Count }
+Log-Success "GET /aulas -> $aulasGeralCount aula(s) no total do sistema"
 
 $aulasModulo1 = Invoke-Api -Uri "$BaseUrl/aulas/modulo/$($modulo1.id)" -Headers $headersAdmin
 Log-Success "GET /aulas/modulo/$($modulo1.id) -> $($aulasModulo1.Count) aula(s)"

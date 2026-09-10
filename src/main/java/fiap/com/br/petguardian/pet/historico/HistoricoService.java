@@ -5,6 +5,8 @@ import fiap.com.br.petguardian.pet.Pet;
 import fiap.com.br.petguardian.pet.PetRepository;
 import fiap.com.br.petguardian.pet.historico.dto.HistoricoRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,8 @@ public class HistoricoService {
     private final HistoricoRepository historicoRepository;
     private final PetRepository petRepository;
 
-    @Transactional
-    public Historico create(HistoricoRequest request) {
-        Pet pet = findPetById(request.petId());
-        return historicoRepository.save(request.toEntity(pet));
+    public Page<Historico> findAll(Pageable pageable) {
+        return historicoRepository.findAll(pageable);
     }
 
     public List<Historico> findAllByPetId(Long petId) {
@@ -30,6 +30,12 @@ public class HistoricoService {
 
     public Historico findById(Long id) {
         return findHistoricoById(id);
+    }
+
+    @Transactional
+    public Historico create(HistoricoRequest request) {
+        Pet pet = findPetById(request.petId());
+        return historicoRepository.save(request.toEntity(pet));
     }
 
     @Transactional

@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,16 @@ import java.util.List;
 public class AulaController {
 
     private final AulaService aulaService;
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Listar todas as aulas com paginação e ordenação")
+    public Page<AulaResponse> findAll(
+            @PageableDefault(size = 10, page = 0, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return aulaService.findAll(pageable)
+                .map(AulaResponse::fromEntity);
+    }
 
     @GetMapping("/modulo/{moduloId}")
     @ResponseStatus(HttpStatus.OK)

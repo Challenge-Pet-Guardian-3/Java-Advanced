@@ -5,6 +5,8 @@ import fiap.com.br.petguardian.trilha.aula.dto.AulaRequest;
 import fiap.com.br.petguardian.trilha.modulo.Modulo;
 import fiap.com.br.petguardian.trilha.modulo.ModuloRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +19,8 @@ public class AulaService {
     private final AulaRepository aulaRepository;
     private final ModuloRepository moduloRepository;
 
-    @Transactional
-    public Aula create(AulaRequest request) {
-        Modulo modulo = findModuloById(request.moduloId());
-        return aulaRepository.save(request.toEntity(modulo));
+    public Page<Aula> findAll(Pageable pageable) {
+        return aulaRepository.findAll(pageable);
     }
 
     public List<Aula> findAllByModuloId(Long moduloId) {
@@ -33,11 +33,23 @@ public class AulaService {
     }
 
     @Transactional
+    public Aula create(AulaRequest request) {
+        Modulo modulo = findModuloById(request.moduloId());
+        return aulaRepository.save(request.toEntity(modulo));
+    }
+
+    @Transactional
     public Aula update(Long id, AulaRequest request) {
         Aula aula = findAulaById(id);
         Modulo modulo = findModuloById(request.moduloId());
         request.aplicarEm(aula, modulo);
         return aulaRepository.save(aula);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        findAulaById(id);
+        aulaRepository.deleteById(id);
     }
 
     @Transactional
@@ -52,12 +64,6 @@ public class AulaService {
         Aula aula = findAulaById(id);
         aula.setConcluida(false);
         return aulaRepository.save(aula);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        findAulaById(id);
-        aulaRepository.deleteById(id);
     }
 
     private Aula findAulaById(Long id) {

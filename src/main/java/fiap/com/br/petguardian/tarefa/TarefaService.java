@@ -83,6 +83,12 @@ public class TarefaService {
     }
 
     @Transactional
+    public void delete(Long id) {
+        findTarefaById(id);
+        tarefaRepository.deleteById(id);
+    }
+
+    @Transactional
     public Tarefa concluir(Long id, TarefaConclusaoRequest request) {
         Tarefa tarefa = findTarefaById(id);
         tarefaValidator.validarPendenteParaConclusao(tarefa);
@@ -110,12 +116,6 @@ public class TarefaService {
     public Integer calcularPontosTotaisUsuario(Long usuarioId) {
         findUsuarioById(usuarioId);
         return tarefaRepository.calcularPontosTotaisUsuario(usuarioId, EnumStatus.CONCLUIDO);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        findTarefaById(id);
-        tarefaRepository.deleteById(id);
     }
 
     private Tarefa findTarefaById(Long id) {
