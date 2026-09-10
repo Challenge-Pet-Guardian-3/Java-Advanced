@@ -5,11 +5,15 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
+        servers = {
+                @Server(url = "/", description = "Default Server URL")
+        },
         info = @Info(
                 title = "PetGuardian API",
                 description = "API da plataforma de cuidado colaborativo centrada no Pet. Tutores compartilham responsabilidades, gerenciam tarefas da rotina do animal e acompanham o histórico consolidado de cuidados em um único lugar.",
