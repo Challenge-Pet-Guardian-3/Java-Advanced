@@ -1,0 +1,6 @@
+{
+  "build": {
+    "builder": "gradle"
+  },
+  "run": "java -jar /app/build/libs/*.jar"
+}
