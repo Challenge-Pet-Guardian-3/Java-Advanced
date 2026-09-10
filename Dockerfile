@@ -36,6 +36,6 @@ RUN chown -R appuser:appgroup /app
 # Executa como usuário sem privilégios administrativos
 USER appuser
 
-EXPOSE 8091
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
