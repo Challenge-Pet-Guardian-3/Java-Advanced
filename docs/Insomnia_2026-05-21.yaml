@@ -1133,6 +1133,30 @@ collection:
       sortKey: 600
       description: "Prontuario clinico e eventos de saude do animal"
     children:
+      - url: "{{ _.base_url }}/historicos?page=0&size=10&sort=dataHist,desc"
+        name: Listar Todos os Eventos Clinicos (Paginado)
+        meta:
+          id: req_hist_find_all
+          created: 1779315088800
+          modified: 1779315088800
+          isPrivate: false
+          description: "Listagem paginada de todos os eventos clinicos registrados no sistema"
+          sortKey: 600
+        method: GET
+        headers:
+          - name: Authorization
+            value: Bearer {{ _.token }}
+        authentication:
+          type: bearer
+          token: "{{ _.token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
       - url: "{{ _.base_url }}/historicos/pet/1"
         name: Listar Eventos Clinicos do Pet
         meta:
@@ -1289,6 +1313,30 @@ collection:
           sortKey: 710
           description: "Trilhas de desenvolvimento do animal"
         children:
+          - url: "{{ _.base_url }}/trilhas?page=0&size=10&sort=nome,asc"
+            name: Listar Todas as Trilhas (Paginado - PREMIUM / ADMIN)
+            meta:
+              id: req_tri_find_all
+              created: 1779315089100
+              modified: 1779315089100
+              isPrivate: false
+              description: "Listagem paginada de todas as trilhas cadastradas (acesso PREMIUM e ADMIN)"
+              sortKey: 710
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
           - url: "{{ _.base_url }}/trilhas/pet/1"
             name: Listar Trilhas do Pet (PREMIUM / ADMIN)
             meta:
@@ -1437,6 +1485,30 @@ collection:
           sortKey: 720
           description: "Modulos que compoem as trilhas"
         children:
+          - url: "{{ _.base_url }}/modulos?page=0&size=10&sort=nome,asc"
+            name: Listar Todos os Modulos (Paginado - PREMIUM / ADMIN)
+            meta:
+              id: req_mod_find_all
+              created: 1779315089200
+              modified: 1779315089200
+              isPrivate: false
+              description: "Listagem paginada de todos os modulos cadastrados (acesso PREMIUM e ADMIN)"
+              sortKey: 720
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
           - url: "{{ _.base_url }}/modulos/trilha/1"
             name: Listar Modulos da Trilha (PREMIUM / ADMIN)
             meta:
@@ -1587,6 +1659,30 @@ collection:
           sortKey: 730
           description: "Aulas educativas com pontuacao para o pet"
         children:
+          - url: "{{ _.base_url }}/aulas?page=0&size=10&sort=nome,asc"
+            name: Listar Todas as Aulas (Paginado - PREMIUM / ADMIN)
+            meta:
+              id: req_aul_find_all
+              created: 1779315089300
+              modified: 1779315089300
+              isPrivate: false
+              description: "Listagem paginada de todas as aulas cadastradas (acesso PREMIUM e ADMIN)"
+              sortKey: 730
+            method: GET
+            headers:
+              - name: Authorization
+                value: Bearer {{ _.token }}
+            authentication:
+              type: bearer
+              token: "{{ _.token }}"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
           - url: "{{ _.base_url }}/aulas/modulo/1"
             name: Listar Aulas do Modulo (PREMIUM / ADMIN)
             meta:
@@ -2053,7 +2149,7 @@ environments:
         modified: 1779315088279
         isPrivate: false
       data:
-        base_url: https://petguardian-api.up.railway.app
-        email: admin@petguardian.com
-        senha: password123
+        base_url: https://java-advanced-production-35ab.up.railway.app
+        email: enzo.admin@petguardian.com
+        senha: Admin@123456
         token: ""

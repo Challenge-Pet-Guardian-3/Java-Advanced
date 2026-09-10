@@ -17,8 +17,10 @@
 | Link rápido | URL                                                     |
 |---|---------------------------------------------------------|
 | Repositório GitHub | https://github.com/Challenge-Pet-Guardian-3/Java-Advanced |
-| Arquivo Insomnia | [/docs/Insomnia_2026-05-21.yaml](/docs/Insomnia_2026-05-21.yaml)      |
-| Swagger UI (local) | http://localhost:8080/swagger-ui/index.html             |
+| API Railway (Produção) | https://java-advanced-production-35ab.up.railway.app |
+| Swagger UI (Produção) | https://java-advanced-production-35ab.up.railway.app/swagger-ui/index.html |
+| Swagger UI (Local) | http://localhost:8080/swagger-ui/index.html |
+| Arquivo Insomnia | [/docs/Insomnia_2026-05-21.yaml](./docs/Insomnia_2026-05-21.yaml) |
 
 ---
 
@@ -198,6 +200,7 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 
 | Método | Endpoint | Descrição | Permissão |
 |---|---|---|---|
+| `GET` | `/historicos` | Listar todos os registros clínicos (paginado) | Autenticado |
 | `GET` | `/historicos/pet/{petId}` | Listar eventos clínicos do pet ordenados por data | Autenticado |
 | `GET` | `/historicos/{id}` | Buscar registro clínico por ID | Autenticado |
 | `POST` | `/historicos` | Cadastrar evento clínico (vacina, consulta, cirurgia, etc.) | Autenticado |
@@ -208,6 +211,7 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 
 | Método | Endpoint | Descrição | Permissão |
 |---|---|---|---|
+| `GET` | `/trilhas` | Listar todas as trilhas (paginado) | `PREMIUM`, `ADMIN` |
 | `GET` | `/trilhas/pet/{petId}` | Listar trilhas disponíveis para o pet | `PREMIUM`, `ADMIN` |
 | `GET` | `/trilhas/{id}` | Buscar trilha por ID | `PREMIUM`, `ADMIN` |
 | `POST` | `/trilhas` | Cadastrar nova trilha | `ADMIN` |
@@ -218,6 +222,7 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 
 | Método | Endpoint | Descrição | Permissão |
 |---|---|---|---|
+| `GET` | `/modulos` | Listar todos os módulos (paginado) | `PREMIUM`, `ADMIN` |
 | `GET` | `/modulos/trilha/{trilhaId}` | Listar módulos de uma trilha | `PREMIUM`, `ADMIN` |
 | `GET` | `/modulos/{id}` | Buscar módulo por ID | `PREMIUM`, `ADMIN` |
 | `POST` | `/modulos` | Criar módulo associado a uma trilha | `ADMIN` |
@@ -228,6 +233,7 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 
 | Método | Endpoint | Descrição | Permissão |
 |---|---|---|---|
+| `GET` | `/aulas` | Listar todas as aulas (paginado) | `PREMIUM`, `ADMIN` |
 | `GET` | `/aulas/modulo/{moduloId}` | Listar aulas de um módulo | `PREMIUM`, `ADMIN` |
 | `GET` | `/aulas/{id}` | Buscar aula por ID | `PREMIUM`, `ADMIN` |
 | `POST` | `/aulas` | Criar nova aula | `ADMIN` |
@@ -253,42 +259,104 @@ Todos os endpoints operam com DTOs (Records), Bean Validation e documentação O
 ### Pré-requisitos
 
 - Java 17 LTS instalado
-- Docker e Docker Compose instalados
+- (Opcional) Docker e Docker Compose instalados, caso deseje rodar o banco localmente
 
-### Passos para Execução Local
+---
 
-1. **Subir o Banco PostgreSQL via Docker Compose:**
+### Configuração de Variáveis de Ambiente (`.env`)
+
+A aplicação suporta conexão transparente tanto ao banco de dados em nuvem no **Railway** quanto a uma instância local via **Docker Compose**. O `application.properties` já possui as credenciais do Railway configuradas como **fallback padrão**, permitindo que a aplicação execute out-of-the-box sem dependência de Docker local.
+
+Caso queira alternar entre ambientes, crie um arquivo `.env` na raiz do projeto (baseando-se no `.env.example`):
+
+```env
+# ==============================================================
+# OPÇÃO 1: Conectar no PostgreSQL do Railway (Padrão / Nuvem)
+# ==============================================================
+# Não precisa configurar nada: o application.properties já usa o Railway como padrão.
+# PGHOST=altaria.proxy.rlwy.net
+# PGPORT=41468
+# PGDATABASE=railway
+# PGUSER=postgres
+# PGPASSWORD=PpPfEBowUuHgGMRqDzZjnOZbqKlbKrZl
+
+# ==============================================================
+# OPÇÃO 2: Conectar no PostgreSQL Local via Docker (compose.yml)
+# ==============================================================
+# Para apontar para o Docker local, inicie o container (docker compose up -d)
+# e descomente as variáveis abaixo:
+# PGHOST=localhost
+# PGPORT=5432
+# PGDATABASE=petguardian
+# PGUSER=petguardian
+# PGPASSWORD=petguardian
+
+# Porta da Aplicação
+PORT=8080
+```
+
+---
+
+### Passos para Execução
+
+#### Modo 1: Executar Direto com Railway (Padrão / Sem Docker Desktop)
+Não requer Docker Desktop nem configuração prévia de `.env`. A aplicação inicializa conectando diretamente na nuvem:
+
+```bash
+./gradlew bootRun
+```
+*(Ou dê **Run** na classe `PetGuardianApplication` pela sua IDE).*
+
+#### Modo 2: Executar Localmente com Docker Compose
+1. Subir o contêiner do banco:
 ```bash
 docker compose up -d
 ```
 
-2. **Executar a Aplicação Spring Boot:**
+2. Definir as variáveis do banco local no arquivo `.env` (ou no terminal / Run Configuration da IDE):
+```powershell
+$env:PGHOST="localhost"
+$env:PGPORT="5432"
+$env:PGDATABASE="petguardian"
+$env:PGUSER="petguardian"
+$env:PGPASSWORD="petguardian"
+```
 
-Linux/Mac:
+3. Executar a aplicação:
 ```bash
 ./gradlew bootRun
 ```
 
-Windows:
-```bat
-.\gradlew.bat bootRun
+As migrações do schema e tabelas serão executadas automaticamente pelo **Flyway** na inicialização da aplicação.
+
+---
+
+### Script de Seed e Testes E2E Automatizados (`seed-railway.ps1`)
+
+O projeto inclui um script PowerShell completo e idempotente para popular o banco de dados e validar todos os endpoints (usuários com ViaCEP, pets, co-cuidadores, tarefas futuras, histórico clínico, trilhas, módulos e aulas):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\seed-railway.ps1
 ```
 
-As migrações do schema e tabelas serão executadas automaticamente pelo **Flyway** na inicialização.
+> **Dica:** Para rodar contra o servidor local após subir a aplicação em `localhost:8080`, basta passar o parâmetro `-BaseUrl`:
+> ```powershell
+> powershell -ExecutionPolicy Bypass -File .\seed-railway.ps1 -BaseUrl "http://localhost:8080"
+> ```
 
-### Acessos Locais
+---
 
-| Recurso | URL |
-|---|---|
-| API Base | `http://localhost:8080` |
-| Swagger UI | `http://localhost:8080/swagger-ui/index.html` (ou `/swagger-ui.html`) |
-| OpenAPI Docs | `http://localhost:8080/v3/api-docs` |
-| Actuator Health | `http://localhost:8080/actuator/health` |
+### Tabela de Acessos
 
-Configuração padrão do PostgreSQL (`compose.yml`):
-- Host: `localhost` | Porta: `5432`
-- Database: `petguardian`
-- Usuário: `petguardian` | Senha: `petguardian`
+| Ambiente | Recurso | URL |
+|---|---|---|
+| **Produção (Railway)** | API Base | `https://java-advanced-production-35ab.up.railway.app` |
+| **Produção (Railway)** | Swagger UI | `https://java-advanced-production-35ab.up.railway.app/swagger-ui/index.html` |
+| **Produção (Railway)** | Actuator Health | `https://java-advanced-production-35ab.up.railway.app/actuator/health` |
+| **Local** | API Base | `http://localhost:8080` |
+| **Local** | Swagger UI | `http://localhost:8080/swagger-ui/index.html` |
+| **Local** | OpenAPI Docs | `http://localhost:8080/v3/api-docs` |
+| **Local** | Actuator Health | `http://localhost:8080/actuator/health` |
 
 
 ---
