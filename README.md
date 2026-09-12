@@ -70,7 +70,7 @@ src/main/java/fiap/com/br/petguardian/
 ├── auth/                # Autenticação stateless, SecurityConfig (RBAC), Tokens JWT com chaves RSA
 ├── config/              # OpenAPI/Swagger, beans globais e RestClient
 ├── exception/           # Tratamento centralizado de exceções (GlobalExceptionHandler)
-├── validation/          # Validadores de domínio (CEP, DDD, Enum, integridade de cuidadores)
+├── validation/          # Validadores de domínio (CEP, DDD, Enum, integridade de cuidadores, unicidade de nomes via @NomeUnicoValidation)
 │
 ├── usuario/             # Gestão de usuários/tutores, perfis RBAC e visão agregada da rede
 ├── usuariopet/          # Relação N:N Usuário x Pet (Care Circle, vínculos, transferência de tutela)
@@ -106,7 +106,7 @@ src/main/java/fiap/com/br/petguardian/
 | **Flyway Migration** | 10.x | Controle versionado e idempotente do schema e cargas do banco |
 | **Spring Security & OAuth2** | Integrado | Segurança stateless e Resource Server com validação de tokens JWT |
 | **Nimbus JOSE + JWT** | Integrado | Criptografia assimétrica RSA (2048-bit) para assinatura e decodificação de tokens |
-| **Spring Validation** | Integrado | Bean Validation declarativo em DTOs Records |
+| **Spring Validation** | Integrado | Bean Validation declarativo em DTOs Records puros/imutáveis (@NomeUnicoValidation, @CepValidation, etc.) |
 | **SpringDoc OpenAPI 3** | 2.8.5 | Geração automática de documentação e console interativo Swagger UI |
 | **HTTP Service Interfaces** | Integrado | Cliente declarativo (`@HttpExchange`) para consumo assíncrono/síncrono do ViaCEP |
 | **Spring Boot Actuator** | Integrado | Observabilidade com métricas e healthcheck de infraestrutura |
@@ -452,7 +452,7 @@ powershell -ExecutionPolicy Bypass -File .\seed-railway.ps1 -BaseUrl "http://loc
 A API possui interceptador global (`@RestControllerAdvice` em `GlobalExceptionHandler`) que padroniza os erros nos formatos:
 
 ### Formato 1: Erros de Validação de Campos (`400 Bad Request`)
-Disparado por falhas no Bean Validation (`@NotBlank`, `@NotNull`, `@CepValidation`, `@DddValidation`, etc.):
+Disparado por falhas no Bean Validation (`@NotBlank`, `@NotNull`, `@NomeUnicoValidation`, `@CepValidation`, `@DddValidation`, etc.):
 ```json
 {
   "erros": [
