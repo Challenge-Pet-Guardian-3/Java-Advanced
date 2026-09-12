@@ -24,11 +24,4 @@ public record HistoricoRequest(
                 .pet(pet)
                 .build();
     }
-
-    public Historico aplicarEm(Historico historico, Pet pet) {
-        historico.setTipoHist(tipoHist);
-        historico.setDataHist(dataHist);
-        historico.setPet(pet);
-        return historico;
-    }
 }

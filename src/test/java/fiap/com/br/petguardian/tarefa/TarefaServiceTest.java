@@ -127,8 +127,6 @@ class TarefaServiceTest {
                 .pet(pet)
                 .build();
 
-        when(statusService.findStatus(EnumStatus.PENDENTE)).thenReturn(statusPendente);
-        when(statusService.findStatus(EnumStatus.EXPIRADO)).thenReturn(Status.builder().nomeStatus(EnumStatus.EXPIRADO).build());
         when(tarefaRepository.findById(100L)).thenReturn(Optional.of(tarefa));
         when(usuarioRepository.findById(2L)).thenReturn(Optional.of(concluinte));
         when(statusService.findStatus(EnumStatus.CONCLUIDO)).thenReturn(statusConcluido);

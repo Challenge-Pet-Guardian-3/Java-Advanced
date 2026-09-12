@@ -42,7 +42,7 @@ public class ModuloService {
     public Modulo update(Long id, ModuloRequest request) {
         Modulo modulo = findModuloById(id);
         Trilha trilha = findTrilhaById(request.trilhaId());
-        request.aplicarEm(modulo, trilha);
+        aplicarEm(modulo, request, trilha);
         return moduloRepository.save(modulo);
     }
 
@@ -60,5 +60,12 @@ public class ModuloService {
     private Trilha findTrilhaById(Long trilhaId) {
         return trilhaRepository.findById(trilhaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Trilha com id " + trilhaId + " nao encontrada."));
+    }
+
+    private void aplicarEm(Modulo modulo, ModuloRequest request, Trilha trilha) {
+        modulo.setNome(request.nome());
+        modulo.setTempoConclusao(request.tempoConclusao());
+        modulo.setDescricao(request.descricao());
+        modulo.setTrilha(trilha);
     }
 }

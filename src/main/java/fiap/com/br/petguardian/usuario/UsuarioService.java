@@ -49,7 +49,7 @@ public class UsuarioService {
     @Transactional
     public Usuario update(Long id, UsuarioRequest usuarioRequest) {
         Usuario usuario = findUsuarioById(id);
-        usuarioRequest.aplicarEm(usuario, usuarioRequest.email(), passwordEncoder.encode(usuarioRequest.senha()));
+        aplicarEm(usuario, usuarioRequest, passwordEncoder.encode(usuarioRequest.senha()));
         usuario.getEnderecos().add(enderecoService.findOrCreateByCepAndNumero(usuarioRequest.endereco()));
         return usuarioRepository.save(usuario);
     }
@@ -72,5 +72,16 @@ public class UsuarioService {
     private Usuario findUsuarioById(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario com id " + id + " nao encontrado."));
+    }
+
+    private void aplicarEm(Usuario usuario, UsuarioRequest request, String senhaCodificada) {
+        usuario.setNome(request.nome());
+        usuario.setEmail(request.email().trim().toLowerCase());
+        usuario.setSenha(senhaCodificada);
+        usuario.setRole(UsuarioRole.valueOf(request.role()));
+        if (usuario.getTelefone() != null) {
+            usuario.getTelefone().setDdd(request.ddd().trim());
+            usuario.getTelefone().setNumero(request.numeroTelefone().trim());
+        }
     }
 }

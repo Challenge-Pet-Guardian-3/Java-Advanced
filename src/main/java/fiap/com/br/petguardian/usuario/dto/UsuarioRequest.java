@@ -57,14 +57,4 @@ public record UsuarioRequest(
                 .numero(numeroTelefone.trim())
                 .build();
     }
-
-    public Usuario aplicarEm(Usuario usuario, String email, String senhaCodificada) {
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setSenha(senhaCodificada);
-        usuario.setRole(UsuarioRole.valueOf(role));
-        usuario.getTelefone().setDdd(ddd.trim());
-        usuario.getTelefone().setNumero(numeroTelefone.trim());
-        return usuario;
-    }
 }

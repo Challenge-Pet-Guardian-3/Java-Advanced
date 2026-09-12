@@ -22,4 +22,8 @@ public interface AulaRepository extends JpaRepository<Aula, Long> {
             "join m.trilha tr " +
             "where tr.pet.id = :petId and a.concluida = true")
     Integer calcularPontosAulasConcluidasPorPet(@Param("petId") Long petId);
+
+    boolean existsByNomeIgnoreCaseAndModuloId(String nome, Long moduloId);
+
+    boolean existsByNomeIgnoreCaseAndModuloIdAndIdNot(String nome, Long moduloId, Long id);
 }

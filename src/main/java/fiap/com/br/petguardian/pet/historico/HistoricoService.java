@@ -42,7 +42,7 @@ public class HistoricoService {
     public Historico update(Long id, HistoricoRequest request) {
         Historico historico = findHistoricoById(id);
         Pet pet = findPetById(request.petId());
-        request.aplicarEm(historico, pet);
+        aplicarEm(historico, request, pet);
         return historicoRepository.save(historico);
     }
 
@@ -60,5 +60,11 @@ public class HistoricoService {
     private Pet findPetById(Long petId) {
         return petRepository.findById(petId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet com id " + petId + " nao encontrado."));
+    }
+
+    private void aplicarEm(Historico historico, HistoricoRequest request, Pet pet) {
+        historico.setTipoHist(request.tipoHist());
+        historico.setDataHist(request.dataHist());
+        historico.setPet(pet);
     }
 }

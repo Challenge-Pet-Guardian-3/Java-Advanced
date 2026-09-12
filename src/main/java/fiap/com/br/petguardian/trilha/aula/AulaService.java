@@ -42,7 +42,7 @@ public class AulaService {
     public Aula update(Long id, AulaRequest request) {
         Aula aula = findAulaById(id);
         Modulo modulo = findModuloById(request.moduloId());
-        request.aplicarEm(aula, modulo);
+        aplicarEm(aula, request, modulo);
         return aulaRepository.save(aula);
     }
 
@@ -74,5 +74,15 @@ public class AulaService {
     private Modulo findModuloById(Long moduloId) {
         return moduloRepository.findById(moduloId)
                 .orElseThrow(() -> new ResourceNotFoundException("Modulo com id " + moduloId + " nao encontrado."));
+    }
+
+    private void aplicarEm(Aula aula, AulaRequest request, Modulo modulo) {
+        aula.setNome(request.nome());
+        aula.setDescricao(request.descricao());
+        aula.setPontosAula(request.pontosAula());
+        aula.setDificuldade(request.dificuldade());
+        aula.setConteudo(request.conteudo());
+        aula.setConcluida(request.concluida());
+        aula.setModulo(modulo);
     }
 }

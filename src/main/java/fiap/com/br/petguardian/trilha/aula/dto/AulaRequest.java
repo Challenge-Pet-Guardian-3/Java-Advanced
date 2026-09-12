@@ -2,11 +2,13 @@ package fiap.com.br.petguardian.trilha.aula.dto;
 
 import fiap.com.br.petguardian.trilha.aula.Aula;
 import fiap.com.br.petguardian.trilha.modulo.Modulo;
+import fiap.com.br.petguardian.validation.NomeUnicoValidation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+@NomeUnicoValidation(message = "Ja existe uma aula cadastrada com este nome para este modulo.")
 public record AulaRequest(
         @NotBlank
         @Size(max = 50)
@@ -44,16 +46,5 @@ public record AulaRequest(
                 .concluida(concluida)
                 .modulo(modulo)
                 .build();
-    }
-
-    public Aula aplicarEm(Aula aula, Modulo modulo) {
-        aula.setNome(nome);
-        aula.setDescricao(descricao);
-        aula.setPontosAula(pontosAula);
-        aula.setDificuldade(dificuldade);
-        aula.setConteudo(conteudo);
-        aula.setConcluida(concluida);
-        aula.setModulo(modulo);
-        return aula;
     }
 }

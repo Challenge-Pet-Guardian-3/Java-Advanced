@@ -66,7 +66,7 @@ public class PetService {
         usuarioPetValidator.validarResponsavelPrincipal(petRequest.usuarioId(), id);
 
         Raca raca = findOrCreateRaca(petRequest.raca());
-        petRequest.aplicarEm(pet, raca);
+        aplicarEm(pet, petRequest, raca);
         return petRepository.save(pet);
     }
 
@@ -109,5 +109,14 @@ public class PetService {
     private Raca findOrCreateRaca(String nomeRaca) {
         return racaRepository.findByNomeIgnoreCase(nomeRaca)
                 .orElseGet(() -> racaRepository.save(Raca.builder().nome(nomeRaca).build()));
+    }
+
+    private void aplicarEm(Pet pet, PetRequest request, Raca raca) {
+        pet.setNome(request.nome());
+        pet.setDataNasc(request.dataNasc());
+        pet.setRaca(raca);
+        pet.setPorte(PetPorte.valueOf(request.porte()));
+        pet.setSexo(request.sexo());
+        pet.setCastrado(request.castrado());
     }
 }

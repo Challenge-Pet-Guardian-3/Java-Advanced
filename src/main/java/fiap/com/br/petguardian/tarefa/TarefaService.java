@@ -78,7 +78,7 @@ public class TarefaService {
         EnumStatus status = EnumStatus.valueOf(request.status());
 
         LocalDateTime conclusao = definirConclusao(tarefa, status, request.conclusao(), LocalDateTime.now());
-        request.aplicarEm(tarefa, usuario, pet, statusService.findStatus(status), conclusao);
+        aplicarEm(tarefa, request, usuario, pet, statusService.findStatus(status), conclusao);
         return tarefaRepository.save(tarefa);
     }
 
@@ -96,7 +96,7 @@ public class TarefaService {
         Usuario usuario = findUsuarioById(request.concluinteId());
         tarefaValidator.validarCuidadorDoPet(usuario.getId(), tarefa.getPet().getId());
 
-        request.aplicarEm(tarefa, usuario, statusService.findStatus(EnumStatus.CONCLUIDO));
+        aplicarConclusao(tarefa, usuario, statusService.findStatus(EnumStatus.CONCLUIDO));
         return tarefaRepository.save(tarefa);
     }
 
@@ -142,5 +142,22 @@ public class TarefaService {
         Status pendente = statusService.findStatus(EnumStatus.PENDENTE);
         Status expirado = statusService.findStatus(EnumStatus.EXPIRADO);
         tarefaRepository.expirarTarefasPendentesAtrasadas(LocalDateTime.now(), pendente, expirado);
+    }
+
+    private void aplicarEm(Tarefa tarefa, TarefaRequest request, Usuario usuario, Pet pet, Status statusObj, LocalDateTime conclusaoCalculada) {
+        tarefa.setTitulo(request.titulo());
+        tarefa.setPontosTarefa(request.pontosTarefa());
+        tarefa.setDescricao(request.descricao());
+        tarefa.setPrazo(request.prazo());
+        tarefa.setUsuario(usuario);
+        tarefa.setPet(pet);
+        tarefa.setStatus(statusObj);
+        tarefa.setConclusao(conclusaoCalculada);
+    }
+
+    private void aplicarConclusao(Tarefa tarefa, Usuario usuario, Status statusConcluido) {
+        tarefa.setUsuario(usuario);
+        tarefa.setStatus(statusConcluido);
+        tarefa.setConclusao(LocalDateTime.now());
     }
 }

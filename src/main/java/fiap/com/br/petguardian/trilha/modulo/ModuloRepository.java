@@ -14,4 +14,8 @@ public interface ModuloRepository extends JpaRepository<Modulo, Long> {
 
     @EntityGraph(attributePaths = {"trilha"})
     List<Modulo> findAllByTrilhaId(Long trilhaId);
+
+    boolean existsByNomeIgnoreCaseAndTrilhaId(String nome, Long trilhaId);
+
+    boolean existsByNomeIgnoreCaseAndTrilhaIdAndIdNot(String nome, Long trilhaId, Long id);
 }

@@ -42,7 +42,7 @@ public class TrilhaService {
     public Trilha update(Long id, TrilhaRequest request) {
         Trilha trilha = findTrilhaById(id);
         Pet pet = findPetById(request.petId());
-        request.aplicarEm(trilha, pet);
+        aplicarEm(trilha, request, pet);
         return trilhaRepository.save(trilha);
     }
 
@@ -60,5 +60,11 @@ public class TrilhaService {
     private Pet findPetById(Long petId) {
         return petRepository.findById(petId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pet com id " + petId + " nao encontrado."));
+    }
+
+    private void aplicarEm(Trilha trilha, TrilhaRequest request, Pet pet) {
+        trilha.setNome(request.nome());
+        trilha.setDescricao(request.descricao());
+        trilha.setPet(pet);
     }
 }

@@ -137,7 +137,7 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
 | `GET` | `/tarefas/by-usuario/pontos` | `@RequestParam Long usuarioId` | `Integer` | Consulta total de pontos acumulados pelo cuidador. |
 | `POST` | `/tarefas` | `TarefaRequest` (`usuarioId` NOT NULL) | `TarefaResponse` (201 Created) | Cria nova tarefa vinculada obrigatoriamente a um cuidador do pet com status `PENDENTE`. |
 | `PUT` | `/tarefas/{id}` | `TarefaRequest` | `TarefaResponse` (200 OK) | Atualiza os dados e status da tarefa. |
-| `PATCH`| `/tarefas/{id}/concluir` | `TarefaConclusaoRequest` (`concluinteId`) | `TarefaResponse` (200 OK) | Marca tarefa como `CONCLUIDO`, vincula executor e data de conclusão via `aplicarEm()`. |
+| `PATCH`| `/tarefas/{id}/concluir` | `TarefaConclusaoRequest` (`concluinteId`) | `TarefaResponse` (200 OK) | Marca tarefa como `CONCLUIDO`, vincula executor e data de conclusão via `aplicarConclusao()` no Service. |
 | `PATCH`| `/tarefas/{id}/desmarcar` | `@PathVariable Long id`, `@RequestParam Long usuarioId` | `TarefaResponse` (200 OK) | Desmarca tarefa previamente concluída retornando-a ao status `PENDENTE` e limpando a conclusão. |
 | `DELETE`| `/tarefas/{id}` | `@PathVariable Long id` | 204 No Content | Deleta uma tarefa. |
 
@@ -239,8 +239,8 @@ O sistema opera com três perfis de acesso formalizados no Enum `UsuarioRole`:
    - Cada service injeta diretamente os **Repositories** das entidades relacionadas de que necessita (`PetRepository`, `UsuarioRepository`, etc.) e mantém seu próprio helper privado `findPetById` / `findUsuarioById`.
    - **NÃO** injetar Services irmãos (ex: `PetService` dentro de `HistoricoService` ou `UsuarioService` dentro de `UsuarioPetService`) para prevenir horizontal coupling e ciclos de dependência circular.
 4. **Sem `Locale.ROOT`:** Utilizar `.toUpperCase()` ou `.toLowerCase()` padrão.
-5. **Uso de `toEntity()` nos DTOs:** Métodos `update` nos Services utilizam `request.toEntity(...)`, `entity.setId(id)` e `repository.save(entity)`.
-6. **Encapsulamento de Transição em DTOs/Entidades:** Operações com regras de transição específicas (como `TarefaConclusaoRequest.aplicarEm(...)`) encapsulam suas atribuições de forma coesa sem quebrar contratos do frontend/mobile.
+5. **DTOs Limpos e Imutáveis:** DTOs são records puros contendo apenas campos, validações e conversão inicial (`toEntity(...)`). Não contêm métodos de mutação de entidades de domínio.
+6. **Encapsulamento de Mutação via `aplicarEm` nos Services:** Métodos `update` nos Services orquestram dependências e encapsulam as atribuições da entidade em método privado `aplicarEm(...)` no próprio Service, mutando a entidade gerenciada com segurança.
 7. **Inicialização com `@Builder.Default`:** Coleções e campos booleanos sempre inicializados.
 8. **DTOs Limpos:** Records de DTO contêm apenas anotações essenciais de validação, sem `@Schema`.
 9. **Sem Verificações Redundantes de Null (Proibido Null-Checks Paranoicos):** DTOs com Bean Validation (`@NotNull`, `@NotBlank`, `@CepValidation`, etc.) e entidades com `@Builder.Default` garantem a integridade dos dados na entrada. É terminantemente proibido poluir services e controllers com checagens de `!= null` e verificações defensivas em cascata desnecessárias.

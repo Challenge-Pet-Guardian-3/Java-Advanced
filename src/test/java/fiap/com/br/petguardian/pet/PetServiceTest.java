@@ -96,7 +96,7 @@ class PetServiceTest {
 
         assertNotNull(resultado);
         assertEquals("Thor", resultado.getNome());
-        verify(usuarioPetService).vincularResponsavelPrincipal(usuario, petSalvo);
+        verify(usuarioPetService).vincularPrimeiroResponsavelPrincipal(usuario, petSalvo);
     }
 
     @Test

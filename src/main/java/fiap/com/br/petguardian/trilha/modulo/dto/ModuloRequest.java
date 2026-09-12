@@ -2,10 +2,12 @@ package fiap.com.br.petguardian.trilha.modulo.dto;
 
 import fiap.com.br.petguardian.trilha.Trilha;
 import fiap.com.br.petguardian.trilha.modulo.Modulo;
+import fiap.com.br.petguardian.validation.NomeUnicoValidation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@NomeUnicoValidation(message = "Ja existe um modulo cadastrado com este nome para esta trilha.")
 public record ModuloRequest(
         @NotBlank
         @Size(max = 50)
@@ -29,13 +31,5 @@ public record ModuloRequest(
                 .descricao(descricao)
                 .trilha(trilha)
                 .build();
-    }
-
-    public Modulo aplicarEm(Modulo modulo, Trilha trilha) {
-        modulo.setNome(nome);
-        modulo.setTempoConclusao(tempoConclusao);
-        modulo.setDescricao(descricao);
-        modulo.setTrilha(trilha);
-        return modulo;
     }
 }

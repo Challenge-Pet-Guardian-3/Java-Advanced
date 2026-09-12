@@ -73,7 +73,7 @@ public class EnderecoService {
     private Endereco aplicarEndereco(Endereco endereco, EnderecoRequest request) {
         ViaCepResponse dados = obterDadosCep(request.cep());
         Bairro bairro = obterOuCriarBairro(dados);
-        return request.aplicarEm(endereco, dados.logradouro(), bairro);
+        return aplicarEm(endereco, request, dados.logradouro(), bairro);
     }
 
     private ViaCepResponse obterDadosCep(String cep) {
@@ -93,5 +93,13 @@ public class EnderecoService {
 
         return bairroRepository.findByNomeIgnoreCaseAndCidadeId(dados.bairro(), cidade.getId())
                 .orElseGet(() -> bairroRepository.save(Bairro.builder().nome(dados.bairro()).cidade(cidade).build()));
+    }
+
+    private Endereco aplicarEm(Endereco endereco, EnderecoRequest request, String rua, Bairro bairro) {
+        endereco.setCep(request.cep().replaceAll("\\D", ""));
+        endereco.setNumero(request.numero());
+        endereco.setRua(rua);
+        endereco.setBairro(bairro);
+        return endereco;
     }
 }

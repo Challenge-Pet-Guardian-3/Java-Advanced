@@ -39,4 +39,4 @@ out/
 .agent/**
 
 # Environment & Secrets
-.env
+.env
