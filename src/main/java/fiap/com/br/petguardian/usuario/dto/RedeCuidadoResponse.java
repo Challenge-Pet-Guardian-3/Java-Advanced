@@ -25,6 +25,12 @@ public record RedeCuidadoResponse(
             String email,
             boolean responsavelPrincipal,
             List<Long> petIds,
-            List<String> petNomes
-    ) {}
+            List<String> petNomes,
+            List<String> petsPrincipalNomes,
+            List<String> petsAjudaNomes
+    ) {
+        public CuidadorResumo(Long id, String nome, String email, boolean responsavelPrincipal, List<Long> petIds, List<String> petNomes) {
+            this(id, nome, email, responsavelPrincipal, petIds, petNomes, List.of(), List.of());
+        }
+    }
 }
