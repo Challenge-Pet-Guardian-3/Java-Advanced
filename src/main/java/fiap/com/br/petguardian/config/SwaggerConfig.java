@@ -7,7 +7,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Configuration
 @OpenAPIDefinition(
@@ -41,4 +46,30 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT"
 )
 public class SwaggerConfig {
+
+    @Bean
+    public OpenApiCustomizer sortTagsCustomizer() {
+        return openApi -> {
+            List<String> order = List.of(
+                    "Usuário",
+                    "Autenticação",
+                    "Pets",
+                    "UsuarioPet",
+                    "Care Circle",
+                    "Tarefas",
+                    "Historico",
+                    "Trilhas",
+                    "Modulos",
+                    "Aulas",
+                    "Endereco"
+            );
+            if (openApi.getTags() != null) {
+                openApi.getTags().sort(Comparator.comparingInt(tag -> {
+                    int index = order.indexOf(tag.getName());
+                    return index != -1 ? index : Integer.MAX_VALUE;
+                }));
+            }
+        };
+    }
 }
+
