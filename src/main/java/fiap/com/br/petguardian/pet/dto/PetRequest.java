@@ -39,7 +39,7 @@ public record PetRequest(
                 .nome(nome)
                 .dataNasc(dataNasc)
                 .raca(racaObj)
-                .porte(PetPorte.valueOf(porte))
+                .porte(PetPorte.valueOf(porte.trim().toUpperCase()))
                 .sexo(sexo)
                 .castrado(castrado)
                 .build();

@@ -115,8 +115,8 @@ public class PetService {
         pet.setNome(request.nome());
         pet.setDataNasc(request.dataNasc());
         pet.setRaca(raca);
-        pet.setPorte(PetPorte.valueOf(request.porte()));
-        pet.setSexo(request.sexo());
+        pet.setPorte(PetPorte.valueOf(request.porte().toUpperCase()));
+        pet.setSexo(Character.toUpperCase(request.sexo()));
         pet.setCastrado(request.castrado());
     }
 }

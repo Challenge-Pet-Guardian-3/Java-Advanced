@@ -35,10 +35,10 @@ public class TarefaService {
 
     public Page<Tarefa> findAllByUsuario(Long usuarioId, String statusFiltro, Pageable pageable) {
         expirarTarefasPendentesAtrasadas();
-        if ("ALL".equals(statusFiltro)) {
+        if ("ALL".equalsIgnoreCase(statusFiltro)) {
             return tarefaRepository.findAllDoCuidador(usuarioId, pageable);
         }
-        return tarefaRepository.findAllDoCuidadorByStatus(usuarioId, EnumStatus.valueOf(statusFiltro), pageable);
+        return tarefaRepository.findAllDoCuidadorByStatus(usuarioId, EnumStatus.valueOf(statusFiltro.trim().toUpperCase()), pageable);
     }
 
     public Page<Tarefa> findAllByPetId(Long petId, Pageable pageable) {
@@ -75,7 +75,7 @@ public class TarefaService {
         Pet pet = findPetById(request.petId());
         Usuario usuario = findUsuarioById(request.usuarioId());
         tarefaValidator.validarCuidadorDoPet(usuario.getId(), pet.getId());
-        EnumStatus status = EnumStatus.valueOf(request.status());
+        EnumStatus status = EnumStatus.valueOf(request.status().trim().toUpperCase());
 
         LocalDateTime conclusao = definirConclusao(tarefa, status, request.conclusao(), LocalDateTime.now());
         aplicarEm(tarefa, request, usuario, pet, statusService.findStatus(status), conclusao);

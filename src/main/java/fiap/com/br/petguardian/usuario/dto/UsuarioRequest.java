@@ -46,7 +46,7 @@ public record UsuarioRequest(
                 .nome(nome)
                 .email(email.trim().toLowerCase())
                 .senha(senhaCodificada)
-                .role(UsuarioRole.valueOf(role))
+                .role(UsuarioRole.valueOf(role.trim().toUpperCase()))
                 .telefone(telefone)
                 .build();
     }

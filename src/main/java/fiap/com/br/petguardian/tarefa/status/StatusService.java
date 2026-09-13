@@ -17,6 +17,6 @@ public class StatusService {
     }
 
     public Status findStatusByNome(String nome) {
-        return findStatus(EnumStatus.valueOf(nome));
+        return findStatus(EnumStatus.valueOf(nome.trim().toUpperCase()));
     }
 }

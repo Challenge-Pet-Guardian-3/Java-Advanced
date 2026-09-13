@@ -78,7 +78,7 @@ public class UsuarioService {
         usuario.setNome(request.nome());
         usuario.setEmail(request.email().trim().toLowerCase());
         usuario.setSenha(senhaCodificada);
-        usuario.setRole(UsuarioRole.valueOf(request.role()));
+        usuario.setRole(UsuarioRole.valueOf(request.role().trim().toUpperCase()));
         if (usuario.getTelefone() != null) {
             usuario.getTelefone().setDdd(request.ddd().trim());
             usuario.getTelefone().setNumero(request.numeroTelefone().trim());
