@@ -18,7 +18,7 @@
 | **2. Spring Security & Controle de Acesso** | **30 pts** | **Crítico (PBI-05 a PBI-08)** | Autenticação via Spring Security OAuth2 Resource Server com par de chaves assimétricas **RSA 2048-bit** (`NimbusJwtEncoder` / `NimbusJwtDecoder`), BCrypt, tokens JWT Stateless para consumo Mobile (React Native), `CorsConfig` dedicado e proteção centralizada via `SecurityFilterChain`. |
 | **3. Flyway (Controle de Versão de BD)** | **20 pts** | **Crítico (PBI-09 e PBI-10)** | Migrações versionadas (`V1`, `V2`, `V3`) com tabelas Pet-Centric: `usuario`, `pet`, `usuario_pet` (gestão N:N familiar com PK composta `@EmbeddedId`), `tarefa`, `status`, `endereco`, `bairro`, `cidade`, `estado`, `telefone`. |
 | **4. Funcionalidades Completas (Fluxos Não-CRUD)** | **20 pts** | **Crítico (PBI-11 a PBI-14)** | **Dois fluxos ponta a ponta complexos:**<br>1) *Rede Familiar & Co-Cuidadores:* Vínculo N:N entre tutores e pets com `UsuarioPetController` (`/pets/{petId}/cuidadores`), gestão de Responsável Principal, convite de co-cuidadores exclusivamente por **e-mail**, transferência de titularidade, agregação performática da Rede de Cuidado (`RedeCuidadoMapper` com batch query anti-N+1) e histórico consolidado do pet.<br>2) *Rotina Familiar, Expiração Automática & Gamificação:* Tutores criam rotinas com prazo e pontuação, mecanismo atômico de expiração automática de tarefas pendentes vencidas via query `@Modifying`, conclusão com atribuição de cuidador executor e cálculo de ranking/pontuação. |
-| **5. Documentação, Vídeo (10 min) & Avaliação Oral** | **Obrigatório** | **Alto (PBI-15 a PBI-17)** | README detalhado, gravação com demonstração das rotas/segurança/fluxos e guia de estudo para defesa individual com foco em decisões de arquitetura e Clean Code. |
+| **5. Documentação & Demonstração em Vídeo (10 min)** | **Obrigatório** | **Alto (PBI-15 e PBI-16)** | README detalhado, gravação com demonstração das rotas/segurança/fluxos com foco em decisões de arquitetura e Clean Code. |
 
 ---
 
@@ -57,8 +57,7 @@
 │
 └── 🏆 [FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral
     ├── 📄 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle) (1 pt)
-    ├── 📄 [PBI-16] Roteiro e Gravação do Vídeo Demonstrativo da Aplicação (Máx. 10 min) (1 pt)
-    └── 📄 [PBI-17] Matriz de Argumentação e Preparação para a Avaliação Oral Individual (1 pt)
+    └── 📄 [PBI-16] Roteiro e Gravação do Vídeo Demonstrativo da Aplicação (Máx. 10 min) (1 pt)
 ```
 
 ---
@@ -83,8 +82,7 @@
 | | **PBI-14** | [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Pontuação | 2 pts | 1 - Critical | 5.5h |
 | **[FEATURE 08] Docs, Vídeo & Banca** | **PBI-15** | Atualização Completa do README.md e Guia de Execução (Gradle) | 1 pts | 2 - High | 3.0h |
 | | **PBI-16** | Roteiro e Gravação do Vídeo Demonstrativo (Máx. 10 min) | 1 pts | 1 - Critical | 5.5h |
-| | **PBI-17** | Matriz de Argumentação e Preparação para a Avaliação Oral | 1 pts | 2 - High | 3.5h |
-| **TOTAL CONSOLIDADO** | **8 Features** | **17 PBIs / 43 Child Tasks Técnicas** | **24 pts** | — | **74.5h** |
+| **TOTAL CONSOLIDADO** | **8 Features** | **16 PBIs / 41 Child Tasks Técnicas** | **23 pts** | — | **71.0h** |
 
 ---
 
@@ -99,7 +97,7 @@
 * **Start Date:** `2026-08-24`
 * **Target Date:** `2026-08-29`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `24`
+* **Effort (Story Points):** `23`
 * **Business Value:** `100`
 * **Description:** Evolução corporativa do backend Spring Boot aplicando governança de código SOLID/Clean Code, autenticação Stateless via OAuth2 Resource Server com par de chaves assimétricas RSA 2048-bit, migrações versionadas com Flyway e implementação de 2 fluxos de negócio complexos não-CRUD (Care Circle familiar N:N e rotina com expiração atômica e gamificação).
 
@@ -605,8 +603,8 @@
 * **Start Date:** `2026-08-28`
 * **Target Date:** `2026-08-29`
 * **Priority:** `1 - Critical`
-* **Effort (Story Points):** `3`
-* **Description:** Elaboração da documentação técnica no README, gravação do vídeo demonstrativo de até 10 minutos e consolidação da matriz de argumentação para a avaliação oral individual da disciplina.
+* **Effort (Story Points):** `2`
+* **Description:** Elaboração da documentação técnica no README e gravação do vídeo demonstrativo de até 10 minutos para validação dos requisitos da disciplina.
 
 #### 🔹 [PBI-15] Atualização Completa do README.md e Guia de Execução (Gradle)
 * **Work Item Type:** `Product Backlog Item`
@@ -664,30 +662,4 @@
   * *Descrição:* Demonstrar endpoints e respostas em tempo real.
 * **Task 16.3:** [TASK-45] Editar, realizar upload no YouTube e adicionar o link ao `README.md`. *(Activity: Deployment, Est: 1.5h)*
   * *Descrição:* Publicar e fixar URL de acesso no repositório.
-
----
-
-#### 🔹 [PBI-17] Matriz de Argumentação e Preparação para a Avaliação Oral Individual
-* **Work Item Type:** `Product Backlog Item`
-* **Parent Feature:** `[FEATURE 08] Documentação Técnica, Demonstração em Vídeo & Preparação para Banca Oral`
-* **State:** `Approved`
-* **Priority:** `2 - High`
-* **Effort (Story Points):** `1`
-* **Tags:** `Sprint3, JavaAdvanced, AvaliacaoOral, Estudo`
-
-##### Descrição (História de Usuário)
-> **Como** Integrante da equipe PetGuardian,  
-> **Eu quero** revisar os trechos de código, decisões técnicas, Clean Code e justificativas arquiteturais,  
-> **Para que** eu esteja plenamente preparado para responder individualmente às perguntas do professor na banca avaliativa.
-
-##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] Cada integrante domina a explicação de trechos específicos do código (SecurityFilterChain, Streams/groupingBy, RedeCuidadoMapper, GlobalExceptionHandler, Services transacionais, ViaCEP).
-- [ ] Justificativas claras formuladas para as decisões de design (por que DTOs Records, por que RSA 2048-bit, por que injeção por construtor, por que `@Transactional` seletivo).
-- [ ] Mapeamento das dificuldades encontradas e soluções implementadas.
-
-##### Tarefas Técnicas (Child Tasks)
-* **Task 17.1:** [TASK-46] Elaborar documento de apoio com perguntas frequentes e justificativas de arquitetura do projeto. *(Activity: Documentation, Est: 2.0h)*
-  * *Descrição:* Consolidar argumentos sobre decisões de design e SOLID.
-* **Task 17.2:** [TASK-47] Realizar rodada interna de simulação da avaliação oral entre os membros do grupo. *(Activity: Testing, Est: 1.5h)*
-  * *Descrição:* Praticar respostas e defesa técnica do código-fonte.
 
