@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/enderecos")
 @RequiredArgsConstructor
-@Tag(name = "Enderecos", description = "Gerenciamento de enderecos")
+@Tag(name = "Endereco", description = "Gerenciamento de endereços")
 public class EnderecoController {
     private final EnderecoService enderecoService;
 

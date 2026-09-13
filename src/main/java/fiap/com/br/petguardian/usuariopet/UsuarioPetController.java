@@ -15,7 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/pets/{petId}")
 @RequiredArgsConstructor
-@Tag(name = "Care Circle (Rede de Cuidados)", description = "Gestao colaborativa de tutores e co-cuidadores do pet")
+@Tag(name = "UsuarioPet", description = "Gestão de vínculos entre usuários e pets")
+@Tag(name = "Care Circle", description = "Gestão colaborativa de tutores e co-cuidadores do pet")
 public class UsuarioPetController {
 
     private final UsuarioPetService usuarioPetService;

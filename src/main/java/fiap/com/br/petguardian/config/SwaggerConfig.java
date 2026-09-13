@@ -21,16 +21,17 @@ import org.springframework.context.annotation.Configuration;
         ),
         security = @SecurityRequirement(name = "bearerAuth"),
         tags = {
-                @Tag(name = "Autenticacao", description = "Autenticacao de usuarios e geracao de token JWT"),
-                @Tag(name = "Usuarios", description = "Gerenciamento de usuarios (tutores/cuidadores)"),
-                @Tag(name = "Pets", description = "Gerenciamento de pets e historico clinico"),
-                @Tag(name = "Care Circle (Rede de Cuidados)", description = "Gestao colaborativa de tutores e co-cuidadores do pet"),
+                @Tag(name = "Usuário", description = "Gerenciamento de usuários (tutores/cuidadores)"),
+                @Tag(name = "Autenticação", description = "Autenticação de usuários e geração de token JWT"),
+                @Tag(name = "Pets", description = "Gerenciamento de pets e histórico clínico"),
+                @Tag(name = "UsuarioPet", description = "Gestão de vínculos entre usuários e pets"),
+                @Tag(name = "Care Circle", description = "Gestão colaborativa de tutores e co-cuidadores do pet"),
                 @Tag(name = "Tarefas", description = "Gerenciamento de tarefas e rotinas de cuidados do pet"),
-                @Tag(name = "Historico", description = "Historico de saude e eventos do pet"),
+                @Tag(name = "Historico", description = "Histórico de saúde e eventos do pet"),
                 @Tag(name = "Trilhas", description = "Gerenciamento de trilhas de aprendizado e adestramento do pet"),
-                @Tag(name = "Modulos", description = "Gerenciamento de modulos das trilhas de aprendizado"),
-                @Tag(name = "Aulas", description = "Gerenciamento de aulas e conteudos educativos das trilhas"),
-                @Tag(name = "Enderecos", description = "Gerenciamento de enderecos")
+                @Tag(name = "Modulos", description = "Gerenciamento de módulos das trilhas de aprendizado"),
+                @Tag(name = "Aulas", description = "Gerenciamento de aulas e conteúdos educativos das trilhas"),
+                @Tag(name = "Endereco", description = "Gerenciamento de endereços")
         }
 )
 @SecurityScheme(

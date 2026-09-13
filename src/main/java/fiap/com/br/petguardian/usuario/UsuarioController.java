@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
-@Tag(name = "Usuarios", description = "Gerenciamento de usuarios")
+@Tag(name = "Usuário", description = "Gerenciamento de usuários")
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
@@ -54,6 +54,8 @@ public class UsuarioController {
     @GetMapping("/{id}/rede-cuidado")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Visualizar rede de cuidado do usuário (pets, co-cuidadores e tarefas agrupadas)")
+    @Tag(name = "Care Circle", description = "Gestão colaborativa de tutores e co-cuidadores do pet")
+    @Tag(name = "Usuário", description = "Gerenciamento de usuários")
     public RedeCuidadoResponse getRedeCuidado(@PathVariable Long id) {
         return usuarioService.getRedeCuidado(id);
     }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/pets")
 @RequiredArgsConstructor
-@Tag(name = "Pets", description = "Gerenciamento de pets e historico clinico")
+@Tag(name = "Pets", description = "Gerenciamento de pets e histórico clínico")
 public class PetController {
 
     private final PetService petService;

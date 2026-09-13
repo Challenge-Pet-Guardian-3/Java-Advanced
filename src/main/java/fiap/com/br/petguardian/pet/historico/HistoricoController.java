@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/historicos")
 @RequiredArgsConstructor
-@Tag(name = "Historico", description = "Historico de saude e eventos do pet")
+@Tag(name = "Historico", description = "Histórico de saúde e eventos do pet")
 public class HistoricoController {
 
     private final HistoricoService historicoService;

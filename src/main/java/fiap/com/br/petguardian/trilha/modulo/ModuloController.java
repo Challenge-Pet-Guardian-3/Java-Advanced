@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/modulos")
 @RequiredArgsConstructor
-@Tag(name = "Modulos", description = "Gerenciamento de modulos das trilhas de aprendizado")
+@Tag(name = "Modulos", description = "Gerenciamento de módulos das trilhas de aprendizado")
 public class ModuloController {
 
     private final ModuloService moduloService;

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Autenticacao", description = "Autenticacao de usuarios e geracao de token JWT")
+@Tag(name = "Autenticação", description = "Autenticação de usuários e geração de token JWT")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
