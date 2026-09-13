@@ -25,6 +25,10 @@
 | **Swagger UI (Local)** | http://localhost:8080/swagger-ui/index.html |
 | **Arquivo de Coleção Insomnia** | [/docs/Insomnia_2026-05-21.yaml](./docs/Insomnia_2026-05-21.yaml) |
 
+## 🔗 Vídeo de Demonstração
+
+[Vídeo de Demonstração](https://youtu.be/HAolZI8EX0M)
+
 ---
 
 ## Integrantes
