@@ -16,7 +16,7 @@
 | :--- | :---: | :---: | :--- |
 | **1. Refatoração SOLID, DRY & Clean Code** | **Penalidades (-10 a -15 pts)** | **Concluído (PBI-01 a PBI-04)** | Injeção por construtor (`@RequiredArgsConstructor`), eliminação total de `ResponseStatusException`, Global Exception Handler, DTOs desacoplados com fábrica `toEntity()`/`fromEntity()`, `@Transactional` seletivo, tipos primitivos `boolean` e SpringDoc OpenAPI/Swagger. |
 | **2. Spring Security & Controle de Acesso** | **30 pts** | **Crítico (PBI-05 a PBI-08)** | Autenticação via Spring Security OAuth2 Resource Server com par de chaves assimétricas **RSA 2048-bit** (`NimbusJwtEncoder` / `NimbusJwtDecoder`), BCrypt, tokens JWT Stateless para consumo Mobile (React Native), `CorsConfig` dedicado e proteção centralizada via `SecurityFilterChain`. |
-| **3. Flyway (Controle de Versão de BD)** | **20 pts** | **Crítico (PBI-09 e PBI-10)** | Migrações versionadas (`V1`, `V2`, `V3`) com tabelas Pet-Centric: `usuario`, `pet`, `usuario_pet` (gestão N:N familiar com PK composta `@EmbeddedId`), `tarefa`, `status`, `endereco`, `bairro`, `cidade`, `estado`, `telefone`. |
+| **3. Flyway (Controle de Versão de BD)** | **20 pts** | **Crítico (PBI-09 e PBI-10)** | Migrações versionadas (`V1`, `V2`) com tabelas Pet-Centric: `usuario`, `pet`, `usuario_pet` (gestão N:N familiar com PK composta `@EmbeddedId`), `tarefa`, `status`, `endereco`, `bairro`, `cidade`, `estado`, `telefone`. |
 | **4. Funcionalidades Completas (Fluxos Não-CRUD)** | **20 pts** | **Crítico (PBI-11 a PBI-14)** | **Dois fluxos ponta a ponta complexos:**<br>1) *Rede Familiar & Co-Cuidadores:* Vínculo N:N entre tutores e pets com `UsuarioPetController` (`/pets/{petId}/cuidadores`), gestão de Responsável Principal, convite de co-cuidadores exclusivamente por **e-mail**, transferência de titularidade, agregação performática da Rede de Cuidado (`RedeCuidadoMapper` com batch query anti-N+1) e histórico consolidado do pet.<br>2) *Rotina Familiar, Expiração Automática & Gamificação:* Tutores criam rotinas com prazo e pontuação, mecanismo atômico de expiração automática de tarefas pendentes vencidas via query `@Modifying`, conclusão com atribuição de cuidador executor e cálculo de ranking/pontuação. |
 | **5. Documentação & Demonstração em Vídeo (10 min)** | **Obrigatório** | **Alto (PBI-15 e PBI-16)** | README detalhado, gravação com demonstração das rotas/segurança/fluxos com foco em decisões de arquitetura e Clean Code. |
 
@@ -45,7 +45,7 @@
 │
 ├── 🏆 [FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)
 │   ├── 📄 [PBI-09] Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) (2 pts)
-│   └── 📄 [PBI-10] Migrações Incrementais de Domínio, Status e Seeds de Segurança (V2 e V3) (1 pt)
+│   └── 📄 [PBI-10] Migração Incremental de Domínio e Status Inicial (V2) (1 pt)
 │
 ├── 🏆 [FEATURE 06] Fluxo 1: Gestão de Pets, Rede Familiar e Co-Cuidadores (N:N)
 │   ├── 📄 [PBI-11] [Fluxo 1.1] Gestão de Vínculos N:N, Responsável Principal e Convite de Co-Cuidadores por E-mail (2 pts)
@@ -75,14 +75,14 @@
 | **[FEATURE 04] Autorização RBAC** | **PBI-07** | SecurityFilterChain Stateless, CORS Dedicado e Proteção Centralizada | 2 pts | 1 - Critical | 5.0h |
 | | **PBI-08** | Segurança Granular por Método (@EnableMethodSecurity) e Handlers | 1 pts | 1 - Critical | 5.0h |
 | **[FEATURE 05] Flyway & Banco** | **PBI-09** | Configuração do Flyway e Migração Inicial DDL Pet-Centric (V1) | 2 pts | 1 - Critical | 6.0h |
-| | **PBI-10** | Migrações Incrementais, Status e Seeds de Segurança (V2/V3) | 1 pts | 2 - High | 4.5h |
+| | **PBI-10** | Migração Incremental de Domínio e Status Inicial (V2) | 1 pts | 2 - High | 2.5h |
 | **[FEATURE 06] Fluxo 1 Rede Cuidado** | **PBI-11** | [Fluxo 1.1] Gestão Vínculos N:N, Responsável Principal e Convite E-mail | 2 pts | 1 - Critical | 6.0h |
 | | **PBI-12** | [Fluxo 1.2] Rede Cuidado Agregada (RedeCuidadoMapper) e Histórico Pet | 2 pts | 1 - Critical | 6.0h |
 | **[FEATURE 07] Fluxo 2 Gamificação** | **PBI-13** | [Fluxo 2.1] Criação Rotina Familiar e Expiração Automática de Tarefas | 2 pts | 1 - Critical | 5.5h |
 | | **PBI-14** | [Fluxo 2.2] Conclusão de Tarefas, Registro de Executor e Pontuação | 2 pts | 1 - Critical | 5.5h |
 | **[FEATURE 08] Docs, Vídeo & Banca** | **PBI-15** | Atualização Completa do README.md e Guia de Execução (Gradle) | 1 pts | 2 - High | 3.0h |
 | | **PBI-16** | Roteiro e Gravação do Vídeo Demonstrativo (Máx. 10 min) | 1 pts | 1 - Critical | 5.5h |
-| **TOTAL CONSOLIDADO** | **8 Features** | **16 PBIs / 41 Child Tasks Técnicas** | **23 pts** | — | **71.0h** |
+| **TOTAL CONSOLIDADO** | **8 Features** | **16 PBIs / 40 Child Tasks Técnicas** | **23 pts** | — | **69.0h** |
 
 ---
 
@@ -424,7 +424,7 @@
 
 ---
 
-#### 🔹 [PBI-10] Migrações Incrementais de Domínio, Status e Seeds de Segurança (V2 e V3)
+#### 🔹 [PBI-10] Migração Incremental de Domínio e Status Inicial (V2)
 * **Work Item Type:** `Product Backlog Item`
 * **Parent Feature:** `[FEATURE 05] Versionamento de Banco de Dados & Governança de Esquema (Flyway)`
 * **State:** `Approved`
@@ -434,20 +434,17 @@
 
 ##### Descrição (História de Usuário)
 > **Como** Desenvolvedor Backend e Administrador do Sistema,  
-> **Eu quero** criar migrações incrementais do Flyway para inserir sementes de dados de domínio (status, raças, endereços e usuários de teste),  
-> **Para que** a aplicação já inicie pronta para testes e demonstração imediata no Mobile.
+> **Eu quero** criar migrações incrementais do Flyway para inserir sementes de dados de domínio (status das tarefas),  
+> **Para que** a aplicação já inicie com os estados fundamentais provisionados para testes e rotinas.
 
 ##### Critérios de Aceite (Acceptance Criteria / Definition of Done)
-- [ ] Script `V2__popular_status_e_racas.sql` insere status (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`) e raças iniciais.
-- [ ] Script `V3__adicionar_perfis_e_usuarios_iniciais.sql` insere usuários de teste com senhas hash BCrypt, telefones, endereços, pets e vínculos familiares.
+- [ ] Script `V2__carga_inicial_status.sql` insere status (`PENDENTE`, `CONCLUIDO`, `EXPIRADO`).
 - [ ] Migrações são idempotentes e executam sequencialmente.
 
 ##### Tarefas Técnicas (Child Tasks)
-* **Task 10.1:** [TASK-26] Elaborar script `V2__popular_status_e_racas.sql` com constantes de status e raças. *(Activity: Development, Est: 1.5h)*
-  * *Descrição:* Inserir registros de lookup para tarefas e animais.
-* **Task 10.2:** [TASK-27] Elaborar script `V3__adicionar_perfis_e_usuarios_iniciais.sql` com seeds de usuários hash BCrypt e pets vinculados. *(Activity: Development, Est: 2.0h)*
-  * *Descrição:* Cadastrar base de tutores, co-cuidadores e pets com senhas seguras.
-* **Task 10.3:** [TASK-28] Validar integridade referencial e execução sequencial no banco de dados. *(Activity: Testing, Est: 1.0h)*
+* **Task 10.1:** [TASK-26] Elaborar script `V2__carga_inicial_status.sql` com constantes de status da rotina. *(Activity: Development, Est: 1.5h)*
+  * *Descrição:* Inserir registros de lookup para tarefas do ciclo de cuidado.
+* **Task 10.2:** [TASK-27] Validar integridade referencial e execução sequencial no banco de dados. *(Activity: Testing, Est: 1.0h)*
   * *Descrição:* Executar banco limpo e verificar população correta das tabelas.
 
 ---
