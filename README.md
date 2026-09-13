@@ -57,6 +57,18 @@ O **PetGuardian** é uma API REST corporativa desenvolvida em **Spring Boot** pa
 
 ---
 
+## ☁️ Arquitetura e Deploy em Nuvem (Railway)
+
+A API **PetGuardian** e seu banco de dados relacional **PostgreSQL 16** estão provisionados e operando em alta disponibilidade em ambiente de produção no **Railway**:
+
+* **Microsserviço da Aplicação (`Java-Advanced`):** Container Spring Boot 4.1.1 (Java 17 LTS / Gradle) com pipeline de entrega contínua vinculado ao GitHub, operando com status `Online`.
+* **Banco de Dados Relacional (`Postgres`):** Instância PostgreSQL 16 provisionada com volume persistente montado (`postgres-volume`), garantindo durabilidade das tabelas, histórico clínico e rotinas.
+* **Rede Privada Integrada:** Comunicação de baixa latência entre o container da aplicação e o container de banco de dados.
+
+![Arquitetura de Deploy no Railway](docs/Railway.png)
+
+---
+
 ## Modelagem Lógica e Relacional do Banco de Dados
 
 ### Modelo Lógico 
